@@ -1,8 +1,5 @@
-#include <cstdio>
 #include <iostream>
-#include <map>
 #include <string>
-#include <iterator>
 
 using namespace std;
 
@@ -35,6 +32,12 @@ public:
 
         }
     }
+
+    string syncRecord() {return "";}
+    string sync() {return "";}
+    string enter() {return "";}
+    string instrCall() {return "";}
+    string replay() {return "";}
 };
 
 
