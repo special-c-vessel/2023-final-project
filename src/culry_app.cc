@@ -1,128 +1,160 @@
-#inlcude "culry_app.h"
+    #include <cctype>
+    #inlcude "culry_app.h"
 
-CulryObject CulryApp::GetRecord(CulryObject _obj, int _uniId) noexcept
-{
-    if(_obj.GetType() != CulryObject::Type::Empty && (_obj.GetType() == CulryObject::Type::Value || _obj.GetType() == CulryObject::Type::Function))
+    CulryObject CulryApp::GetRecord(CulryObject _obj, int _uniId) noexcept
     {
-        if (_obj.GetUniqueID() == 0) {
-            _obj.SetUniqueID(_uniId);
-            return _obj;
-        }
-    } 
-    else 
-    {
-        return _obj;
-    }
-}
-
-
-CulryObject CulryApp::SyncReocrd(CulryObject _rec, CulryObject _v) noexcept
-{
-    // var result = rec.val
-    CulryObject _result = CulryObject();
-    _result.SetUniqueID(_rec.GetUniqueID());
-
-    // if (rec.val !== null && (rec.type === ‘object’ || rec.type === ‘function’))
-    if (_rec.GetValue() != 0 && (_rec.GetType() == CulryObject::Type::Value || _rec.GetType() == CulryObject::Type::Function ))
-    {
-        // if ( objectMap[rec.val] )
-        auto _findValue = objectMap.find(_rec.GetUniqueID());
-        if ( _findValue != objectMap.end )
+        if(_obj.GetType() != CulryObject::Type::Empty && (_obj.GetType() == CulryObject::Type::Value || _obj.GetType() == CulryObject::Type::Function))
         {
-            // result = objectMap[rec.val];
-            _result.SetValue((int)_findValue);
+            if (_obj.GetUniqueID() == 0) {
+                _obj.SetUniqueID(_uniId);
+                return _obj;
+            }
         }
         else
         {
-            // if(typeof v !== rec.type || v[“*id*”])
-            if (_v.GetType() != _rec.GetType() || _v.GetUniqueID() != 0)
+            return _obj;
+        }
+    }
+
+
+    CulryObject CulryApp::SyncRecord(CulryObject _rec, CulryObject _v) noexcept
+    {
+        // var result = rec.val
+        CulryObject _result = CulryObject();
+        _result.SetUniqueID(_rec.GetUniqueID());
+
+        // if (rec.val !== null && (rec.type === ‘object’ || rec.type === ‘function’))
+        if (_rec.GetValue() != 0 && (_rec.GetType() == CulryObject::Type::Value || _rec.GetType() == CulryObject::Type::Function ))
+        {
+            // if ( objectMap[rec.val] )
+            auto _findValue = objectMap.find(_rec.GetUniqueID());
+            if ( _findValue != objectMap.end )
             {
-                // v = (rec.type === ‘object’) ? {} : function() {}
-                if (_rec.GetType() == CulryObject::Type::Value) 
+                // result = objectMap[rec.val];
+                _result.SetValue((int)_findValue);
+            }
+            else
+            {
+                // if(typeof v !== rec.type || v[“*id*”])
+                if (_v.GetType() != _rec.GetType() || _v.GetUniqueID() != 0)
                 {
-                    
-                }
-                else 
-                {
+                    // v = (rec.type === ‘object’) ? {} : function() {}
+                    if (_rec.GetType() == CulryObject::Type::Value)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+
+                    // v[“*id*”] = rec.val;
+                    _v.SetUniqueID(_rec.GetUniqueID());
+
+                    // objectMap [rec.val] = v;
+                    objectMap.insert({_rec.GetUniqueID(), _v.GetValue()});
+
+                    // result = v;
+                    _result = _v;
 
                 }
+            }
+        }
 
-                // v[“*id*”] = rec.val;
-                _v.SetUniqueID(_rec.GetUniqueID());
+        return _result;
+    }
 
-                // objectMap [rec.val] = v;
-                objectMap.insert({_rec.GetUniqueID(), _v.GetValue()});
+    CulryObject CulryApp::Sync(CulryObject _obj1, CulryObject _obj2) noexcept
+    {
+        // i = i + 1
+        globalIndex++;
 
-                // result = v;
-                _result = _v;
-
+        // if (recording)
+        if(IsRecording())
+        {
+            // if (v1 !== v2)
+            if (_obj1.GetUniqueID() != _obj2.GetUniqueID())
+            {
+                trace[globalIndex] = GetRecord(_obj1);
+            }
+            return _obj1;
+        }
+        else
+        {
+            // if (trace[i]) return syncRecord( trace[i], v1);
+            if(trace[globalIndex] != NULL)
+            {
+                return SyncReocrd(trace[globalIndex], _obj1);
+            }
+            // else return v1;
+            else
+            {
+                return _obj1;
             }
         }
     }
 
-    return _result;
-}
-
-CulryObject CulryApp::Sync(CulryObject _obj1, CulryObject _obj2) noexcept
-{
-    // i = i + 1
-    globalIndex++;
-
-    // if (recoding) 
-    if(IsRecoding())
+    // function instrCall(f, o, a1, ..., an)
+    void CulryApp::InstrCall(CulryObject _f, CulryObject _o, CulryObject _a1) noexcept
     {
-        // if (v1 !== v2)
-        if (_obj1.GetUniqueID() != _obj2.GetUniqueID()) 
+        if(f.IsInstrumented() || IsRecording)
         {
-            trace[globalIndex] = GetRecord(_obj1);
+            return call(-f, _o, _a1);
+            // return call(_f, _o, _a1);
         }
-        return _obj1;
-    }
-    else
-    {
-        // if (trace[i]) return syncRecord( trace[i], v1);
-        if(trace[globalIndex] != NULL) 
-        {
-            return SyncReocrd(trace[globalIndex], _obj1);
-        }
-        // else return v1;
         else
         {
-            return _obj1;
+            return Replay();
+            // return Replay();
         }
-    }
-}
 
-// function instrCall(f, o, a1, ..., an)
-void CulryApp::InstrCall(CulryObject _f, CulryObject _o, CulryObject _a1) noexcept
-{
-    if(f.IsInstrumented())
-    {
-        // return call(_f, _o, _a1);
+        /*
+        * if(recording || isInstrumented (f))
+        *  return call(f, o, a1 ... an)
+        * else
+        *  return Replay()
+        */
     }
-    else
-    {
-        // return Replay();
-    }
-}
 
-void CulryApp::Enter() noexcept
-{
-    globalIndex++;
-
-    if(v.IsRecording())
+    void CulryApp::Enter() noexcept
     {
-        trace[i] = GetRecord(v);
-        trace[i].isFunCall = true;
-    }
-    return "";
-}
+        globalIndex++;
 
-void CulryApp::Replay() noexcept
-{
-    while(trace[i + 1].IsFunCall)
-    {
-        Object f = syncRecord(trace[i + 1], undefind());
-        //f() llvm 함수?
+        if(v.IsRecording())
+        {
+            trace[i] = GetRecord(v);
+            trace[i].isFunCall = true;
+        }
+        return ;
+
+        /*
+        * i = i + 1;
+        * if(recording)
+        * {
+        *   trace[i] = getRecord(v)
+            trace[i].isFunCall = true
+          }
+
+
+        */
     }
-}
+
+    void CulryApp::Replay() noexcept
+    {
+        while(trace[i + 1].IsFunCall)
+        {
+            Object f = syncRecord(trace[i + 1], undefind());
+            f();
+        }
+
+        /*
+        * while(trace[i + 1].isFuncall)
+        * {
+        *      var f = syncRecord(traceP[i + 1], undefined)
+        *      f()
+
+        }
+
+            return undefined
+        */
+    }
