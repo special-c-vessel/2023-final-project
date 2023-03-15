@@ -23,7 +23,7 @@ bool NodeVisitor::VisitStmt(Stmt *s) {
       string var_type = var_decl->getType().getAsString();
       if (var_type == "int" && var_decl->hasInit()) { // int <var> = <expr>;
         char* str;
-        asprintf(&str, "printf(\"Var %s=%%d is declared\\n\", %s);", var_name.c_str(), var_name.c_str());
+        asprintf(&str, "\nshadow value add %s=%%d", var_name.c_str(), var_name.c_str());
         SourceLocation end_loc = s->getEndLoc().getLocWithOffset(1);
         rewriter.InsertTextAfter(end_loc, str);
         free(str);
