@@ -45,33 +45,8 @@ namespace {
     Culry() : FunctionPass(ID) {}
 
     bool runOnFunction(Function &F) override {
-      /*
-      TestClass* testClass = new TestClass();
+      
 
-      ++CulryCounter;
-      errs() << "Culry : " << testClass -> TestFunc(5) << " ";
-      errs().write_escaped(F.getName()) << '\n';
-
-      for (auto &BB : F) {
-        errs() << "Basic Block:\n";
-        errs() << "  Name: " << BB.getName() << "\n";
-        errs() << "  Number of Instructions: " << BB.size() << "\n";
-        errs() << "  Instructions:\n";
-
-        for (auto &I : BB) {
-            errs() << "    " << I << " name :  ";
-            if (auto *Add = dyn_cast<BinaryOperator>(&I)) {
-              if (Add->getOpcode() == Instruction::Add) {
-                errs() << "Add is occured";
-              }
-            }
-            errs() << "\n";
-        }
-      }
-      return false;
-      */
-
-     /*
       LLVMContext &C = F.getContext();
       std::vector<Type*> printfArgs;
       printfArgs.push_back(Type::getInt8PtrTy(C));
@@ -92,20 +67,6 @@ namespace {
       }
 
       return true;
-      */
-      for (auto &BB : F) {
-        for (auto &I : BB) {
-          if (DbgDeclareInst *DDI = dyn_cast<DbgDeclareInst>(&I)) {
-            Value *Var = DDI->getAddress();
-            errs() << "Variable Name: " << Var->getName() << "\n";
-            if (AllocaInst *AI = dyn_cast<AllocaInst>(Var)) {
-              StringRef Name = AI->getName();
-              //errs() << "Variable Name: " << Name << "\n";
-            }
-          }
-        }
-      }
-      return false;
     }
   };
 }
