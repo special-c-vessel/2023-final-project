@@ -3,6 +3,7 @@ source_filename = "etest.cc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-macosx13.0.0"
 
+
 @.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 @.str.1 = private unnamed_addr constant [6 x i8] c"zzzz\0A\00", align 1
 
@@ -15,14 +16,14 @@ target triple = "arm64-apple-macosx13.0.0"
 
 
 
-
+;; for file ========================
 %struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
 %struct.__sFILEX = type opaque
 %struct.__sbuf = type { i8*, i32 }
 
 @.str.openfile = private unnamed_addr constant [9 x i8] c"test.txt\00", align 1
 @.str.write = private unnamed_addr constant [2 x i8] c"w\00", align 1
-
+;; ===========================================
 
 ; Function Attrs: noinline norecurse optnone ssp uwtable
 define i32 @main() #0 !dbg !1264 {
@@ -31,8 +32,6 @@ entry:
   %xxxxx = alloca i32, align 4
   %yyyyy = alloca i32, align 4
   %zzzzz = alloca i32, align 4
-
-
 
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %xxxxx, metadata !1266, metadata !DIExpression()), !dbg !1267
@@ -48,34 +47,31 @@ entry:
   store i32 %add, i32* %zzzzz, align 4, !dbg !1274
   %1 = load i32, i32* %zzzzz, align 4, !dbg !1275
 
-
-
   %call = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %1), !dbg !1276
 
-
+  ;; create new var and printf
   %bbbbb = alloca i32, align 4
   store i32 332, i32* %bbbbb, align 4
   %ggc = load i32, i32* %bbbbb, align 4
   %callbbbbb = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18  x i8]* @.str.aaa, i64 0, i64 0), i32 %ggc)
 
-
-
+  ; open file
   %pFile = alloca %struct.__sFILE*, align 8
   store i32 0, i32* %retval, align 4
   %callfile = call %struct.__sFILE* @"\01_fopen"(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.write, i64 0, i64 0))
   store %struct.__sFILE* %callfile, %struct.__sFILE** %pFile, align 8
 
+  ;write str
   %tempstr = load %struct.__sFILE*, %struct.__sFILE** %pFile, align 8, !dbg !85
   %calltempstr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %tempstr, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.tempstr, i64 0, i64 0)), !dbg !86
 
   %calltempstr2 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %tempstr, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.tempstr, i64 0, i64 0)), !dbg !86
 
-
+  ;file close
   %fileclose = load %struct.__sFILE*, %struct.__sFILE** %pFile, align 8, !dbg !87
   %callfileclose = call i32 @fclose(%struct.__sFILE* %fileclose), !dbg !88
 
   %call1 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i64 0, i64 0)), !dbg !1277
-
 
 
   ret i32 0, !dbg !1278
@@ -86,17 +82,14 @@ declare void @llvm.dbg.declare(metadata, metadata, metadata) #1
 
 declare i32 @printf(i8*, ...) #2
 
+; for use fprintf
+declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #2
 
-declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #22
-attributes #22 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+; for use fclose
+declare i32 @fclose(%struct.__sFILE*) #2
 
-declare i32 @fclose(%struct.__sFILE*) #22
-
-
-declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #11
-attributes #1 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
-
-
+; for use FILE
+declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #2
 
 attributes #0 = { noinline norecurse optnone ssp uwtable "frame-pointer"="non-leaf" "min-legal-vector-width"="0" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 attributes #1 = { nofree nosync nounwind readnone speculatable willreturn }
