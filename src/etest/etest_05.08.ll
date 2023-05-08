@@ -193,7 +193,7 @@ if.enddd:
   call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_str, i64 0, i64 0), i8* %var_3_name)
   %call55 = call i8* @_ZNKSt9type_info4nameB6v15006Ev(%"class.std::type_info"* bitcast (i8** @_ZTIi to %"class.std::type_info"*)) #8
   %call66 = call i8* @_ZNKSt9type_info4nameB6v15006Ev(%"class.std::type_info"* bitcast (i8** @_ZTIi to %"class.std::type_info"*)) #8
-  %cmptype3 = icmp eq i8* %call33, %call44
+  %cmptype3 = icmp eq i8* %call55, %call66
   br i1 %cmptype3, label %if.thenee, label %if.endff
 if.thenee:                                          ; preds = %entry
   %var_3_type = call i8* @_ZNKSt9type_info4nameB6v15006Ev(%"class.std::type_info"* bitcast (i8** @_ZTIi to %"class.std::type_info"*)) #8
