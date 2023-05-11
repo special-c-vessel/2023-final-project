@@ -1,0 +1,26 @@
+declare	
+xxxxx		var_name
+i		var_type
+2		var_value
+0x16f66e4e8	var_pointer
+8		var_lineNumber
+12		
+declare
+yyyyy
+i
+3
+0x16f66e4e4
+9
+declare
+zzzzz
+i
+5
+0x16f66e4e0
+10
+operation
+add
+xxxxx
+yyyyy
+zzzzz
+10
+12

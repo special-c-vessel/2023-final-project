@@ -1,0 +1,2 @@
+[line Number : 5] [type : int] [Value : 99] [Address : 0x16f98a584] 
+[line Number : 10] [type : int] [Value : 200] [Address : 0x16f98a584] 
