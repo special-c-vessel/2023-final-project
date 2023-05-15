@@ -32,6 +32,10 @@
 
 #include "llvm/IR/User.h"
 
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/LTO/Config.h"
+
+
 
 
 #include <optional>
@@ -89,7 +93,8 @@ struct CountOpcode : public FunctionPass {
           llvm::outs() << "Old opcodeName is : " << i->getOpcodeName() << "\n";
           
           if(auto * x = llvm::dyn_cast<llvm::StoreInst>(i))   // ==========================================================
-          {// if store
+          {// if store]]
+          // x = USER 
           //if(i->getOpcode() == 31)    // if alloca
             llvm::outs() << "###START###\n";
 
@@ -100,13 +105,13 @@ struct CountOpcode : public FunctionPass {
 
             llvm::Value* op1 = x->getValueOperand();
             llvm::Value* op2 = x->getPointerOperand();
-            llvm::outs() << op1->getName() << " : " << *(op1->getType()) << "\n";
-            llvm::outs() << op2->getName() << " : " << *(op2->getType()) << "\n";
+            llvm::outs() << op1->getName() << " type : " << *(op1->getType()) << "\n";
+            llvm::outs() << op2->getName() << " type : " << *(op2->getType()) << "\n";
 
             //var_name
             StringRef ages = op2->getName();
             std::string agerh = ages.data();
-            cout << "string is : " << agerh << "\n";
+            cout << "name is : " << agerh << "\n";
             //char * erhgaeg[] = ages->data();
 
 
@@ -116,8 +121,8 @@ struct CountOpcode : public FunctionPass {
             const DebugLoc &location = i->getDebugLoc();
             if (location)
             {
-                llvm::outs() << location.getLine() << "\n";
-                llvm::outs() << location.getCol() << "\n";
+                llvm::outs() << "Line : " << location.getLine() << "\n";
+                llvm::outs() << "Col  : " << location.getCol() << "\n";
             } else {
                 // No location metadata available
                 // 함수의 인자 같은 arg의 가능성
@@ -126,29 +131,66 @@ struct CountOpcode : public FunctionPass {
             }
 
 
-            llvm::outs() << " ========================================================= value is :     \n";
+            //llvm::outs() << " ========================================================= value is :     \n";
             //Value* YourVal = ;
             //llvm::outs() << i->getSExtValue() << "\n";
             
-            llvm::outs() << op1 << "\n";
-            llvm::outs() << *op1 << "\n";
+            llvm::outs() << "op1  : " << op1 << "\n";
+            llvm::outs() << "*op1 : " << *op1 << "\n";
+
+            //same to             llvm::outs() << "*op1 : " << *op1 << "\n";
+            // outs() << "printAsop : ";
+            // op1->printAsOperand(errs(), true);
+            // outs() << "\n";
+
+            //auto * oopp1 = op1->op_begin();
+            //llvm::outs() << oopp1 << "\n";
+            // StoreInst *SI = dyn_cast<StoreInst>(i);
+            // Value* YourVal = SI->getOperand(0);
+            // llvm::outs() << YourVal->getRawSubclassOptionalData() << "\n";
+
+            llvm::outs() << "op2  : " << op2 << "\n";
+            llvm::outs() << "*op2 : " << *op2 << "\n";
+
+            
+            // llvm::outs() << op2 << "\n";
+            // llvm::outs() << *op2 << "\n";
+            
             llvm::outs() << *(x->	op_end ()) << "\n";
 
             auto * test = x->op_begin();
-                            llvm::outs() << *test << "\n";
+                            llvm::outs() << (*test)->getName() << "\n";
 
             test ++;
-                            llvm::outs() << *test << "\n";
-                            llvm::outs() << x->operand_values () << "\n";
+                            llvm::outs() << (*test)->getName() << "\n";
+                            //llvm::outs() << x->operand_values () << "\n";
             test ++;
-                            llvm::outs() << *test << "\n";
+                            llvm::outs() << (*test)->getName() << "\n";
             test ++;
-                            llvm::outs() << *test << "\n";
-            test ++;
-                            llvm::outs() << *test << "\n";
-            test ++;
-                            llvm::outs() << *test << "\n";
-                      
+                            // after store    -> same x->op_end()
+                            llvm::outs() << (*test)->getName() << "\n";
+
+
+                     
+            ConstantInt *op11 = static_cast<ConstantInt *>(i->getOperand(0));
+            ConstantInt *op22 = static_cast<ConstantInt *>(x->getOperand(1));
+            
+            //errs() << op22->getValue();
+
+            // int64_t op1_realValue = op11->getSExtValue();
+            // int64_t op2_realValue = op22->getSExtValue();
+
+            // llvm::outs() << op1_realValue << "\n";
+            // llvm::outs() << op2_realValue << "\n";
+
+
+            llvm::outs() <<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
+            
+            Align ali = x->getAlign();
+            auto getprt = x->getPointerAddressSpace();
+            
+            llvm::outs() << x->getNumSuccessors () << "\n";
+
 
 
 
@@ -172,7 +214,7 @@ struct CountOpcode : public FunctionPass {
 
 
 
-            llvm::outs() << "###END###\n";
+            llvm::outs() << "###END###############################\n";
             //llvm::outs() << "is store!!\n";
             //llvm::outs() << i->getName() << "\n";
             
