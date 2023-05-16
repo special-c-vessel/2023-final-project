@@ -33,6 +33,7 @@
 #include "llvm/IR/User.h"
 
 #include "llvm/IR/LLVMContext.h"
+
 #include "llvm/LTO/Config.h"
 
 
@@ -44,9 +45,27 @@
 using namespace llvm;
 using namespace std;
 
+std::string tempname1 = "";
+std::string tempname2 = "";
+
 #define DEBUG_TYPE "AddInfo"
 
 //llvm::LLVMContext* TheContext;
+
+void printLineAndColNum(const DebugLoc &location)
+{
+  return;
+}
+
+void printStoreInst(BasicBlock::iterator i)
+{
+  return;
+}
+
+void printAddInst(BasicBlock::iterator i)
+{
+  return;
+}
 
 int totalCount = 1;
 
@@ -63,7 +82,8 @@ struct CountOpcode : public FunctionPass {
       for (BasicBlock::iterator i = bb->begin(), e = bb->end(); i != e; ++i) 
       {
         std::cout << "basic start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-
+            Instruction* ii = &*i;
+            outs() << "origin instr :" << *ii << "\n\n";
         //llvm::outs() << i.getArraySize() << "\n";
         
         //llvm::outs() << F.getName() << " , ";
@@ -96,22 +116,34 @@ struct CountOpcode : public FunctionPass {
           {// if store]]
           // x = USER 
           //if(i->getOpcode() == 31)    // if alloca
-            llvm::outs() << "###START###\n";
+            llvm::outs() << "###START###############################################\n";
 
+            llvm::outs() << "entire store instruction\n";
             Instruction* ii = &*i;
-            outs() << *ii << "\n";
+            outs() << *ii << "\n\n";
             //llvm::outs() << i->getContext();
 
+            llvm::outs() << "this op name is : ";
+            llvm::outs() << "Store\n\n";
 
+            llvm::outs() << "print two operand\n";
             llvm::Value* op1 = x->getValueOperand();
             llvm::Value* op2 = x->getPointerOperand();
-            llvm::outs() << op1->getName() << " type : " << *(op1->getType()) << "\n";
-            llvm::outs() << op2->getName() << " type : " << *(op2->getType()) << "\n";
 
-            //var_name
-            StringRef ages = op2->getName();
-            std::string agerh = ages.data();
-            cout << "name is : " << agerh << "\n";
+            llvm::outs() << "first op name  : ";
+            llvm::outs() << op1->getName() << ",  type : " << *(op1->getType()) << "\n";
+
+            llvm::outs() << "second op name : ";
+            llvm::outs() << op2->getName() << ",  type : " << *(op2->getType()) << "\n";
+            llvm::outs() << "\n";
+
+            // //var_name
+            // StringRef age = op1->getName();
+            // StringRef ages = op2->getName();
+            // std::string ager = age.data();
+            // std::string agerh = ages.data();
+            // cout << "fist op name   : " << ager << "\n";
+            // cout << "second op name : " << agerh << "\n\n";
             //char * erhgaeg[] = ages->data();
 
 
@@ -121,8 +153,9 @@ struct CountOpcode : public FunctionPass {
             const DebugLoc &location = i->getDebugLoc();
             if (location)
             {
-                llvm::outs() << "Line : " << location.getLine() << "\n";
-                llvm::outs() << "Col  : " << location.getCol() << "\n";
+                llvm::outs() << "Instruction location in cpp file:\n";
+                llvm::outs() << "Line: " << location.getLine() << ", ";
+                llvm::outs() << "Col : " << location.getCol() << "\n\n";
             } else {
                 // No location metadata available
                 // 함수의 인자 같은 arg의 가능성
@@ -184,7 +217,7 @@ struct CountOpcode : public FunctionPass {
             // llvm::outs() << op2_realValue << "\n";
 
 
-            llvm::outs() <<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
+            llvm::outs() <<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
             
             Align ali = x->getAlign();
             auto getprt = x->getPointerAddressSpace();
@@ -214,7 +247,7 @@ struct CountOpcode : public FunctionPass {
 
 
 
-            llvm::outs() << "###END###############################\n";
+            llvm::outs() << "###END###############################################\n";
             //llvm::outs() << "is store!!\n";
             //llvm::outs() << i->getName() << "\n";
             
@@ -321,6 +354,111 @@ struct CountOpcode : public FunctionPass {
 
             llvm::outs() << "@@@@@@@   END alloca    @@@@@\n";
           }
+          else if(auto* x = llvm::dyn_cast<llvm::AddOperator>(i))
+          {
+            llvm::outs() << "find add Inst 00000000000000000000000000000000000000000000000000000000000\n";
+            
+            llvm::outs() << "entire store instruction\n";
+            Instruction* ii = &*i;
+            outs() << *ii << "\n\n";
+
+            llvm::outs() << "print two operand\n";
+            llvm::Value* op1 = x->getOperand(0);
+            llvm::Value* op2 = x->getOperand(1);
+
+            
+
+            std::string stradd = "tempadd";
+            int gfv = 5;
+            StringRef age1 = op1->getName();
+            StringRef ages1 = op2->getName();
+            std::string ager1 = age1.data();
+            std::string agerh1 = ages1.data();
+
+            ager1 = stradd + std::to_string(gfv++);
+            agerh1 = stradd + std::to_string(gfv++);
+
+            op1->setName(ager1);
+            op2->setName(agerh1);
+
+            llvm::outs() << "first op name  : ";
+            llvm::outs() << op1->getName() << ",  type : " << *(op1->getType()) << "\n";
+            llvm::outs() << "second op name : ";
+            llvm::outs() << op2->getName() << ",  type : " << *(op2->getType()) << "\n";
+            llvm::outs() << "\n";
+
+            outs() << "change instr :" << *ii << "\n\n";
+
+
+            const DebugLoc &location = i->getDebugLoc();
+            if (location)
+            {
+                llvm::outs() << "Instruction location in cpp file:\n";
+                llvm::outs() << "Line: " << location.getLine() << ", ";
+                llvm::outs() << "Col : " << location.getCol() << "\n\n";
+            }
+
+
+          }
+          else if(auto* x = llvm::dyn_cast<llvm::SubOperator>(i))
+          {
+            llvm::outs() << "find sub Inst 00000000000000000000000000000000000000000000000000000000000\n";
+            const DebugLoc &location = i->getDebugLoc();
+            if (location)
+            {
+                llvm::outs() << "Instruction location in cpp file:\n";
+                llvm::outs() << "Line: " << location.getLine() << ", ";
+                llvm::outs() << "Col : " << location.getCol() << "\n\n";
+            }
+          }
+          else if(auto* x = llvm::dyn_cast<llvm::MulOperator>(i))
+          {
+            llvm::outs() << "find mul Inst 00000000000000000000000000000000000000000000000000000000000\n";
+            const DebugLoc &location = i->getDebugLoc();
+            if (location)
+            {
+                llvm::outs() << "Instruction location in cpp file:\n";
+                llvm::outs() << "Line: " << location.getLine() << ", ";
+                llvm::outs() << "Col : " << location.getCol() << "\n\n";
+            }
+          }
+          else if(auto* x = llvm::dyn_cast<llvm::SDivOperator>(i))
+          {
+            llvm::outs() << "find div Inst 00000000000000000000000000000000000000000000000000000000000\n";
+            const DebugLoc &location = i->getDebugLoc();
+            if (location)
+            {
+                llvm::outs() << "Instruction location in cpp file:\n";
+                llvm::outs() << "Line: " << location.getLine() << ", ";
+                llvm::outs() << "Col : " << location.getCol() << "\n\n";
+            }
+          }
+          else if(i->getOpcode() == 23) // detect srem
+          {
+            
+            llvm::outs() << "find rem Inst 00000000000000000000000000000000000000000000000000000000000\n";
+
+            auto* x = dyn_cast<BinaryOperator>(i);
+
+            outs() << i->getOpcodeName() << "\n"; 
+            llvm::Value* op1 = x->getOperand(0);
+            llvm::Value* op2 = x->getOperand(1);
+
+            llvm::outs() << "first op name  : ";
+            llvm::outs() << op1->getName() << ",  type : " << *(op1->getType()) << "\n";
+            llvm::outs() << "second op name : ";
+            llvm::outs() << op2->getName() << ",  type : " << *(op2->getType()) << "\n";
+            llvm::outs() << "\n";
+
+            const DebugLoc &location = i->getDebugLoc();
+            if (location)
+            {
+                llvm::outs() << "Instruction location in cpp file:\n";
+                llvm::outs() << "Line: " << location.getLine() << ", ";
+                llvm::outs() << "Col : " << location.getCol() << "\n\n";
+            }
+          }
+
             
 
         }
