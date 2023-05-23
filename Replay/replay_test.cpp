@@ -1,14 +1,5 @@
 #include "replay_header.h"
-
-
-// 변수 기록 구조체
-struct RecData {
-    string val_name; // 변수 이름
-    string val_type; // 변수 타입
-    string val_value; // 변수 값
-    string val_ptr; // 변수 주소
-    string val_line; // 기록이 발생한 줄 번호
-};
+#include "DeclareData.h"
 
 // 오퍼레이션 기록 고조체
 struct OpData {
@@ -23,7 +14,7 @@ struct OpData {
 
 // 전역 함수 선언
 void FindRecData(int _line);
-void PrintRecData(RecData _data);
+void PrintRecData(DeclareData _data);
 void FindOpData(int _line);
 void PrintOpData(OpData _data);
 void PrintCode(int _codesIndex);
@@ -32,7 +23,7 @@ string FindValuePtr(int _lineNum, string _valName);
 string TrimStr(const string& str);
 
 // 전역 변수 선언
-std::vector<RecData> recData;
+std::vector<DeclareData> recData;
 std::vector<OpData> opData;
 std::string line;
 std::string codes[1000];
@@ -65,12 +56,12 @@ int main(int argc, char* argv[]) {
     // 기록 파일을 반복문으로 한줄씩 확인
     while (getline(recFile, line)) {
         if(line == "declare") { // declare일 경우 변수 기록 객체를 생성 후 벡터에 푸시
-            RecData data;
-            getline(recFile, data.val_name);
-            getline(recFile, data.val_type);
-            getline(recFile, data.val_ptr);
-            getline(recFile, data.val_value);
-            getline(recFile, data.val_line);
+            DeclareData data = DeclareData();
+            getline(recFile, data.name);
+            getline(recFile, data.type);
+            getline(recFile, data.ptr);
+            getline(recFile, data.value);
+            getline(recFile, data.line);
             recData.push_back(data);
         }
         else if(line == "operation") { // operation일 경우 op 기록 객체를 생성 후 벡터에 푸시
@@ -123,7 +114,7 @@ void FindRecData(int _line) {
     // 벡터 안에서 전달받은 줄 번호에 해당하는 기록이 있는지 검사
     for(int i = 0; i < recData.size(); i++) {
         // 줄 번호가 string으로 저장되있으므로 조건문 검사를 위해 int로 변환
-        int recDataLine = std::stoi(recData[i].val_line);
+        int recDataLine = std::stoi(recData[i].line);
         // vector 안에 줄 번호에 해당하는 객체가 있다면 출력
         if (recDataLine == _line) {
             PrintRecData(recData[i]);
@@ -132,11 +123,11 @@ void FindRecData(int _line) {
 }
 
 // 인자로 받은 RecData의 값을 출력해주는 함수
-void PrintRecData(RecData _data) {
-    std::cout << "val type : " << _data.val_type << std::endl;
-    std::cout << "val name : " << _data.val_name << std::endl;
-    std::cout << "val ptr : " << _data.val_ptr << std::endl;
-    std::cout << "val value : " << _data.val_value << std::endl;
+void PrintRecData(DeclareData _data) {
+    std::cout << "val type : " << _data.type << std::endl;
+    std::cout << "val name : " << _data.name << std::endl;
+    std::cout << "val ptr : " << _data.ptr << std::endl;
+    std::cout << "val value : " << _data.value << std::endl;
     std::cout << std::endl;
 }
 
@@ -169,8 +160,8 @@ void PrintOpData(OpData _data) {
 
 string FindValueName(int _lineNum, string _valName) {
     for(int i = _lineNum; i >= 0; i--) {
-        if (recData[i].val_name == _valName) {
-            return recData[i].val_value;
+        if (recData[i].name == _valName) {
+            return recData[i].value;
         }
     }
     return "";
@@ -178,8 +169,8 @@ string FindValueName(int _lineNum, string _valName) {
 
 string FindValuePtr(int _lineNum, string _valName) {
     for(int i = _lineNum; i >= 0; i--) {
-        if (recData[i].val_name == _valName) {
-            return recData[i].val_ptr;
+        if (recData[i].name == _valName) {
+            return recData[i].ptr;
         }
     }
     return "";
