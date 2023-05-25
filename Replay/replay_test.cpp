@@ -94,9 +94,6 @@ int main(int argc, char* argv[]) {
         std::cout << "origin src\n\n";
         
         PrintCode(codesIndex);
-
-        //FindRecData(codesIndex); // 현재 줄번호에 해당하는 변수 기록이 있는지 확인
-        //FindOpData(codesIndex); // 현재 줄번호에 해당하는 op 기록이 있는지 확인
         
         std::cout << "\n\nw : line up\ns : line down\ndigit : move line number\n\ninput keyboard : ";
         std::cin >> input;
@@ -117,17 +114,20 @@ void FindRecData(int _line) {
         int recDataLine = std::stoi(recData[i].line);
         // vector 안에 줄 번호에 해당하는 객체가 있다면 출력
         if (recDataLine == _line) {
+            std::cout << "\n------------------------------------------------------------------\n";
+            std::cout << "\n\n" << "\033[1m" << "\tAnalysis information" << "\033[0m" << "\n\n";
             PrintRecData(recData[i]);
+            std::cout << "\n------------------------------------------------------------------\n";
         }
     }
 }
 
 // 인자로 받은 RecData의 값을 출력해주는 함수
 void PrintRecData(DeclareData _data) {
-    std::cout << "val type : " << _data.type << std::endl;
-    std::cout << "val name : " << _data.name << std::endl;
-    std::cout << "val ptr : " << _data.ptr << std::endl;
-    std::cout << "val value : " << _data.value << std::endl;
+    std::cout << "\tval type : " << _data.type << std::endl;
+    std::cout << "\tval name : " << _data.name << std::endl;
+    std::cout << "\tval ptr : " << _data.ptr << std::endl;
+    std::cout << "\tval value : " << _data.value << std::endl;
     std::cout << std::endl;
 }
 
@@ -138,21 +138,24 @@ void FindOpData(int _line) {
          // 줄 번호가 string으로 저장되있으므로 조건문 검사를 위해 int로 변환
         int opDataLine = std::stoi(opData[i].val_line);
         if (opDataLine == _line) {
+            std::cout << "\n------------------------------------------------------------------\n";
+            std::cout << "\n\n" << "\033[1m" << "\tAnalysis information" << "\033[0m" << "\n\n";
             PrintOpData(opData[i]);
+            std::cout << "\n------------------------------------------------------------------\n";
         }
     }
 }
 
 // 인자로 받은 OpData 값을 출력해주는 함수
 void PrintOpData(OpData _data) {
-    std::cout << "operation : " << _data.op << std::endl;
-    std::cout << "first val : " << _data.val1;
+    std::cout << "\toperation : " << _data.op << std::endl;
+    std::cout << "\tfirst val : " << _data.val1;
     std::cout << " , value : " << FindValueName(std::stoi(_data.val_line), _data.val1);
     std::cout << " , ptr : " << FindValuePtr(std::stoi(_data.val_line), _data.val1) << std::endl;
-    std::cout << "second val : " << _data.val2;
+    std::cout << "\tsecond val : " << _data.val2;
     std::cout << " , value : " << FindValueName(std::stoi(_data.val_line), _data.val2);
     std::cout << " , ptr : " << FindValuePtr(std::stoi(_data.val_line), _data.val2) << std::endl;
-    std::cout << "result val : " << _data.result_name;
+    std::cout << "\tresult val : " << _data.result_name;
     std::cout << " , value : " << _data.result_val;
     std::cout << " , ptr : " << _data.result_ptr << std::endl;
     std::cout << std::endl;
@@ -190,6 +193,9 @@ void PrintCode(int _codesIndex) {
         if(i == _codesIndex) {
             printf("\033[1C");
             std::cout << "\033[1m"  << codes[i] << "\033[0m" << std::endl; // 소스 코드를 한 줄 읽어온다
+            
+            FindRecData(i); // 현재 줄번호에 해당하는 변수 기록이 있는지 확인
+            FindOpData(i); // 현재 줄번호에 해당하는 op 기록이 있는지 확인
         }
         else {
             std::cout << codes[i] << std::endl;
