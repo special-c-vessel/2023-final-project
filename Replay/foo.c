@@ -1,12 +1,11 @@
 #include <iostream>
 
-int main() {
-	int xxxx = 10;
-	int yyyy = 5;
-	int zzzz = 20;
+int main() 
+{
+	int xxxx = 5;
+	int yyyy = 10;
+	int zzzz;
 
-	xxxx = 15; 
-	yyyy = 20;
 	zzzz = xxxx + yyyy;
 
 	return 0;

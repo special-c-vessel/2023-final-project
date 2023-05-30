@@ -3,12 +3,14 @@ xxxx
 int
 0x1234
 5
+14
 5
 declare
 yyyy
 int
 0x4321
 10
+14
 6
 operation
 add
