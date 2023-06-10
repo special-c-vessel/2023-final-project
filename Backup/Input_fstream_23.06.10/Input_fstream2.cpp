@@ -196,7 +196,7 @@ int main() {
           // 타입
           // 이건 이미 넣어놨음  @.str.int = private unnamed_addr constant [5 x i8] c"int\0A\00", align 1
           // %call1                                                                        = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.2, i64 0, i64 0)), !dbg !991
-          output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.int, i64 0, i64 0))\n";
+          output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.i32, i64 0, i64 0))\n";
 
           // 값
           //                        %temp_var_          1        _              4          = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i32 0, i32 0), i32 %var_         1         _value)
@@ -215,7 +215,7 @@ int main() {
             LineNum = "";
             ColNum = "";
 
-            findLineAndColNumber("test.ll", tempv[i + 8]);
+            findLineAndColNumber(targetFileName, tempv[i + 8]);
 
             // line && col number
             //                        %temp_var_        1          _            6            = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 118)
@@ -238,6 +238,66 @@ int main() {
           cout << tempallocastr << "\n";
           str_fstream << "@__const." << currentFunc << "var_name_" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 1 << " x i8] c\"" << tempallocastr << "\\00\", align 1\n";
 
+        } else if (tempv[i] == "@_ZNSt3__13cinE,") {
+          cout << "find cin\n";
+          if (tempv[4] == "call") {
+            cout << tempv[tempv.size() - 4] << " "; // %kkkkk),
+
+            globalNum++;
+            int var_name_location = tempv.size() - 4;
+            int pointerSize = tempv[var_name_location].size() - 2;
+            int templocalNum = 1;
+            string var_name_str = "";
+            for (int j = 0; j < tempv[var_name_location].size() - 2; j++)
+              var_name_str += tempv[var_name_location][j]; // %kkkkk
+
+            output_printf_fstream << "%var_" << globalNum << "_value = load i32, i32* " << var_name_str << ", align 4\n";
+
+            output_printf_fstream << "%var_" << globalNum << "_name_ptr = alloca [" << pointerSize << " x i8]\n";
+
+            output_printf_fstream << "%temp_var_" << globalNum << "_name = bitcast [" << pointerSize << " x i8]* "
+                                  << "%var_" << globalNum << "_name_ptr to i8*\n";
+
+            string tempstr2 = "";
+            for (int j = 1; j < var_name_str.size(); j++) {
+              tempstr2 += var_name_str[j];
+            }
+
+            output_printf_fstream << "call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %temp_var_" << globalNum << "_name, i8* align 1 getelementptr inbounds ([" << pointerSize << " x i8], [" << pointerSize << " x i8]* @__const.var_name_" << tempstr2 << ", i32 0, i32 0), i64 10, i1 false)\n";
+
+            output_printf_fstream << "%var_" << globalNum << "_name = getelementptr inbounds [" << pointerSize << " x i8], [" << pointerSize << " x i8]* %var_" << globalNum << "_name_ptr, i64 0, i64 0\n";
+
+            // declare
+            output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.op_declare, i32 0, i32 0))\n";
+
+            // 이름
+            output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_str, i64 0, i64 0), i8* %var_" << globalNum << "_name)\n";
+
+            // 타입
+            output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.i32, i64 0, i64 0))\n";
+
+            // 값
+            output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i32 0, i32 0), i32 %var_" << globalNum << "_value)\n";
+
+            string tempPtrStr = "";
+            for (int i = 0; i < tempv[6].size() - 1; i++)
+              tempPtrStr += tempv[6][i];
+            // 포인터
+            output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), i32* " << var_name_str << ")\n";
+
+            LineNum = "";
+            ColNum = "";
+
+            cout << "\n";
+            cout << tempv[tempv.size() - 2] << " ggg \n";
+            findLineAndColNumber(targetFileName, tempv[tempv.size() - 2]);
+
+            // line && col number
+            //                        %temp_var_        1          _            6            = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 118)
+            output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
+            output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << ColNum << ")\n";
+          } else {
+          }
         } else {
         }
       }
