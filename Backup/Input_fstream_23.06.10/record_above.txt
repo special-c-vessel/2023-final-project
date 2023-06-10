@@ -60,8 +60,12 @@ entry:
   ret i8* %2
 }
 
-@.str.int = private unnamed_addr constant [5 x i8] c"int\0A\00", align 1
+@.str.i16 = private unnamed_addr constant [7 x i8] c"short\0A\00", align 1
+@.str.i32 = private unnamed_addr constant [5 x i8] c"int\0A\00", align 1
+@.str.i64 = private unnamed_addr constant [15 x i8] c"long long int\0A\00", align 1
 @.str.float = private unnamed_addr constant [7 x i8] c"float\0A\00", align 1
+@.str.double = private unnamed_addr constant [8 x i8] c"double\0A\00", align 1
+
 @.str.char = private unnamed_addr constant [6 x i8] c"char\0A\00", align 1
 @.str.string = private unnamed_addr constant [5 x i8] c"str\0A\00", align 1
 
