@@ -37,7 +37,29 @@
 
 ; 출력문 형식
 @.str.print_str = private unnamed_addr constant [4 x i8] c"%s\0A\00", align 1
+
+; line, col 사용을 위해
 @.str.print_int = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
+; char
+@.str.print_i8 = private unnamed_addr constant [4 x i8] c"%c\0A\00", align 1
+
+; short
+@.str.print_i16 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
+; int
+@.str.print_i32 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
+;long int
+
+; long long int
+@.str.print_i64 = private unnamed_addr constant [5 x i8] c"%ld\0A\00", align 1
+
+
+@.str.print_float = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
+@.str.print_double = private unnamed_addr constant [5 x i8] c"%lf\0A\00", align 1
+
+
 @.str.print_ptr = private unnamed_addr constant [4 x i8] c"%p\0A\00", align 1
 @.str.print_chr = private unnamed_addr constant [4 x i8] c"%c\0A\00", align 1
 
@@ -60,13 +82,15 @@ entry:
   ret i8* %2
 }
 
-@.str.i16 = private unnamed_addr constant [7 x i8] c"short\0A\00", align 1
-@.str.i32 = private unnamed_addr constant [5 x i8] c"int\0A\00", align 1
+@.str.i8 = private unnamed_addr constant [6 x i8]  c"char\0A\00", align 1
+@.str.i16 = private unnamed_addr constant [7 x i8]  c"short\0A\00", align 1
+@.str.i32 = private unnamed_addr constant [5 x i8]  c"int\0A\00", align 1
 @.str.i64 = private unnamed_addr constant [15 x i8] c"long long int\0A\00", align 1
-@.str.float = private unnamed_addr constant [7 x i8] c"float\0A\00", align 1
-@.str.double = private unnamed_addr constant [8 x i8] c"double\0A\00", align 1
 
-@.str.char = private unnamed_addr constant [6 x i8] c"char\0A\00", align 1
+@.str.float = private unnamed_addr constant [7 x i8]  c"float\0A\00", align 1
+@.str.double = private unnamed_addr constant [8 x i8]  c"double\0A\00", align 1
+
+;@.str.char = private unnamed_addr constant [6 x i8] c"char\0A\00", align 1
 @.str.string = private unnamed_addr constant [5 x i8] c"str\0A\00", align 1
 
 define internal void @_GLOBAL__sub_I_main.cc() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
@@ -87,7 +111,7 @@ declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #222
 declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222
 
 ; Function Attrs: argmemonly nofree nounwind willreturn
-declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
+declare void @llvm.memcpy.p0i8.p0i8.i64_curly(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
 
 
 
