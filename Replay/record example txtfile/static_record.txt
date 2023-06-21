@@ -1,0 +1,15 @@
+declare
+aaaaa	(name)
+int
+12	(line)
+17	(colum)
+
+operator
+add
+bbbb	(name 1)
+cccc	(name 2)
+kkkk	(name 3)
+int		(name 3's type)
+15	(line)
+12	(colum)
+

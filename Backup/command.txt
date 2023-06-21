@@ -1,0 +1,36 @@
+ninja -C build check-llvm
+
+cmake -G Ninja -S ./llvm -B $build_llvm -DLLVM_INSTALL_UTILS=ON \-DCMAKE_INSTALL_PREFIX=$installprefix -DCMAKE_BUILD_TYPE=Release
+
+clang -O3 -emit-llvm Hello.cpp -c -o Hello.bc
+clang -emit-llvm -c foo.c
+clang clang -c -emit-llvm main.c -o main.bc	// bitcode(.bc) 생성
+
+clang -emit-llvm -S foo.c
+llvm-dis main.bc						// ll 생성
+
+clang -S -emit-llvm -Xclang -disable-O0-optnone main.c
+
+opt -analyze -dot-cfg main.ll				// cfg 생성
+
+dot -Tpng -o main.png .main.dot			// dot -> png 변경
+
+
+cmake -S llvm -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release 
+
+make -j8
+
+clang -S -emit-llvm -fno-discard-value-names server.cc
+clang -S -emit-llvm -fno-discard-value-names client.cc 
+
+
+/Users/han/GitHub/llvm-project/build/bin/lli server.ll 6
+
+/Users/han/GitHub/llvm-project/build/bin/lli client.ll 127.0.0.1 6
+
+clang -S -emit-llvm -fno-discard-value-names test.cpp -g
+./Input_fstream2_upgrade
+./Input_fstream3
+/Users/han/GitHub/llvm-project/build/bin/lli record_result.ll
+
+
