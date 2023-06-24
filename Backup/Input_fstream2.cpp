@@ -27,7 +27,7 @@ string currentFunc_returnType = "";
 int globalNum = 0;
 
 void findLineAndColNumber(string, string);
-void addPrintfInstruction(string, string, string, string);
+void addPrintfInstruction(string, string, string, string, string);
 void writeTxtFile(string);
 /*
 한번 돌면서
@@ -41,14 +41,17 @@ void writeTxtFile(string);
 타겟 ll파일에 구문 추가
 */
 
-void addPrintfInstruction(string var_name, string var_type, string debugNum, string func_name) // string currentFunc // string var_type
-{                                                                                              //    %randomNum,       i32
+//
+void addPrintfInstruction(string var_name, string var_type, string debugNum, string func_name, string keyWord) // string currentFunc // string var_type
+{                                                                                                              //    %randomNum,       i32
   globalNum++;
   int pointerSize = var_name.size() - 1;
   int templocalNum = 1;
 
   int var_type_length;
   int var_type_print_length;
+
+  // 각 타입에 맞게 변수 길이를 설정
   if (var_type == "i8") // char
   {
     var_type_length = 6;
@@ -107,8 +110,8 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
     컬럼      순으로
   */
   // declare
-  //                        %temp_var_          1       _               1          = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.op_declare, i64 0, i64 0))
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.op_declare, i32 0, i32 0))\n";
+  //                        %temp_var_          1       _               1          = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([         9                   x i8], [            9                x i8]* @.str.op_      declare    , i64 0, i64 0))
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
 
   // 이름
   //                        %temp_var_    2_2                                      = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_str, i64 0, i64 0), i8*      %var_2_name)
@@ -134,8 +137,8 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
 
   // cout << "find dbg\n";
 
-  LineNum = "-1";
-  ColNum = "-1";
+  LineNum = "0";
+  ColNum = "0";
   if (debugNum.size() > 1) {
     LineNum = "";
     ColNum = "";
@@ -146,7 +149,7 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
   //                        %temp_var_        1          _            6            = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 118)
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
 
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << ColNum << ")\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << ColNum << ")\n";
 
   return;
 }
@@ -273,7 +276,7 @@ int main() {
                                    "%struct.__sFILE** @file, align 8\n";
         }
 
-        else if (tempv[i] == "store" && tempv[6] != "getelementptr") {
+        else if ((tempv[i] == "store" && tempv[6] != "getelementptr") || tempv[i] == "load") {
 
           if (tempv[6] == "%__fill_4,")
             continue;
@@ -293,7 +296,7 @@ int main() {
           string debugNum = tempv[10]; //  !864
 
           // cout << debugNum << "\n";
-          addPrintfInstruction(var_name, var_type, debugNum, currentFunc);
+          addPrintfInstruction(var_name, var_type, debugNum, currentFunc, tempv[i]);
 
         } else if (tempv[i] == "target" && tempv[i + 1] == "triple") {
           cout << "record_above txt file write\n";
@@ -338,7 +341,8 @@ int main() {
             for (int j = 0; j < temp_var_type.size() - 1; j++)
               var_type += temp_var_type[j];
 
-            addPrintfInstruction(var_name, var_type, debugNum, currentFunc);
+            //                                                      cin으로 새로 값을 할당하는 것이므로 store로 설정
+            addPrintfInstruction(var_name, var_type, debugNum, currentFunc, "store");
 
             // cout << tempv.size() << " <- size   \n";
 
