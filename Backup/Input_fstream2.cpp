@@ -29,19 +29,8 @@ int globalNum = 0;
 void findLineAndColNumber(string, string);
 void addPrintfInstruction(string, string, string, string, string);
 void writeTxtFile(string);
-/*
-한번 돌면서
-    string alloca 모두 체크
-    printf 문 추가
-이후
-    기본 세팅되어 있는 txt에 새로 생성한 string 전역 변수를 합한 txt 파일 생성
-    후
-    기존 파일에 추가 삽입
 
-타겟 ll파일에 구문 추가
-*/
-
-//
+// 변수의 기록을 위한 (코드를 삽입하는) 함수
 void addPrintfInstruction(string var_name, string var_type, string debugNum, string func_name, string keyWord) // string currentFunc // string var_type
 {                                                                                                              //    %randomNum,       i32
   globalNum++;
@@ -51,7 +40,7 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
   int var_type_length;
   int var_type_print_length;
 
-  // 각 타입에 맞게 변수 길이를 설정
+  // 각 타입에 맞게 타입 출력 길이를 설정
   if (var_type == "i8") // char
   {
     var_type_length = 6;
@@ -78,64 +67,16 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
     var_type_print_length = 5;
   }
 
-  //                        %var_         1         _value = load           i32       ,             i32*       %randomNum,   align 4     ;
+  // 새로 할당된 값 불러옴
   output_printf_fstream << "%var_" << globalNum << "_value = load " << var_type << ", " << var_type << "* " << var_name << " align 4\n";
 
-  //                        %var_       1           _name_ptr = alloca [      10              x i8], align 1
-  output_printf_fstream << "%var_" << globalNum << "_name_ptr = alloca [" << pointerSize << " x i8]\n";
-
-  //                        %temp_var_          1        _name = bitcast [          10          x i8]*       %var_        1          _name_ptr to i8*
-  output_printf_fstream << "%temp_var_" << globalNum << "_name = bitcast [" << pointerSize << " x i8]* "
-                        << "%var_" << globalNum << "_name_ptr to i8*\n";
-
-  string tempstr2 = "";
-  for (int j = 1; j < var_name.size() - 1; j++) {
-    tempstr2 += var_name[j];
-  }
-  //                        call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %temp_var_         1         _name, i8* align 1 getelementptr inbounds       ([      10              x i8], [    10                x i8]* @__const.      main_          var_1_name               , i32 0, i32 0), i64 10, i1 false)
-  output_printf_fstream << "call void @llvm.memcpy.p0i8.p0i8.i64_curly(i8* align 1 %temp_var_" << globalNum << "_name, i8* align 1 getelementptr inbounds ([" << pointerSize << " x i8], [" << pointerSize << " x i8]* @__const." << currentFunc << "var_name_" << tempstr2 << ", i32 0, i32 0), i64 10, i1 false)\n";
-
-  //                        %var_         1         _name = getelementptr inbounds [            10        x i8], [            10        x i8]* %var_        1          _name_ptr, i64 0, i64 0
-  output_printf_fstream << "%var_" << globalNum << "_name = getelementptr inbounds [" << pointerSize << " x i8], [" << pointerSize << " x i8]* %var_" << globalNum << "_name_ptr, i64 0, i64 0\n";
-
-  // %var_1_type = call i8* @_ZNKSt9type_info4nameB6v15006Ev(%"class.std::type_info"* bitcast (i8** @_ZTIi to %"class.std::type_info"*)) #888
-
-  /*
-    디클레어
-    이름
-    타입
-    값
-    포인터
-    라인
-    컬럼      순으로
-  */
-  // declare
-  //                        %temp_var_          1       _               1          = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([         9                   x i8], [            9                x i8]* @.str.op_      declare    , i64 0, i64 0))
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
-
-  // 이름
-  //                        %temp_var_    2_2                                      = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_str, i64 0, i64 0), i8*      %var_2_name)
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_str, i64 0, i64 0), i8* %var_" << globalNum << "_name)\n";
-
-  // 타입
-  // 이건 이미 넣어놨음  @.str.int = private unnamed_addr constant [5 x i8] c"int\0A\00", align 1
-  // %call1                                                                        = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([     4                    x i8], [         4                x i8]* @.str.          2       , i64 0, i64 0)), !dbg !991
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
-
-  // 값
-  //                        %temp_var_          1        _              4          = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([  4 x i8], [4 x i8]* @.str.print_          int     , i32 0, i32 0),          i32       %var_         1         _value)
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
+  string tempsVarName = "";
+  for (int i = 1; i < var_name.size(); i++)
+    tempsVarName += var_name[i]; // %var_name, -> var_name,
 
   string tempPtrStr = "";
   for (int i = 0; i < var_name.size() - 1; i++)
-    tempPtrStr += var_name[i];
-  // 포인터
-  //                         %temp_var_          1        _            5           = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0),             i32*         %randomNum     )
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type << "* " << tempPtrStr << ")\n";
-
-  // debugNum
-
-  // cout << "find dbg\n";
+    tempPtrStr += var_name[i]; // %var_name, -> %var_name
 
   LineNum = "0";
   ColNum = "0";
@@ -145,15 +86,19 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
     findLineAndColNumber(targetFileName, debugNum);
   }
 
-  // line && col number
-  //                        %temp_var_        1          _            6            = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 118)
+  // 키워드 이름 타입 값 포인터 라인 컬럼   순으로
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type << "* " << tempPtrStr << ")\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
-
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << ColNum << ")\n";
 
   return;
 }
 
+// 디버거 정보(line, column) 을 읽어오는 함수
 void findLineAndColNumber(string txtName, string debugNum) {
 
   ifstream FLACNFstream;
@@ -184,9 +129,6 @@ void findLineAndColNumber(string txtName, string debugNum) {
           for (int j = 0; j < FLACNFtempv[i + 5].size() - 1; j++) {
             ColNum += FLACNFtempv[i + 5][j];
           }
-
-          // cout << LineNum << " " << ColNum << "\n";
-
           break;
         }
       }
@@ -198,6 +140,7 @@ void findLineAndColNumber(string txtName, string debugNum) {
   return;
 }
 
+// 파일을 읽는 함수
 void writeTxtFile(string txtName) {
 
   ifstream tempTxtFstream;
@@ -253,7 +196,7 @@ int main() {
           output_printf_fstream << tempv[i] << " ";
       }
 
-      // 줄에 store가 있다면 타입 확인 수 그에 맞는 값을 벡터에 추가
+      // 줄에 store가 있다면 타입 확인, 맞는 값을 벡터에 추가
       for (int i = 0; i < tempv.size(); i++) {
 
         if (tempv[i] == "define") {
@@ -276,26 +219,31 @@ int main() {
                                    "%struct.__sFILE** @file, align 8\n";
         }
 
-        else if ((tempv[i] == "store" && tempv[6] != "getelementptr") || tempv[i] == "load") {
-
-          if (tempv[6] == "%__fill_4,")
-            continue;
-
-          if (tempv[6] == "%__rdstate_," || tempv[6] == "%__rdstate_3,")
-            continue;
-
-          if (tempv[i + 1][1] == '\"')
-            continue;
+        else if (tempv[i] == "store" && tempv[6] != "getelementptr") {
 
           if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
             continue;
-          // globalNum++;
 
           string var_name = tempv[6];  // %randomNum,
           string var_type = tempv[3];  // i32  포인터 타입은 * 만 붙히면 됨
           string debugNum = tempv[10]; //  !864
 
-          // cout << debugNum << "\n";
+          addPrintfInstruction(var_name, var_type, debugNum, currentFunc, tempv[i]);
+
+        } else if (tempv[i] == "load") {
+
+          if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
+            continue;
+
+          string temp_var_type = tempv[5];
+          string var_type;
+
+          for (int i = 0; i < temp_var_type.size() - 1; i++)
+            var_type += temp_var_type[i];
+
+          string var_name = tempv[7];  // %randomNum,
+          string debugNum = tempv[11]; //  !864
+
           addPrintfInstruction(var_name, var_type, debugNum, currentFunc, tempv[i]);
 
         } else if (tempv[i] == "target" && tempv[i + 1] == "triple") {
@@ -311,7 +259,7 @@ int main() {
           }
           cout << tempallocastr << "\n";
           cout << currentFunc << " <- currentFunc \n";
-          str_fstream << "@__const." << currentFunc << "var_name_" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 1 << " x i8] c\"" << tempallocastr << "\\00\", align 1\n";
+          str_fstream << "@__const." << currentFunc << "var_name_" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
 
         } else if (tempv[i] == "@_ZNSt3__13cinE,") {
 
@@ -415,7 +363,7 @@ int main() {
 
   str_fstream.close();
   output_printf_fstream.close();
-  targetfile_fstream.close(); // 열었떤 파일을 닫는다.
+  targetfile_fstream.close();
   output_result_fstream.close();
   return 0;
 }
