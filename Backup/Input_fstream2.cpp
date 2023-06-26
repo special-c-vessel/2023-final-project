@@ -219,37 +219,41 @@ int main() {
                                    "%struct.__sFILE** @file, align 8\n";
         }
 
-        else if (tempv[i] == "store" && tempv[6] != "getelementptr") {
+        else if ((tempv[i] == "store" && tempv[6] != "getelementptr") || tempv[i] == "load") {
 
           if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
             continue;
 
-          string var_name = tempv[6];  // %randomNum,
-          string var_type = tempv[3];  // i32  포인터 타입은 * 만 붙히면 됨
-          string debugNum = tempv[10]; //  !864
-
-          addPrintfInstruction(var_name, var_type, debugNum, currentFunc, tempv[i]);
-
-        } else if (tempv[i] == "load") {
-
-          if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
-            continue;
-
-          string temp_var_type = tempv[5];
+          string var_name;
           string var_type;
+          string debugNum;
 
-          for (int i = 0; i < temp_var_type.size() - 1; i++)
-            var_type += temp_var_type[i];
+          if (tempv[i] == "store") {
 
-          string var_name = tempv[7];  // %randomNum,
-          string debugNum = tempv[11]; //  !864
+            var_name = tempv[6];  // %randomNum,
+            var_type = tempv[3];  // i32  포인터 타입은 * 만 붙히면 됨
+            debugNum = tempv[10]; //  !864
+
+          } else if (tempv[i] == "load") {
+
+            string temp_var_type = tempv[5];
+
+            for (int i = 0; i < temp_var_type.size() - 1; i++)
+              var_type += temp_var_type[i];
+
+            var_name = tempv[7];  // %randomNum,
+            debugNum = tempv[11]; //  !864
+          }
 
           addPrintfInstruction(var_name, var_type, debugNum, currentFunc, tempv[i]);
 
         } else if (tempv[i] == "target" && tempv[i + 1] == "triple") {
+
           cout << "record_above txt file write\n";
           writeTxtFile("record_above.txt");
+
         } else if (tempv[i] == "alloca") {
+
           cout << "find alloca!   ";
           cout << tempv[i - 2] << "  ";
 
@@ -263,21 +267,14 @@ int main() {
 
         } else if (tempv[i] == "@_ZNSt3__13cinE,") {
 
-          if (currentFunc[currentFunc.size() - 1] == 'Q')
-            continue;
-
           cout << "find cin\n";
           if (tempv[4] == "call") {
+            //  %call = call nonnull align 8 dereferenceable(16) %"class.std::__1::basic_istream"* @_ZNSt3__113basic_istreamIcNS_11char_traitsIcEEErsERi(%"class.std::__1::basic_istream"* @_ZNSt3__13cinE, i32* nonnull align 4 dereferenceable(4) %num1), !dbg !987
             // invork  인 경우 따로 만들어야 함
 
             string temp_var_name = tempv[tempv.size() - 4]; // %randomNum),
             string temp_var_type = tempv[i + 1];            // type*
             string debugNum = tempv[tempv.size() - 2];      //  !864
-
-            // cout << "name, type, debug print =================\n";
-            // cout << "name = " << temp_var_name << "\n";
-            // cout << "type = " << temp_var_type << "\n";
-            // cout << "debug = " << debugNum << "\n";
 
             string var_name;
             string var_type;
@@ -292,70 +289,16 @@ int main() {
             //                                                      cin으로 새로 값을 할당하는 것이므로 store로 설정
             addPrintfInstruction(var_name, var_type, debugNum, currentFunc, "store");
 
-            // cout << tempv.size() << " <- size   \n";
-
-            // cout << tempv[tempv.size() - 4] << " "; // %kkkkk),
-            // cout << tempv[17] << " ";               // %kkkkk),
-            // cout << tempv[19] << " ";               // !523
-            // cout << tempv[12] << " ";               // type*
-
-            // globalNum++;
-            // int var_name_location = tempv.size() - 4;
-            // int pointerSize = tempv[var_name_location].size() - 2;
-            // int templocalNum = 1;
-            // string var_name_str = "";
-            // // for (int j = 0; j < tempv[var_name_location].size() - 2; j++)
-            // //   var_name_str += tempv[var_name_location][j]; // %kkkkk
-
-            // // output_printf_fstream << "%var_" << globalNum << "_value = load i32, i32* " << var_name_str << ", align 4\n";
-
-            // // output_printf_fstream << "%var_" << globalNum << "_name_ptr = alloca [" << pointerSize << " x i8]\n";
-
-            // // output_printf_fstream << "%temp_var_" << globalNum << "_name = bitcast [" << pointerSize << " x i8]* "
-            // //                       << "%var_" << globalNum << "_name_ptr to i8*\n";
-
-            // string tempstr2 = "";
-            // for (int j = 1; j < var_name_str.size(); j++) {
-            //   tempstr2 += var_name_str[j];
-            // }
-
-            // output_printf_fstream << "call void @llvm.memcpy.p0i8.p0i8.i64_curly(i8* align 1 %temp_var_" << globalNum << "_name, i8* align 1 getelementptr inbounds ([" << pointerSize << " x i8], [" << pointerSize << " x i8]* @__const." << currentFunc << "var_name_" << tempstr2 << ", i32 0, i32 0), i64 10, i1 false)\n";
-
-            // output_printf_fstream << "%var_" << globalNum << "_name = getelementptr inbounds [" << pointerSize << " x i8], [" << pointerSize << " x i8]* %var_" << globalNum << "_name_ptr, i64 0, i64 0\n";
-
-            // // declare
-            // output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.op_declare, i32 0, i32 0))\n";
-
-            // // 이름
-            // output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_str, i64 0, i64 0), i8* %var_" << globalNum << "_name)\n";
-
-            // // 타입
-            // output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.i32, i64 0, i64 0))\n";
-
-            // // 값
-            // output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i32 0, i32 0), i32 %var_" << globalNum << "_value)\n";
-
-            // string tempPtrStr = "";
-            // for (int i = 0; i < tempv[6].size() - 1; i++)
-            //   tempPtrStr += tempv[6][i];
-            // // 포인터
-            // output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), i32* " << var_name_str << ")\n";
-
-            // LineNum = "";
-            // ColNum = "";
-
-            // cout << "\n";
-            // cout << tempv[tempv.size() - 2] << " ggg \n";
-            // findLineAndColNumber(targetFileName, tempv[tempv.size() - 2]);
-
-            // // line && col number
-            // //                        %temp_var_        1          _            6            = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 118)
-            // output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
-            // output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << ColNum << ")\n";
           } else if (tempv[4] == "invoke") {
-            cout << "find voke\n";
+            // cin 이고 invoke 인 경우
+            cout << "find cin voke\n";
           }
-        } else {
+        } else if (tempv[i] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%\"class.std::__1::basic_string\"\*") {
+          // string str 선언 후  str = "문자열" 수행 시 탐지
+          cout << "find @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%!!!!\n\n";
+
+          // 이제 한 줄 더 읽고 invoke.cont 를 찾아서 그 아래에 코드 삽입
+        } else if (tempv[i] == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc") {
         }
       }
     }
