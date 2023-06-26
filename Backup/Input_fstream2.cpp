@@ -24,6 +24,8 @@ string ColNum;
 string currentFunc = "Global";
 string currentFunc_returnType = "";
 
+vector<vector<string> > previoustempv;
+
 int globalNum = 0;
 
 void findLineAndColNumber(string, string);
@@ -34,11 +36,14 @@ void writeTxtFile(string);
 void addPrintfInstruction(string var_name, string var_type, string debugNum, string func_name, string keyWord) // string currentFunc // string var_type
 {                                                                                                              //    %randomNum,       i32
   globalNum++;
+
   int pointerSize = var_name.size() - 1;
   int templocalNum = 1;
 
   int var_type_length;
   int var_type_print_length;
+
+  string var_type_for_arr;
 
   // 각 타입에 맞게 타입 출력 길이를 설정
   if (var_type == "i8") // char
@@ -70,6 +75,43 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
   // 새로 할당된 값 불러옴
   output_printf_fstream << "%var_" << globalNum << "_value = load " << var_type << ", " << var_type << "* " << var_name << " align 4\n";
 
+  // var_name가 arrayidx 일 경우
+  cout << var_name.substr(1, 8) << "\n";
+  if (var_name.substr(1, 8) == "arrayidx") {
+
+    cout << "find arrayidx !!!!!!!!!!!!!!! \n";
+
+    // var_name 을 배열 이름으로 설정해야함
+    var_name = previoustempv[0][previoustempv[0].size() - 8];
+    cout << "previoustempv 's var_name is : " << var_name << "\n";
+
+    // var_type 변경
+    // [7 x [4 x [500 x i32]]]
+    int tempcnt = 6;
+    for (; previoustempv[0][tempcnt][previoustempv[0][tempcnt].size() - 1] != ','; tempcnt++) {
+      var_type_for_arr += previoustempv[0][tempcnt];
+      var_type_for_arr += " ";
+    }
+    var_type_for_arr += previoustempv[0][tempcnt];
+    var_type_for_arr = var_type_for_arr.substr(0, var_type_for_arr.size() - 1);
+    cout << "previoustempv 's var_type is : " << var_type_for_arr << "\n";
+
+    // 배열의 차수를 모두 출력해야함
+    cout << "print num @@@@@@@ ";
+    while (!previoustempv.empty()) {
+      string ttttempstr = previoustempv.back()[previoustempv.back().size() - 4];
+      cout << ttttempstr << "  ";
+      
+        output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << ttttempstr.substr(0, ttttempstr.size() - 1) << ")\n";
+
+      previoustempv.pop_back();
+    }
+    cout << "\n";
+  }
+  else
+  {
+    var_type_for_arr = var_type;
+  }
   string tempsVarName = var_name.substr(1);                    // %var_name, -> var_name,
   string tempPtrStr = var_name.substr(0, var_name.size() - 1); // %var_name, -> %var_name
 
@@ -86,11 +128,26 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type << "* " << tempPtrStr << ")\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type_for_arr << "* " << tempPtrStr << ")\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << ColNum << ")\n";
 
+  cout << "find " << keyWord << "!! current Function && Line number is =====> " << currentFunc << " " << LineNum << "\n";
+
   return;
+
+
+  /*
+  %var_3_value = load i32, i32* %arrayidx2, align 4 
+%temp_var_3_3 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.i32(타입 설정해야함), i64 0, i64 0)) 
+%temp_var_3_4 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_(타입 설정해야함), i32 0, i32 0), i32(타입 설정해야함) %var_3_value) 
+
+즉, 타입을 여기서 다시 설정해줘야함
+
+%temp_var_3_5 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), [7 x [4 x [500 x i32]]]* %intarr) 
+%temp_var_3_6 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 51) 
+%temp_var_3_7 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 21) 
+  */
 }
 
 // 디버거 정보(line, column) 을 읽어오는 함수
@@ -168,6 +225,7 @@ int main() {
   // 최초 파일 열기, string alloca 모두 체크
   //  printf 문 추가
   if (targetfile_fstream.is_open()) {
+
     while (getline(targetfile_fstream, line)) {
 
       stringstream ss(line);
@@ -222,6 +280,11 @@ int main() {
             var_type = tempv[3];  // i32  포인터 타입은 * 만 붙히면 됨
             debugNum = tempv[10]; //  !864
 
+            if (var_name[1] == '0' || var_name[1] == '1' || var_name[1] == '2' || var_name[1] == '3' || var_name[1] == '4' || var_name[1] == '5' || var_name[1] == '6' || var_name[1] == '7' || var_name[1] == '8' || var_name[1] == '9') {
+              cout << var_name << " ddddd \n";
+              continue;
+            }
+
           } else if (tempv[i] == "load") {
 
             string temp_var_type = tempv[5];
@@ -246,8 +309,8 @@ int main() {
 
           string tempallocastr = tempv[i - 2].substr(1);
 
-          cout << tempallocastr << "\n";
-          cout << currentFunc << " <- currentFunc \n";
+          cout << " current Function name is =====> ";
+          cout << currentFunc << "\n";
           str_fstream << "@__const." << currentFunc << "var_name_" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
 
         } else if (tempv[i] == "@_ZNSt3__13cinE,") {
@@ -282,9 +345,26 @@ int main() {
 
           // 이제 한 줄 더 읽고 invoke.cont 를 찾아서 그 아래에 코드 삽입
         } else if (tempv[i] == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc") {
+        } else if (tempv[2][0] == '%' && tempv[4] == "getelementptr") {
+
+          string tempStrForCompareArrayidx = tempv[2].substr(1, 8);
+          if (tempStrForCompareArrayidx == "arrayidx") {
+            //%arrayidx = getelementptr inbounds 의 형식일 때
+
+            // cout << tempv[2] << " " << tempv[tempv.size() - 4] << "\n";
+
+            // 차수를 가져온다
+            string tempArrIndexNum = tempv[tempv.size() - 4].substr(0, tempv[tempv.size() - 4].size() - 1);
+
+            // 차수 기록이 비어있거나     새로운 차수인 경우
+            if (previoustempv.empty() || (previoustempv.back()[2] != tempv[2])) {
+              previoustempv.push_back(tempv);
+              cout << tempArrIndexNum << "\n";
+            }
+          }
         }
       }
-    }
+    } // while end
   }
 
   str_fstream.close();
