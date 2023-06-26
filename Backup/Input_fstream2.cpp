@@ -70,13 +70,8 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
   // 새로 할당된 값 불러옴
   output_printf_fstream << "%var_" << globalNum << "_value = load " << var_type << ", " << var_type << "* " << var_name << " align 4\n";
 
-  string tempsVarName = "";
-  for (int i = 1; i < var_name.size(); i++)
-    tempsVarName += var_name[i]; // %var_name, -> var_name,
-
-  string tempPtrStr = "";
-  for (int i = 0; i < var_name.size() - 1; i++)
-    tempPtrStr += var_name[i]; // %var_name, -> %var_name
+  string tempsVarName = var_name.substr(1);                    // %var_name, -> var_name,
+  string tempPtrStr = var_name.substr(0, var_name.size() - 1); // %var_name, -> %var_name
 
   LineNum = "0";
   ColNum = "0";
@@ -122,18 +117,13 @@ void findLineAndColNumber(string txtName, string debugNum) {
       for (int i = 0; i < FLACNFtempv.size(); i++) {
         if (FLACNFtempv[i] == debugNum && FLACNFtempv[i + 1] == "=") {
 
-          for (int j = 0; j < FLACNFtempv[i + 3].size() - 1; j++) {
-            LineNum += FLACNFtempv[i + 3][j];
-          }
+          LineNum = FLACNFtempv[i + 3].substr(0, FLACNFtempv[i + 3].size() - 1);
+          ColNum = FLACNFtempv[i + 5].substr(0, FLACNFtempv[i + 5].size() - 1);
 
-          for (int j = 0; j < FLACNFtempv[i + 5].size() - 1; j++) {
-            ColNum += FLACNFtempv[i + 5][j];
-          }
           break;
         }
       }
     }
-
   } else {
     cout << txtName << " 파일을 열 수 없습니다\n";
   }
@@ -202,9 +192,7 @@ int main() {
         if (tempv[i] == "define") {
 
           currentFunc_returnType = tempv[i + 1];
-
           currentFunc = "";
-
           while (tempv[i][0] != '@') {
             i++;
           }
@@ -238,8 +226,7 @@ int main() {
 
             string temp_var_type = tempv[5];
 
-            for (int i = 0; i < temp_var_type.size() - 1; i++)
-              var_type += temp_var_type[i];
+            var_type = temp_var_type.substr(0, temp_var_type.size() - 1);
 
             var_name = tempv[7];  // %randomNum,
             debugNum = tempv[11]; //  !864
@@ -257,10 +244,8 @@ int main() {
           cout << "find alloca!   ";
           cout << tempv[i - 2] << "  ";
 
-          string tempallocastr = "";
-          for (int j = 1; j < tempv[i - 2].size(); j++) {
-            tempallocastr += tempv[i - 2][j];
-          }
+          string tempallocastr = tempv[i - 2].substr(1);
+
           cout << tempallocastr << "\n";
           cout << currentFunc << " <- currentFunc \n";
           str_fstream << "@__const." << currentFunc << "var_name_" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
@@ -279,12 +264,10 @@ int main() {
             string var_name;
             string var_type;
 
-            for (int j = 0; j < temp_var_name.size() - 2; j++)
-              var_name += temp_var_name[j];
+            var_name = temp_var_name.substr(0, temp_var_name.size() - 2);
             var_name += ",";
 
-            for (int j = 0; j < temp_var_type.size() - 1; j++)
-              var_type += temp_var_type[j];
+            var_type = temp_var_type.substr(0, temp_var_type.size() - 1);
 
             //                                                      cin으로 새로 값을 할당하는 것이므로 store로 설정
             addPrintfInstruction(var_name, var_type, debugNum, currentFunc, "store");
