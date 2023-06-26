@@ -1,4 +1,4 @@
-# Culry: C++ 소스코드 수준 기록-재현 도구 <br>
+# Culry: C++ 소스코드 수준 기록-재현 도구 (23.06.27 업데이트) <br>
 지도교수 : 이성호 교수님 <br>
 팀&nbsp; &nbsp;&nbsp;  명 : 동윤없는 동윤팀  <br>
 팀&nbsp; &nbsp;&nbsp;  원 : 충남대학교 컴퓨터공학과  17 한정경 <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
