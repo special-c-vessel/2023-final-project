@@ -1,0 +1,7 @@
+store retval int 0 0x16b4388b4 0 0
+store nnuumm int 99999 0x16b4388b0 49 7
+150 1 2 store intarr int 55555 0x16b438ab8 51 21
+3 2 1 load intarr int 0 0x16b438ab8 53 6
+250 3 6 store intarr int 111111 0x16b438ab8 59 23
+12 store floatarr float 125415.125000 0x16b4388c8 64 16
+3 store chararr char A 0x16b4388bb 68 14
