@@ -43,15 +43,16 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 
 <br><br>
 사용방법: <br>
-- Record <br>
-&nbsp; 1. 타겟 c++ 소스코드를 llvm을 사용하여 llvm IR로 변환한다.
-&nbsp; 2. Backup 폴더 안의 Input-fstream2.cpp 를 컴파일 후 실행한다.
-&nbsp; 3. 2번화 같은 폴더의 Input-fstream3.cpp 를 컴파일 후 실행한다.
-&nbsp; 4. 변조된 record_result.ll 코드를 llvm lli 명령어를 통해 실행하여 실행 정보가 저장된 record.txt 파일을 생성한다.
+
+-Record <br>
+&nbsp; 1. 타겟 c++ 소스코드를 llvm을 사용하여 llvm IR로 변환한다.<br>
+&nbsp; 2. Backup 폴더 안의 Input-fstream2.cpp 를 컴파일 후 실행한다.<br>
+&nbsp; 3. 2번화 같은 폴더의 Input-fstream3.cpp 를 컴파일 후 실행한다.<br>
+&nbsp; 4. 변조된 record_result.ll 코드를 llvm lli 명령어를 통해 실행하여 실행 정보가 저장된 record.txt 파일을 생성한다.<br>
 <br>
-- Replay <br>
-&nbsp; 1. Replay 폴더 안의 replay_test.cpp 를 컴파일 한다.
-&nbsp; 2. replay_test 실행파일과 타겟 c++ 소스코드, record.txt 를 통해 실행 정보를 타겟 cpp 프로그램과 mapping 시킨다.
+-Replay <br>
+&nbsp; 1. Replay 폴더 안의 replay_test.cpp 를 컴파일 한다.<br>
+&nbsp; 2. replay_test 실행파일과 타겟 c++ 소스코드, record.txt 를 통해 실행 정보를 타겟 cpp 프로그램과 mapping 시킨다.<br>
 &nbsp; 2. 여러 명령어를 통해 실행 동작 과정을 분석한다.
 
 <br><br>
