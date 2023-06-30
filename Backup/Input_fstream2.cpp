@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream> // for split
+#include <stack>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,11 @@ string currentFunc_returnType = "";
 
 vector<vector<string> > previoustempv;
 
+stack<string> stackForResetArr;
+
+vector<pair<string, string> > vectorForResetArr;
+string var_name_ForResetArr = "";
+
 int globalNum = 0;
 
 void findLineAndColNumber(string, string);
@@ -44,6 +50,9 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
   int var_type_print_length;
 
   string var_type_for_arr;
+
+  bool isArr = false;
+  bool isResetArr = false;
 
   // 각 타입에 맞게 타입 출력 길이를 설정
   if (var_type == "i8") // char
@@ -88,33 +97,32 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
     // var_type 변경
     // [7 x [4 x [500 x i32]]]
     int tempcnt = 6;
-    for (; previoustempv[0][tempcnt][previoustempv[0][tempcnt].size() - 1] != ','; tempcnt++) {
+    while (previoustempv[0][tempcnt][previoustempv[0][tempcnt].size() - 1] != ',') {
       var_type_for_arr += previoustempv[0][tempcnt];
       var_type_for_arr += " ";
+      tempcnt++;
     }
     var_type_for_arr += previoustempv[0][tempcnt];
     var_type_for_arr = var_type_for_arr.substr(0, var_type_for_arr.size() - 1);
     cout << "previoustempv 's var_type is : " << var_type_for_arr << "\n";
 
-    // 배열의 차수를 모두 출력해야함
-    cout << "print num @@@@@@@ ";
-    while (!previoustempv.empty()) {
-      string ttttempstr = previoustempv.back()[previoustempv.back().size() - 4];
-      cout << ttttempstr << "  ";
-      
-        output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << ttttempstr.substr(0, ttttempstr.size() - 1) << ")\n";
+    isArr = true;
 
-      previoustempv.pop_back();
-    }
-    cout << "\n";
-  }
-  else
-  {
-    var_type_for_arr = var_type;
-  }
-  string tempsVarName = var_name.substr(1);                    // %var_name, -> var_name,
-  string tempPtrStr = var_name.substr(0, var_name.size() - 1); // %var_name, -> %var_name
+  } else if (var_name[1] == '0' || var_name[1] == '1' || var_name[1] == '2' || var_name[1] == '3' || var_name[1] == '4' || var_name[1] == '5' || var_name[1] == '6' || var_name[1] == '7' || var_name[1] == '8' || var_name[1] == '9') {
+    //  %10 = bitcast [3 x [15 x i32]]* %arrJJJJJ to i8*
+    // 의 형식일 때 stack에 %10 추가
+    isResetArr = true;
 
+    // cout << "isResetArr 's type : " << var_type << "\n";
+
+  }
+  
+  string tempsVarName = var_name.substr(1, var_name.size() - 1);                    // %var_name, -> var_name
+  string tempPtrStr = var_name.substr(0, var_name.size() - 1);                      // %var_name, -> %var_name
+
+  if (var_name == "retval") {
+    tempsVarName = var_name.substr(1, var_name.size() - 2);
+  }
   LineNum = "0";
   ColNum = "0";
   if (debugNum.size() > 1) {
@@ -123,10 +131,53 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
     findLineAndColNumber(targetFileName, debugNum);
   }
 
+  if (isResetArr) {
+    // 여기서는 출력만
+
+    if (vectorForResetArr.back().first == var_name.substr(0, var_name.size() - 1)) {
+      // vectorForResetArr에 저장된 var_name 과 store의 var_name이 같을 때 모두 출력 후 하나 pop
+
+      cout << "start print vectorForResetArr       ";
+
+      for (int i = 0; i < vectorForResetArr.size(); i++) {
+        cout << vectorForResetArr[i].first << " " << vectorForResetArr[i].second << "  ";
+      }
+      cout << "remove " << vectorForResetArr.back().first << "\n";
+      vectorForResetArr.pop_back();
+
+      tempsVarName = var_name_ForResetArr.substr(1, var_name_ForResetArr.size());
+      tempPtrStr = var_name_ForResetArr.substr(0, var_name.size() - 1);                      // %var_name, -> %var_name
+    }
+  }
+
   // 키워드 이름 타입 값 포인터 라인 컬럼   순으로
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 2 << " x i8], [" << tempsVarName.size() + 2 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
+
+
+  // ===================== 함수로 만들기 ============================================================
+  if (isArr) {
+    // 초기값이 아닌 배열의 차수를 출력하겠다는 의미로 isArr를 출력
+    output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.userKeyWord_isArr, i32 0, i32 0))\n";
+
+    // 배열의 차수를 모두 출력
+    cout << "print num @@@@@@@ ";
+
+    for (int i = 0; i < previoustempv.size(); i++) {
+      string previoustempv_arrnum = previoustempv[i][previoustempv[i].size() - 4];
+      output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << previoustempv_arrnum.substr(0, previoustempv_arrnum.size() - 1) << ")\n";
+    }
+
+    while (!previoustempv.empty()) {
+      previoustempv.pop_back();
+    }
+    cout << "\n";
+  }  else {
+    // var_name 가 arrayidx 가 아닌 경우
+    var_type_for_arr = var_type;
+  }
+
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type_for_arr << "* " << tempPtrStr << ")\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
@@ -135,19 +186,6 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
   cout << "find " << keyWord << "!! current Function && Line number is =====> " << currentFunc << " " << LineNum << "\n";
 
   return;
-
-
-  /*
-  %var_3_value = load i32, i32* %arrayidx2, align 4 
-%temp_var_3_3 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.i32(타입 설정해야함), i64 0, i64 0)) 
-%temp_var_3_4 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_(타입 설정해야함), i32 0, i32 0), i32(타입 설정해야함) %var_3_value) 
-
-즉, 타입을 여기서 다시 설정해줘야함
-
-%temp_var_3_5 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), [7 x [4 x [500 x i32]]]* %intarr) 
-%temp_var_3_6 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 51) 
-%temp_var_3_7 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 21) 
-  */
 }
 
 // 디버거 정보(line, column) 을 읽어오는 함수
@@ -263,9 +301,7 @@ int main() {
           // 함수 시작에 loadfile 추가
           output_printf_fstream << "%loadfile = load %struct.__sFILE*, "
                                    "%struct.__sFILE** @file, align 8\n";
-        }
-
-        else if ((tempv[i] == "store" && tempv[6] != "getelementptr") || tempv[i] == "load") {
+        } else if ((tempv[i] == "store" && tempv[6] != "getelementptr") || tempv[i] == "load") {
 
           if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
             continue;
@@ -279,11 +315,6 @@ int main() {
             var_name = tempv[6];  // %randomNum,
             var_type = tempv[3];  // i32  포인터 타입은 * 만 붙히면 됨
             debugNum = tempv[10]; //  !864
-
-            if (var_name[1] == '0' || var_name[1] == '1' || var_name[1] == '2' || var_name[1] == '3' || var_name[1] == '4' || var_name[1] == '5' || var_name[1] == '6' || var_name[1] == '7' || var_name[1] == '8' || var_name[1] == '9') {
-              cout << var_name << " ddddd \n";
-              continue;
-            }
 
           } else if (tempv[i] == "load") {
 
@@ -339,12 +370,14 @@ int main() {
             // cin 이고 invoke 인 경우
             cout << "find cin voke\n";
           }
-        } else if (tempv[i] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%\"class.std::__1::basic_string\"\*") {
-          // string str 선언 후  str = "문자열" 수행 시 탐지
-          cout << "find @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%!!!!\n\n";
+        }
+        // else if (tempv[i] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%\"class.std::__1::basic_string\"\*") {
+        //   // string str 선언 후  str = "문자열" 수행 시 탐지
+        //   cout << "find @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%!!!!\n\n";
 
-          // 이제 한 줄 더 읽고 invoke.cont 를 찾아서 그 아래에 코드 삽입
-        } else if (tempv[i] == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc") {
+        //   // 이제 한 줄 더 읽고 invoke.cont 를 찾아서 그 아래에 코드 삽입
+        // }
+        else if (tempv[i] == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc") {
         } else if (tempv[2][0] == '%' && tempv[4] == "getelementptr") {
 
           string tempStrForCompareArrayidx = tempv[2].substr(1, 8);
@@ -359,9 +392,25 @@ int main() {
             // 차수 기록이 비어있거나     새로운 차수인 경우
             if (previoustempv.empty() || (previoustempv.back()[2] != tempv[2])) {
               previoustempv.push_back(tempv);
-              cout << tempArrIndexNum << "\n";
+              // cout << "find arrayidx " << tempArrIndexNum << "\n";
+            }
+          } else if ((tempv[2][1] == '0' || tempv[2][1] == '1' || tempv[2][1] == '2' || tempv[2][1] == '3' || tempv[2][1] == '4' || tempv[2][1] == '5' || tempv[2][1] == '6' || tempv[2][1] == '7' || tempv[2][1] == '8' || tempv[2][1] == '9')) {
+            // tempv[6] == "<{" && !!!!! 무조건 <{ 가 있지 않으므로 주의
+
+            // %12 = getelementptr inbounds <{ <{ i32, i32, [13 x i32] }>, <{ i32, [14 x i32] }>, <{ i32, [14 x i32] }> }>, <{ <{ i32, i32, [13 x i32] }>, <{ i32, [14 x i32] }>, <{ i32, [14 x i32] }> }>* %11, i32 0, i32 0, !dbg !1009
+            // 의 형식일 경우     // %12   0   저장
+            if (vectorForResetArr.empty() || vectorForResetArr.back().first != tempv[2]) {
+              vectorForResetArr.push_back(make_pair(tempv[2], tempv[tempv.size() - 4].substr(0, tempv[tempv.size() - 4].size() - 1))); // %12 0 저장
+              cout << vectorForResetArr.back().first << "    " <<  vectorForResetArr.back().second << "   jjjjjjjjjjjjj\n";
             }
           }
+
+          } else if (tempv[i] == "bitcast" && tempv[tempv.size() - 5] == "to" ) {
+            //tempv[0][1] == '0' || tempv[0][1] == '1' || tempv[1][1] == '2' || tempv[2][1] == '3' || tempv[2][1] == '4' || tempv[2][1] == '5' || tempv[2][1] == '6' || tempv[2][1] == '7' || tempv[2][1] == '8' || tempv[2][1] == '9'
+            var_name_ForResetArr = tempv[tempv.size() - 6];
+            cout << var_name_ForResetArr << " mmmmmmmmmmm \n";
+
+        } else {
         }
       }
     } // while end
