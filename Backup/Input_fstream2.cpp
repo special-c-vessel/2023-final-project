@@ -114,15 +114,15 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
     isResetArr = true;
 
     // cout << "isResetArr 's type : " << var_type << "\n";
-
   }
-  
-  string tempsVarName = var_name.substr(1, var_name.size() - 1);                    // %var_name, -> var_name
-  string tempPtrStr = var_name.substr(0, var_name.size() - 1);                      // %var_name, -> %var_name
 
-  if (var_name == "retval") {
-    tempsVarName = var_name.substr(1, var_name.size() - 2);
-  }
+  string tempsVarName = var_name.substr(1);                    // %var_name, -> var_name,
+  string tempPtrStr = var_name.substr(0, var_name.size() - 1); // %var_name, -> %var_name
+
+  // if (var_name == "retval") {
+  //   tempsVarName = var_name.substr(1, var_name.size() - 3);
+  // }
+
   LineNum = "0";
   ColNum = "0";
   if (debugNum.size() > 1) {
@@ -139,22 +139,22 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
 
       cout << "start print vectorForResetArr       ";
 
-      for (int i = 0; i < vectorForResetArr.size(); i++) {
-        cout << vectorForResetArr[i].first << " " << vectorForResetArr[i].second << "  ";
-      }
-      cout << "remove " << vectorForResetArr.back().first << "\n";
-      vectorForResetArr.pop_back();
+      // for (int i = 0; i < vectorForResetArr.size(); i++) {
+      //   cout << vectorForResetArr[i].first << " " << vectorForResetArr[i].second << "  ";
+      // }
+      // cout << "remove " << vectorForResetArr.back().first << "\n";
+      // vectorForResetArr.pop_back();
 
-      tempsVarName = var_name_ForResetArr.substr(1, var_name_ForResetArr.size());
-      tempPtrStr = var_name_ForResetArr.substr(0, var_name.size() - 1);                      // %var_name, -> %var_name
+      tempsVarName = var_name_ForResetArr.substr(1);
+      // tempPtrStr = var_name_ForResetArr.substr(0, var_name.size() - 1);                      // %var_name, -> %var_name
+      // var_type_for_arr = "i32";
     }
   }
 
   // 키워드 이름 타입 값 포인터 라인 컬럼   순으로
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 2 << " x i8], [" << tempsVarName.size() + 2 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
-
 
   // ===================== 함수로 만들기 ============================================================
   if (isArr) {
@@ -173,9 +173,18 @@ void addPrintfInstruction(string var_name, string var_type, string debugNum, str
       previoustempv.pop_back();
     }
     cout << "\n";
-  }  else {
+  } else {
     // var_name 가 arrayidx 가 아닌 경우
     var_type_for_arr = var_type;
+  }
+
+  if (isResetArr) {
+    for (int i = 0; i < vectorForResetArr.size(); i++) {
+      string vectorForResetArr_arrnum = vectorForResetArr[i].second;
+      output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << vectorForResetArr_arrnum << ")\n";
+    }
+    cout << vectorForResetArr.back().second << "   removed &&&&&&&&&&&&&&&&&\n";
+    vectorForResetArr.pop_back();
   }
 
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
@@ -399,16 +408,54 @@ int main() {
 
             // %12 = getelementptr inbounds <{ <{ i32, i32, [13 x i32] }>, <{ i32, [14 x i32] }>, <{ i32, [14 x i32] }> }>, <{ <{ i32, i32, [13 x i32] }>, <{ i32, [14 x i32] }>, <{ i32, [14 x i32] }> }>* %11, i32 0, i32 0, !dbg !1009
             // 의 형식일 경우     // %12   0   저장
+
+            // 현재 line의 %num과 이전 line의 %num이 다르다면 연결된 차수가 아니므로, vector 초기화
+            // if (!vectorForResetArr.empty()) {
+            //   if (tempStrForCompareResetArrIndex != vectorForResetArr.back().first) {
+            //     // y축 이동시 저ㅌ장해두었던 배열 삭제, (0, 0) (0, 1) -> (1, 0)으로 넘어가는 경우 배열 안의 0 삭제
+
+            //     // %11 = bitcast i8* %10 to <{ <{ i32, i32, [13 x i32] }>, <{ i32, [14 x i32] }>, <{ i32, [14 x i32] }> }>*, !dbg !1009
+            //     // %12 = getelementptr inbounds <{ <{ i32, i32, [13 x i32] }>, <{ i32, [14 x i32] }>, <{ i32, [14 x i32] }> }>, <{ <{ i32, i32, [13 x i32] }>, <{ i32, [14 x i32] }>, <{ i32, [14 x i32] }> }>* %11, i32 0, i32 0, !dbg !1009
+            //     // %13 = getelementptr inbounds <{ i32, i32, [13 x i32] }>, <{ i32, i32, [13 x i32] }>* %12, i32 0, i32 0, !dbg !1009
+            //     // 에서 %13 = ... %12 와 %12 가 같다면 저장
+            //     //
+
+            //     while (!vectorForResetArr.empty())
+            //       vectorForResetArr.pop_back();
+            //   }
+            // }
+
             if (vectorForResetArr.empty() || vectorForResetArr.back().first != tempv[2]) {
+              // 중복 체크
+
+              // 중복이 아닐 때, 연결되어 있는지(연결된 차수인지) 확인
+              string tempStrForCompareResetArrIndex;
+              for (int j = 3;; j++) {
+                if (tempv[j][0] == '%') {
+                  tempStrForCompareResetArrIndex = tempv[j].substr(0, tempv[j].size() - 1); // 현재 line에서 %11을 탐색
+                  break;
+                }
+              }
+              // 연결되어 있지 않다면 모두 제거
+              if (!vectorForResetArr.empty()) {
+                if (tempStrForCompareResetArrIndex != vectorForResetArr.back().first) {
+                  cout << "tempStrForCompareResetArrIndex : " << tempStrForCompareResetArrIndex << "    " << "vectorForResetArr.back().first : " << vectorForResetArr.back().first << "              5555555555555\n" ;
+                  while (!vectorForResetArr.empty()) {
+                    vectorForResetArr.pop_back();
+                  }
+                }
+              }
+
               vectorForResetArr.push_back(make_pair(tempv[2], tempv[tempv.size() - 4].substr(0, tempv[tempv.size() - 4].size() - 1))); // %12 0 저장
-              cout << vectorForResetArr.back().first << "    " <<  vectorForResetArr.back().second << "   jjjjjjjjjjjjj\n";
+              cout << vectorForResetArr.back().first << "    " << vectorForResetArr.back().second << "   stored!!!!!!\n";
             }
           }
 
-          } else if (tempv[i] == "bitcast" && tempv[tempv.size() - 5] == "to" ) {
-            //tempv[0][1] == '0' || tempv[0][1] == '1' || tempv[1][1] == '2' || tempv[2][1] == '3' || tempv[2][1] == '4' || tempv[2][1] == '5' || tempv[2][1] == '6' || tempv[2][1] == '7' || tempv[2][1] == '8' || tempv[2][1] == '9'
-            var_name_ForResetArr = tempv[tempv.size() - 6];
-            cout << var_name_ForResetArr << " mmmmmmmmmmm \n";
+        } else if (tempv[i] == "bitcast" && tempv[tempv.size() - 5] == "to") {
+          // tempv[0][1] == '0' || tempv[0][1] == '1' || tempv[1][1] == '2' || tempv[2][1] == '3' || tempv[2][1] == '4' || tempv[2][1] == '5' || tempv[2][1] == '6' || tempv[2][1] == '7' || tempv[2][1] == '8' || tempv[2][1] == '9'
+          var_name_ForResetArr = tempv[tempv.size() - 6];
+          var_name_ForResetArr += ",";
+          cout << var_name_ForResetArr << " mmmmmmmmmmm \n";
 
         } else {
         }
