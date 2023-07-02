@@ -29,39 +29,44 @@
 
 
 ; op type
-@.str.op_declare = private unnamed_addr constant [9 x i8] c"declare\0A\00", align 1
+@.str.op_declare = private unnamed_addr constant [9 x i8] c"declare \00", align 1
+@.str.op_store = private unnamed_addr constant [7 x i8] c"store \00", align 1
+@.str.op_call = private unnamed_addr constant [6 x i8] c"call \00", align 1
+
 @.str.op_operation = private unnamed_addr constant [11 x i8] c"operation\0A\00", align 1
 @.str.op_add = private unnamed_addr constant [5 x i8] c"add\0A\00", align 1
 @.str.op_mul = private unnamed_addr constant [5 x i8] c"mul\0A\00", align 1
 @.str.op_sub = private unnamed_addr constant [5 x i8] c"sub\0A\00", align 1
 
 ; 출력문 형식
-@.str.print_str = private unnamed_addr constant [4 x i8] c"%s\0A\00", align 1
+@.str.print_str = private unnamed_addr constant [4 x i8] c"%s \00", align 1
 
 ; line, col 사용을 위해
-@.str.print_int = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@.str.print_int = private unnamed_addr constant [4 x i8] c"%d \00", align 1
+@.str.print_int_space = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
 
 ; char
-@.str.print_i8 = private unnamed_addr constant [4 x i8] c"%c\0A\00", align 1
+@.str.print_i8 = private unnamed_addr constant [4 x i8] c"%c \00", align 1
 
 ; short
-@.str.print_i16 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@.str.print_i16 = private unnamed_addr constant [4 x i8] c"%d \00", align 1
 
 ; int
-@.str.print_i32 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@.str.print_i32 = private unnamed_addr constant [4 x i8] c"%d \00", align 1
 
 ;long int
 
 ; long long int
-@.str.print_i64 = private unnamed_addr constant [5 x i8] c"%ld\0A\00", align 1
+@.str.print_i64 = private unnamed_addr constant [5 x i8] c"%ld \00", align 1
 
 
-@.str.print_float = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
-@.str.print_double = private unnamed_addr constant [5 x i8] c"%lf\0A\00", align 1
+@.str.print_float = private unnamed_addr constant [4 x i8] c"%f \00", align 1
+@.str.print_double = private unnamed_addr constant [5 x i8] c"%lf \00", align 1
 
 
-@.str.print_ptr = private unnamed_addr constant [4 x i8] c"%p\0A\00", align 1
-@.str.print_chr = private unnamed_addr constant [4 x i8] c"%c\0A\00", align 1
+@.str.print_ptr = private unnamed_addr constant [4 x i8] c"%p \00", align 1
+@.str.print_chr = private unnamed_addr constant [4 x i8] c"%c \00", align 1
 
 ; typeinfo 
 %"class.std::type_info" = type { i32 (...)**, i64 }
@@ -82,16 +87,16 @@ entry:
   ret i8* %2
 }
 
-@.str.i8 = private unnamed_addr constant [6 x i8]  c"char\0A\00", align 1
-@.str.i16 = private unnamed_addr constant [7 x i8]  c"short\0A\00", align 1
-@.str.i32 = private unnamed_addr constant [5 x i8]  c"int\0A\00", align 1
-@.str.i64 = private unnamed_addr constant [15 x i8] c"long long int\0A\00", align 1
+@.str.i8 = private unnamed_addr constant [6 x i8]  c"char \00", align 1
+@.str.i16 = private unnamed_addr constant [7 x i8]  c"short \00", align 1
+@.str.i32 = private unnamed_addr constant [5 x i8]  c"int \00", align 1
+@.str.i64 = private unnamed_addr constant [15 x i8] c"long long int \00", align 1
 
-@.str.float = private unnamed_addr constant [7 x i8]  c"float\0A\00", align 1
-@.str.double = private unnamed_addr constant [8 x i8]  c"double\0A\00", align 1
+@.str.float = private unnamed_addr constant [7 x i8]  c"float \00", align 1
+@.str.double = private unnamed_addr constant [8 x i8]  c"double \00", align 1
 
-;@.str.char = private unnamed_addr constant [6 x i8] c"char\0A\00", align 1
-@.str.string = private unnamed_addr constant [5 x i8] c"str\0A\00", align 1
+;@.str.char = private unnamed_addr constant [6 x i8] c"char \00", align 1
+@.str.string = private unnamed_addr constant [5 x i8] c"str \00", align 1
 
 define internal void @_GLOBAL__sub_I_main.cc() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
 entry:

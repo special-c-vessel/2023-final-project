@@ -1,0 +1,34 @@
+store retval int 0 0x16d4b5058 0 0
+store num1 int 5 0x16d4b5054 23 7
+load num1 int 5 0x16d4b5054 24 7
+store arrCCCCC int 0 9 0x16d88a498 75 7
+store arrCCCCC int 1 8 0x16d88a49c 75 7
+store arrCCCCC int 2 7 0x16d88a4a0 75 7
+store arrCCCCC int 3 6 0x16d88a4a4 75 7
+store arrCCCCC int 4 5 0x16d88a4a8 75 7
+store arrJJJJJ int 0 0 444 0x16d88a380 79 7
+store arrJJJJJ int 0 1 555 0x16d88a384 79 7
+store arrJJJJJ int 1 0 222 0x16d88a3bc 79 7
+store arrJJJJJ int 2 0 777 0x16d88a3f8 79 7
+store arrKKKKK int 0 0 99 0x16d88a2cc 81 7
+store arrKKKKK int 0 1 88 0x16d88a2d0 81 7
+store arrKKKKK int 0 2 77 0x16d88a2d4 81 7
+store arrKKKKK int 1 0 66 0x16d88a2d8 81 7
+store arrKKKKK int 1 1 55 0x16d88a2dc 81 7
+store arrKKKKK int 1 2 44 0x16d88a2e0 81 7
+store arrfloat float 0 0 1.100000 0x16d888e7c 85 9
+store arrfloat float 0 1 1.200000 0x16d888e80 85 9
+store arrfloat float 0 2 1.300000 0x16d888e84 85 9
+store arrfloat float 1 0 2.100000 0x16d888ef4 85 9
+store arrfloat float 1 1 2.200000 0x16d888ef8 85 9
+store arrfloat float 1 2 2.300000 0x16d888efc 85 9
+store arrfloat float isArr 5 16 99999.773438 0x16d888e7c 87 19
+store sampsmapsamp int isArr 1 2 3 777777 0x16d4b857c 93 25
+store temparr2 int isArr 1 99 555555 0x16d4b75dc 96 19
+store temptemparr3 int isArr 2 3 55 22222 0x16d4b505c 98 26
+load temptemparr3 int isArr 2 3 55 22222 0x16d4b505c 99 7
+store num11 int 5 0x16d4b5050 102 7
+store num2 int 10 0x16d4b504c 103 7
+load num1 int 5 0x16d4b5054 106 10
+load num2 int 10 0x16d4b504c 106 17
+store num3 int 15 0x16d4b5048 106 8
