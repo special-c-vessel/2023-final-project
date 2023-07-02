@@ -1,5 +1,53 @@
-#include "replay_header.h"
-#include "DeclareData.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <unistd.h> // for sleep function
+#include <ncurses.h>
+
+using namespace std;
+
+class DeclareData {
+public:// Generator
+	DeclareData() {
+        name = "";
+        type = "";
+        value = "";
+        ptr = "";
+        line = "";
+
+        parentData = nullptr;
+        childData = nullptr;
+    }   
+public:// Nomal function
+	void LinkDecData(DeclareData* _decData) {
+        if(childData == nullptr) {
+            cout << "child is empty" << endl;
+            childData = _decData;
+        }
+        else {
+            cout << "child is not empty" << endl;
+            childData->LinkDecData(_decData);
+        }
+    }
+public:// Getter Setter function
+	DeclareData GetParentData();
+	void SetParentData(DeclareData _decData);
+private:
+	DeclareData* parentData;
+	DeclareData* childData;
+public:
+	string name;
+	string ctype;
+	string type;
+	string value;
+	string ptr;
+	string line;
+	string col;
+	int repeat = 1;
+    std::vector<int> repeatIndex;
+};
+
 
 // 오퍼레이션 기록 고조체
 struct OpData {
@@ -14,13 +62,14 @@ struct OpData {
 
 // 전역 함수 선언
 void FindRecData(int _line);
-void PrintRecData(DeclareData _data);
+void PrintRecData(DeclareData _data, int _codeIndex);
 void FindOpData(int _line);
 void PrintOpData(OpData _data);
 void PrintCode(int _codesIndex);
 string FindValueName(int _lineNum, string _valName);
 string FindValuePtr(int _lineNum, string _valName);
 string TrimStr(const string& str);
+bool isNumeric(std::string const &str);
 
 // 전역 변수 선언
 std::vector<DeclareData> recData;
@@ -33,6 +82,7 @@ int codesIndex = 1;
 int repeatCount = 1;
 int maxCodesIndex = 1;
 int startMainFuncIndex = 0;
+int prevRepeat;
 
 int main(int argc, char* argv[]) {
 
@@ -60,8 +110,8 @@ int main(int argc, char* argv[]) {
     while (getline(recFile, line)) {
         if(line == "declare") { // declare일 경우 변수 기록 객체를 생성 후 벡터에 푸시
             DeclareData data = DeclareData();
-            getline(recFile, data.ctype);
             getline(recFile, data.name);
+            getline(recFile, data.ctype);
             getline(recFile, data.value);
             getline(recFile, data.ptr);
             getline(recFile, data.line);
@@ -70,15 +120,9 @@ int main(int argc, char* argv[]) {
             lineRepeat[stoi(data.line)]++;
             data.repeat = lineRepeat[stoi(data.line)];
 
-            recData.push_back(data);
+            cout << "Repeat Count : " + to_string(lineRepeat[stoi(data.line)]) << endl;
 
-            cout << "Declare Data\n";
-            cout << "data ctype : " << data.ctype << endl;
-            cout << "data name : " << data.name << endl;
-            cout << "data ptr : " << data.ptr << endl;
-            cout << "data value : " << data.value << endl;
-            cout << "data line : " << data.line << endl;
-            cout << "data col : " << data.col << endl;
+            recData.push_back(data);
         }
         else if(line == "operation") { // operation일 경우 op 기록 객체를 생성 후 벡터에 푸시
             OpData data;
@@ -107,8 +151,13 @@ int main(int argc, char* argv[]) {
     
     string input;
 
-    codesIndex = startMainFuncIndex;
+    codesIndex = 0;
 
+    int maxRepeatIndex = 1;
+
+    for(int i = 0; i < recData.size(); i++) {
+        if(maxRepeatIndex < recData[i].repeat) maxRepeatIndex = recData[i].repeat;
+    }
     while (true) {
 
         std::cout << "\033[2J\033[1;1H";
@@ -116,21 +165,46 @@ int main(int argc, char* argv[]) {
         std::cout << "origin src\n\n";
         
         PrintCode(codesIndex);
-        
+        std::cout <<"Max repeat Index : " << maxRepeatIndex << endl;
+        std::cout <<"Repeat Index : " << repeatCount << endl;
         std::cout << "\n\nw : line up\ns : line down\na : repeat before\nd : repeat after\ndigit : move line number\n\ninput keyboard current code index " << codesIndex <<  ": ";
         std::cin >> input;
 
-        if(input == "s") {
-            codesIndex++; // 줄번호를 1을 추가
-            repeatCount = 1;
+        prevRepeat = repeatCount;
+        
+        if(!isNumeric(input)) {
+            if(input == "s") {
+                if(codesIndex < recData.size() - 1) codesIndex++; // 줄번호를 1을 추가
+                repeatCount = recData[codesIndex].repeat;
+                for(int i = 0; i < recData.size(); i++) {
+                    if(maxRepeatIndex < recData[i].repeat) maxRepeatIndex = recData[i].repeat;
+                }
+            }
+            else if(input == "w") {
+                if(codesIndex > 0)codesIndex--;
+                repeatCount = recData[codesIndex].repeat;
+                for(int i = 0; i < recData.size(); i++) {
+                    if(maxRepeatIndex < recData[i].repeat) maxRepeatIndex = recData[i].repeat;
+                }
+            }
+            else if(input == "a") {
+                if(repeatCount > 1) repeatCount--;
+            }
+            else if(input == "d") {
+                if(repeatCount < maxRepeatIndex) repeatCount++;
+            }
+            else {
+                std::cout << "undefined command" << endl;
+            }
         }
-        else if(input == "w") {
-            codesIndex--;
-            repeatCount = 1;
+        else {
+            for(int i = 0; i < recData.size(); i++) {
+                if(stoi(recData[i].line) == stoi(input) && recData[i].repeat == repeatCount){
+                    codesIndex = i;
+                    break;
+                }
+            }
         }
-        else if(input == "a") repeatCount--;
-        else if(input == "d") repeatCount++;
-        else codesIndex = stoi(input);
     }
 
     return 0;
@@ -146,20 +220,41 @@ void FindRecData(int _line) {
         // vector 안에 줄 번호에 해당하는 객체가 있다면 출력
         if (recDataLine == _line && _repeatCount == repeatCount) {
             std::cout << "\n\t\t------------------------------------------------------------------\n";
-            std::cout << "\n\n\t\t\t" << "\033[1m" << "\tAnalysis information" << "\033[0m" << "\n\n";
-            PrintRecData(recData[i]);
+            //std::cout << "\n\n\t\t\t" << "\033[1m" << "\tRepeat information" << "\033[0m" << "\n\n";
+            PrintRecData(recData[i], _line);
             std::cout << "\n\t\t------------------------------------------------------------------\n";
         }
     }
 }
 
 // 인자로 받은 RecData의 값을 출력해주는 함수
-void PrintRecData(DeclareData _data) {
-    std::cout << "\t\tval repeat index : " << _data.repeat << std::endl;
-    std::cout << "\t\tval name : " << _data.name << std::endl;
-    std::cout << "\t\tval ptr : " << _data.ptr << std::endl;
-    std::cout << "\t\tval value : " << _data.value << std::endl;
-    std::cout << std::endl;
+void PrintRecData(DeclareData _data, int _codeIndex) {
+    for(int i = 0; i < recData.size(); i++) {
+        // 줄 번호가 string으로 저장되있으므로 조건문 검사를 위해 int로 변환
+        int _recDataLine = std::stoi(recData[i].line);
+        int _repeatCount = recData[i].repeat;
+        // vector 안에 줄 번호에 해당하는 객체가 있다면 출력
+        if (_recDataLine == stoi(_data.line) && _repeatCount == repeatCount) {
+            std::cout << "\033[1m" << "\t\t\tval repeat index : " << recData[i].repeat << "\033[0m" << std::endl;
+            std::cout << "\033[1m" << "\t\t\tval name : " << recData[i].name << "\033[0m" << std::endl;
+            std::cout << "\033[1m" << "\t\t\tval type : " << recData[i].ctype << "\033[0m" << std::endl;
+            std::cout << "\033[1m" << "\t\t\tval ptr : " << recData[i].ptr << "\033[0m" << std::endl;
+            std::cout << "\033[1m" << "\t\t\tval value : " << recData[i].value << "\033[0m" << std::endl;
+            std::cout << "\033[1m" << "\t\t\tval line : " << recData[i].line << "\033[0m" << std::endl;
+            std::cout << std::endl;
+
+            //for(int j = _codeIndex; j >= 0; j--){
+                //if(recData[j].repeat == repeatCount && recData[i].line != recData[j].line && (prevRepeat - repeatCount) <= 1) {
+                    //std::cout << std::endl;
+                    //std::cout << "\t\t\tval name : " << recData[j].name << std::endl;
+                    //std::cout << "\t\t\tval value : " << recData[j].value << std::endl;
+                    //std::cout << "\t\t\tval line : " << recData[j].line << std::endl;
+                    //std::cout << std::endl;
+                //}
+            //}
+        }
+    }
+    
 }
 
 // 줄 번호로 OpData 객체를 찾는 함수
@@ -220,17 +315,25 @@ string TrimStr(const std::string& str) {
 }
 
 void PrintCode(int _codesIndex) {
-    if(_codesIndex > 10) {
-        int _startIndex = _codesIndex - 10;
-        int _endIndex = _codesIndex + 10;
+    std::cout << "line Number : " << stoi(recData[_codesIndex].line) << std::endl;
+    int _index = stoi(recData[_codesIndex].line);
+    if(_index > 10) {
+        int _startIndex = _index - 10;
+        int _endIndex = _index + 10;
         for(int i = _startIndex; i <= _endIndex; i++) {
             std::cout << i << "             ";
-            if(i == _codesIndex) {
+            if(i == _index) {
                 printf("\033[1C");
                 std::cout << "\033[1m"  << codes[i] << "\033[0m" << std::endl; // 소스 코드를 한 줄 읽어온다
                 
-                FindRecData(i); // 현재 줄번호에 해당하는 변수 기록이 있는지 확인
-                FindOpData(i); // 현재 줄번호에 해당하는 op 기록이 있는지 확인
+                std::cout << "\n\t\t------------------------------------------------------------------\n";
+                std::cout << "\n\n\t\t\t" << "\033[1m" << "\tAnalysis information" << "\033[0m" << "\n\n";
+                PrintRecData(recData[_codesIndex], _codesIndex);
+                //FindRecData(_codesIndex);
+                std::cout << "\n\t\t------------------------------------------------------------------\n";
+                //FindRecData(i); // 현재 줄번호에 해당하는 변수 기록이 있는지 확인
+                //FindOpData(i); // 현재 줄번호에 해당하는 op 기록이 있는지 확인
+                
             }
             else {
                 std::cout << codes[i] << std::endl;
@@ -238,20 +341,33 @@ void PrintCode(int _codesIndex) {
         }
     }
     else {
-        int _startIndex = _codesIndex;
-        int _endIndex = _codesIndex + 10;
+        int _startIndex = _index;
+        int _endIndex = _index + 10;
         for(int i = _startIndex; i <= _endIndex; i++) {
             std::cout << i << "             ";
-            if(i == _codesIndex) {
+            if(i == _index) {
                 printf("\033[1C");
                 std::cout << "\033[1m"  << codes[i] << "\033[0m" << std::endl; // 소스 코드를 한 줄 읽어온다
                 
-                FindRecData(i); // 현재 줄번호에 해당하는 변수 기록이 있는지 확인
-                FindOpData(i); // 현재 줄번호에 해당하는 op 기록이 있는지 확인
+                std::cout << "\n\t\t------------------------------------------------------------------\n";
+                std::cout << "\n\n\t\t\t" << "\033[1m" << "\tAnalysis information" << "\033[0m" << "\n\n";
+                PrintRecData(recData[_codesIndex], _codesIndex);
+                std::cout << "\n\t\t------------------------------------------------------------------\n";
+                //FindRecData(i); // 현재 줄번호에 해당하는 변수 기록이 있는지 확인
+                //FindOpData(i); // 현재 줄번호에 해당하는 op 기록이 있는지 확인
             }
             else {
                 std::cout << codes[i] << std::endl;
             }
         }
     }
+}
+
+bool isNumeric(std::string const &str)
+{
+    auto it = str.begin();
+    while (it != str.end() && std::isdigit(*it)) {
+        it++;
+    }
+    return !str.empty() && it == str.end();
 }

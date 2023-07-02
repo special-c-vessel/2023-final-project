@@ -36,9 +36,6 @@ void error(char *msg)
     exit(1);
 }
 
-// 이 부분에 sleep, cnt ++ 해서 멀티 쓰레드로 동작하도록, 내부 time cnt ++ % 2 하여
-// thread_Cnt가 0, 1을 반복해서 갖도록 한다 
-
 void * timeCount(void *a)
 {
     int cnt2 = 0;
@@ -90,7 +87,7 @@ int main(int argc, char *argv[])
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dis(-1, 1);
+    std::uniform_int_distribution<int> dis(-5, 5);
     
     pthread_t t0;
     pthread_t t1;
@@ -108,7 +105,7 @@ int main(int argc, char *argv[])
     serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
     serv_addr.sin_port = htons(atoi(argv[2]));
 
-    pthread_create(&t0, NULL, timeCount, NULL);
+    //pthread_create(&t0, NULL, timeCount, NULL);
     
     int cnt = 0;
 
@@ -124,23 +121,26 @@ int main(int argc, char *argv[])
             cout << "Input number: ";
             cin >> userInput;
 
+            if(userInput == -1)
+                break;
+
             if (str_len == -1)
                 printf("read error\n");
             
-            cout << cnt++ << "  서버에서 : " << message << "\n";
-            cout << "userInput: " << userInput << "\n";
-            cout << "thread_Cnt: " << thread_Cnt << "\n";
-            cout << "random : " << randomNum << "\n";
-            
-            int divNum = randomNum + thread_Cnt;
-            
-            if(divNum == 0)
-                    {
-                        cout << "error!!\n";
-                        throw std::overflow_error("Divide by zero exception");
-                    }
+            // cout << cnt++ << "  서버에서 : " << message << "\n";
+            // cout << "userInput: " << userInput << "\n";
+            // cout << "thread_Cnt: " << thread_Cnt << "\n";
+            // cout << "random : " << randomNum << "\n";
 
-            int result =  ((int)message[0] * userInput) / divNum;
+            int tempnum;
+            if(message[0] == '1')
+                tempnum = 1;
+            else  
+                tempnum = 0;
+            
+            int divNum = randomNum * tempnum;
+        
+            int result =  (userInput + randomNum) / divNum;
             
             cout << "result : " << result << "\n";
             cout << "normaly worked!!\n\n";
