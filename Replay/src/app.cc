@@ -15,17 +15,17 @@ App::~App() {
 
 void App::Run() {
     Init();
-    Render();
-    //while(!programOver) {
-        //Update();
-        //Render();
-        //Input();
-    //}
+
+    while(!programOver) {
+        Render();
+        Input();
+        Update();
+    }
 }
 
 void App::Init() {
     programOver = false;
-    codeMaxLine = 0;
+    currentLine = 0;
 
     // 소스 파일이 제대로 열렸는지 검사
     std::ifstream srcStream(srcFile);
@@ -61,25 +61,54 @@ void App::Init() {
     
     while (std::getline(srcStream, _line)) {
         codes.push_back(_line);
+        if(_line.find("main") != std::string::npos) {
+            currentLine = codes.size() - 1;
+        }
     }
 }
 
+// 사용자로부터 입력을 받는 함수
 void App::Input() {
     std::string input;
     std::cin >> input;
+    if(!IsNumber(input)) { // 사용자 입력 값이 숫자가 아닐 경우
+        if(input == "s") {
+            if(currentLine < codes.size() - 1) currentLine++;
+        }
+        else if(input == "w") {
+            if(currentLine > 0) currentLine--;
+        }
+        else {
+            std::cout << "undefined command" << std::endl;
+        }
+
+    }
+    else { // 사용자 입력 값이 숫자일 경우
+
+    }
 }
 
 void App::Update() {
-    for(int i = 0; i < records.size(); i++) {
-        PrintRecData(records[i]);
+    std::string _eraseStr = codes[currentLine];
+    _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
+    while(_eraseStr.size() < 2) {
+        currentLine++;
+        _eraseStr = codes[currentLine];
+        _eraseStr.erase(remove(_eraseStr.begin(), _eraseStr.end(), ' '), _eraseStr.end());
     }
-    programOver = true;
 }
 
 void App::Render() {
-    //std::cout << "\033[2J\033[1;1H"; // 화면에 출력된 정보들을 지운다.
-    for(int i = 0; i < codes.size(); i++) {
-        std::cout << codes[i] << std::endl;
+    std::cout << "\033[2J\033[1;1H"; // 화면에 출력된 정보들을 지운다.
+
+    int _startLine = (currentLine < CODE_SHOW_RANGE) 
+    ? 0 : currentLine - CODE_SHOW_RANGE; //코드 시작 줄 번호
+    int _endLine = ((currentLine + CODE_SHOW_RANGE) > codes.size() - 1) 
+    ? _endLine = codes.size() - 1 : _endLine = currentLine + CODE_SHOW_RANGE; // 코드 마지막 줄 번호
+
+    for(int i = _startLine; i <= _endLine; i++) {
+        if(i == currentLine) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
+        else std::cout << codes[i] << std::endl;
     }
 }
 
@@ -90,4 +119,12 @@ void App::PrintRecData(RecordData* _recordData) {
     std::cout << "\033[1m" << "\t\t\tval value : " << _recordData->ptr << "\033[0m" << std::endl;
     std::cout << "\033[1m" << "\t\t\tval line : " << _recordData->line << "\033[0m" << std::endl;
     std::cout << std::endl;
+}
+
+bool App::IsNumber(std::string const &_str) {
+    auto it = _str.begin();
+    while(it != _str.end() && std::isdigit(*it)) {
+        it++;
+    }
+    return !_str.empty() && it == _str.end();
 }
