@@ -1,34 +1,56 @@
-store retval int 0 0x16d4b5058 0 0
-store num1 int 5 0x16d4b5054 23 7
-load num1 int 5 0x16d4b5054 24 7
-store arrCCCCC int 0 9 0x16d88a498 75 7
-store arrCCCCC int 1 8 0x16d88a49c 75 7
-store arrCCCCC int 2 7 0x16d88a4a0 75 7
-store arrCCCCC int 3 6 0x16d88a4a4 75 7
-store arrCCCCC int 4 5 0x16d88a4a8 75 7
-store arrJJJJJ int 0 0 444 0x16d88a380 79 7
-store arrJJJJJ int 0 1 555 0x16d88a384 79 7
-store arrJJJJJ int 1 0 222 0x16d88a3bc 79 7
-store arrJJJJJ int 2 0 777 0x16d88a3f8 79 7
-store arrKKKKK int 0 0 99 0x16d88a2cc 81 7
-store arrKKKKK int 0 1 88 0x16d88a2d0 81 7
-store arrKKKKK int 0 2 77 0x16d88a2d4 81 7
-store arrKKKKK int 1 0 66 0x16d88a2d8 81 7
-store arrKKKKK int 1 1 55 0x16d88a2dc 81 7
-store arrKKKKK int 1 2 44 0x16d88a2e0 81 7
-store arrfloat float 0 0 1.100000 0x16d888e7c 85 9
-store arrfloat float 0 1 1.200000 0x16d888e80 85 9
-store arrfloat float 0 2 1.300000 0x16d888e84 85 9
-store arrfloat float 1 0 2.100000 0x16d888ef4 85 9
-store arrfloat float 1 1 2.200000 0x16d888ef8 85 9
-store arrfloat float 1 2 2.300000 0x16d888efc 85 9
-store arrfloat float isArr 5 16 99999.773438 0x16d888e7c 87 19
-store sampsmapsamp int isArr 1 2 3 777777 0x16d4b857c 93 25
-store temparr2 int isArr 1 99 555555 0x16d4b75dc 96 19
-store temptemparr3 int isArr 2 3 55 22222 0x16d4b505c 98 26
-load temptemparr3 int isArr 2 3 55 22222 0x16d4b505c 99 7
-store num11 int 5 0x16d4b5050 102 7
-store num2 int 10 0x16d4b504c 103 7
-load num1 int 5 0x16d4b5054 106 10
-load num2 int 10 0x16d4b504c 106 17
-store num3 int 15 0x16d4b5048 106 8
+store retval int 0 0x16ce1384c 0 0
+store num_int int 5 0x16ce13848 24 7
+load num_int int 5 0x16ce13848 25 10
+store num_int int 6 0x16ce13848 25 10
+store num_float float 123.150002 0x16ce13844 27 9
+load num_int int 6 0x16ce13848 28 16
+load num_float float 123.150002 0x16ce13844 28 13
+store num_float float 129.149994 0x16ce13844 28 13
+store num_llint long long int 12421522512 0x16ce13838 30 17
+store num_llint long long int 9999999999999999 0x16ce13838 31 13
+store chr char G 0x16ce13837 33 8
+store chr char Q 0x16ce13837 34 7
+load num_int int 6 0x16ce13848 36 7
+load num_float float 129.149994 0x16ce13844 36 17
+store num_llint long long int 22 0x16ce13838 42 15
+store arr_int int isArr 0 33 0x16ce1a430 45 7
+store arr_int int isArr 1 44 0x16ce1a434 45 7
+store arr_int int isArr 2 55 0x16ce1a438 45 7
+store arr_int int isArr 3 66 0x16ce1a43c 45 7
+store arr_int int isArr 4 77 0x16ce1a440 45 7
+store arr_int int isArr 5 88 0x16ce1a444 45 7
+store arr_int int isArr 30 99 0x16ce1a430 46 15
+store arr_iint int isArr 0 0 123 0x16ce19620 48 7
+store arr_iint int isArr 0 1 456 0x16ce19624 48 7
+store arr_iint int isArr 0 2 789 0x16ce19628 48 7
+store arr_iint int isArr 1 0 321 0x16ce19698 48 7
+store arr_iint int isArr 1 1 654 0x16ce1969c 48 7
+store arr_iint int isArr 1 2 987 0x16ce196a0 48 7
+store arr_iint int isArr 15 16 44444 0x16ce19620 49 20
+store arr_iint int isArr 15 16 99999 0x16ce19620 50 20
+store arr_iiiint int isArr 0 0 0 -1 0x16ce13860 54 7
+store arr_iiiint int isArr 0 0 1 -2 0x16ce13864 54 7
+store arr_iiiint int isArr 0 0 2 -3 0x16ce13868 54 7
+store arr_iiiint int isArr 1 0 -4 0x16ce138d8 54 7
+store arr_iiiint int isArr 1 1 -5 0x16ce138dc 54 7
+store arr_iiiint int isArr 1 2 -6 0x16ce138e0 54 7
+store arr_iiiint int isArr 9 10 11 55555 0x16ce13860 55 25
+store arr_charp char isArr 10 B 0x16ce13852 58 17
+load arr_iint int isArr 15 16 99999 0x16ce19620 62 7
+store arr_iint int isArr 20 21 88888 0x16ce19620 64 22
+store tempfucn_int.addr int 12 0x16ce13788 0 0
+store tempfunc_float.addr float 24.444401 0x16ce13784 0 0
+store tempfucn_int.addr int 125 0x16ce13788 12 16
+load tempfucn_int.addr int 125 0x16ce13788 13 21
+load tempfunc_float.addr float 24.444401 0x16ce13784 13 18
+store tempfunc_float.addr float 149.444397 0x16ce13784 13 18
+store tempfunc_arr int isArr 0 12 0x16ce1378c 15 7
+store tempfunc_arr int isArr 1 13 0x16ce13790 15 7
+store tempfunc_arr int isArr 2 14 0x16ce13794 15 7
+store tempfunc_arr int isArr 3 15 0x16ce13798 15 7
+store tempfunc_arr int isArr 4 16 0x16ce1379c 15 7
+store tempfunc_arr int isArr 5 17 0x16ce137a0 15 7
+store tempfunc_arr int isArr 14 9876543 0x16ce1378c 16 20
+load tempfucn_int.addr int 125 0x16ce13788 18 10
+store funcvalue int 125 0x16ce13830 71 7
+load retval int 0 0x16ce1384c 73 1
