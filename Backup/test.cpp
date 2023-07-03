@@ -7,109 +7,67 @@
 
 using namespace std;
 
-// vector 선언, 할당, load
+int tempfunc11111(int tempfucn_int, float tempfunc_float = 24.4444)
+{
+  tempfucn_int = 125;
+  tempfunc_float += tempfucn_int;
 
-// string
+  int tempfunc_arr[15] = {12, 13, 14, 15, 16, 17};
+  tempfunc_arr[14] = 9876543;
 
-// 구조체
+  return tempfucn_int;
+}
 
-// struct tempstruct {
-//   int tempint;
-//   float tempfloat;
-// };
 
-int main() {
+int main()
+{
+  int num_int = 5;
+  num_int++;
 
-  int num1 = 5;
-  if (num1 == 99) {
-    num1 = 200;
+  float num_float = 123.15;
+  num_float += num_int;
+
+  long long int num_llint = 12421522512;
+  num_llint = 9999999999999999;
+
+  char chr = 'G';
+  chr = 'Q';
+
+  if (num_int + num_float == 1111111)
+  {
+    num_llint = 11;
+  }
+  else
+  {
+    num_llint = 22;
   }
 
-  // FILE *ffffffile = fopen("example.txt", "w+");
+  int arr_int[50] = { 33, 44, 55, 66, 77, 88 };
+  arr_int[30] = 99;
 
-  // ofstream fout;
-  // fout.open("helloworld.txt");
+  int arr_iint[30][30] = { {123, 456, 789}, {321, 654, 987}, };
+  arr_iint[15][16] = 44444;
+  arr_iint[15][16] = 99999;
 
-  // // string str = "ff";
-  // string str2 = "bb";
 
-  // int num1;
-  // fout << str2;
+  // int arr_iiiint[10][20][30] = {{{-1, -2, -3}, {-4, -5, -6}, {-77, -88, -99}}};
+  int arr_iiiint[10][20][30] = { {{-1, -2, -3}, {-4, -5, -6}} };
+  arr_iiiint[9][10][11] = 55555;
 
-  // string ssttrr = "hello, world!";
+  char arr_charp[] = "hello, World!";
+  arr_charp[10] = 'B';
 
-  // string tempstr = "hello, world!";
-  // char tempchararr[] = "hello, world!";
+  cout << arr_charp << "\n";
 
-  // fprintf(ffffffile, "%s\n", tempchararr);
-
-  // num1 = 111111;
-  // fprintf(ffffffile, "%d\n", num1);
-
-  // int nnuumm = 99999;
-  // int intarr[7][4][500] = {1, 2, 3};
-
-  // intarr[2][1][150] = 55555;
-
-  // if(intarr[1][2][3] == 444)
-  // {
-  //   intarr[1][2][3] = 333333;
-  // }
-  // else
-  // {
-  //   intarr[6][3][250] = 111111;
-  // }
-
-  // float floatarr[124] = {1, 2, 3};
-
-  // floatarr[12] = 125415.12512;
-
-  // char chararr[] = "hello world!";
-
-  // chararr[3] = 'A';
-
-  int arr[] = {11111, 22222, 33333, 44444, 55555};
-
-  int arrAAAAA[8] = {11, 22, 33, 44, 55, };
-
-  int arrCCCCC[15] = {9, 8, 7, 6, 5, };
-
-  int arrDDDDD[5][5] = {{3, 3, 3,}, {3, 3, 3,}, {4, 4, 4},};
-
-  int arrJJJJJ[3][15] = {{444, 555},  {222}, {777}};
-
-  int arrKKKKK[15][3] = {{99, 88, 77}, {66, 55, 44}};
-
-  int arrLLLLL[20][20];
-
-  float arrfloat[30][30] = {{1.1, 1.2, 1.3}, {2.1, 2.2, 2.3}};
-
-  arrfloat[5][16] = 99999.777;
-
-  // int temptemptemptemptemp[100][200][300]; // = {{{11, 22, 33, 111, 222, 333, 444}, {44, 55, 66},}, {{66, 77, 88}}};
-  // temptemptemptemptemp[5][6][7] = 222222;
-
-  int sampsmapsamp[100][200][50] = {{{11, 22, 33, 111, 222, 333, 444}, {44, 55, 66},}, {{66, 77, 88}}};
-  sampsmapsamp[1][2][3] = 777777;
-
-  int temparr2[5][200];
-  temparr2[1][99] = 555555;
-  int temptemparr3[6][4][100];
-  temptemparr3[2][3][55] = 22222;
-  if (temptemparr3[2][3][55] == 11111) {
+  if (arr_iint[15][16] == 99999)
+  {
+    arr_iint[20][21] = 88888;
+  }
+  else
+  {
+    arr_iint[20][21] = 77777;
   }
 
-  int num11 = 5;
-  int num2 = 10;
-  int num3;
+  int funcvalue = tempfunc11111(12);
 
-  num3 = num1 + num2;
-
-  // int num1 = 5;
-  // float num2 = 111.5234;
-
-  // vector<int> v;
-  // v.push_back(1);
-
-  return 0;
 }
