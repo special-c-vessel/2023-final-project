@@ -110,6 +110,10 @@ void App::Render() {
         if(i == currentLine) std::cout << "\033[1m" << ">>>>   " << codes[i] << "\033[0m" <<std::endl;
         else std::cout << codes[i] << std::endl;
     }
+
+    std::cout << std::endl;
+
+    AddRecordTable(currentLine);
 }
 
 void App::PrintRecData(RecordData* _recordData) {
@@ -127,4 +131,35 @@ bool App::IsNumber(std::string const &_str) {
         it++;
     }
     return !_str.empty() && it == _str.end();
+}
+
+void App::AddRecordTable(int _line) {
+    if(FindRecord(_line)) {
+        ConsoleTable ct(BASIC);
+        ct.SetPadding(1);
+        ct.AddColumn("Name");
+        ct.AddColumn("Type");
+        ct.AddColumn("Value");
+        ct.AddColumn("Ptr");
+        ct.AddColumn("Line");
+        for(int i = 0; i < records.size(); i++) {
+            if(std::stoi(records[i]->line) == _line) {
+                ConsoleTableRow* entry = new ConsoleTableRow(5);
+                entry->AddEntry(records[i]->name, 0);
+                entry->AddEntry(records[i]->type, 1);
+                entry->AddEntry(records[i]->value, 2);
+                entry->AddEntry(records[i]->ptr, 3);
+                entry->AddEntry(records[i]->line, 4);
+                ct.AddRow(entry);
+            }
+        }
+        ct.PrintTable();
+    }
+}
+
+bool App::FindRecord(int _line) {
+    for(int i = 0 ; i < records.size(); i++) {
+        if(std::stoi(records[i]->line) == _line) return true;
+    }
+    return false;
 }

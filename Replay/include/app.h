@@ -6,7 +6,7 @@
 #include <ncurses.h>
 
 #include "record_data.h"
-
+#include "console_table.h"
 #define CODE_SHOW_RANGE 10
 
 class App {
@@ -23,6 +23,8 @@ public: // main framework function
 private: // app class function
     void PrintRecData(RecordData*);
     bool IsNumber(std::string const&);
+    void AddRecordTable(int);
+    bool FindRecord(int _line);
 public: // main framework variable
     char* srcFile;
     char* recordFile;
