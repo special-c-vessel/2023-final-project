@@ -1,6 +1,0 @@
-aaaaa	(name)
-12	(line)
-17	(col)
-13	(value)
-0x1124	(pointer)
-
