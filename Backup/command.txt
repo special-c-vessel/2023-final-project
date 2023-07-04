@@ -29,8 +29,9 @@ clang -S -emit-llvm -fno-discard-value-names client.cc
 /Users/han/GitHub/llvm-project/build/bin/lli client.ll 127.0.0.1 6
 
 clang -S -emit-llvm -fno-discard-value-names test.cpp -g
-./Input_fstream2_upgrade
+./Input_fstream2            
 ./Input_fstream3
 /Users/han/GitHub/llvm-project/build/bin/lli record_result.ll
 
+clang -S -emit-llvm -fno-discard-value-names test.cpp -g;g++ curly_record2.cpp -o curly_record2;./curly_record2;g++ curly_record3.cpp -o curly_record3;./curly_record3;/Users/han/GitHub/llvm-project/build/bin/lli record_result.ll
 
