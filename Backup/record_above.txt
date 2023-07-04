@@ -17,7 +17,7 @@
 @tempint = global i32 0, align 4
 @tempfloat = global float 0.000000e+00, align 4
 
-; 변수명 출력
+; 변수명 출력	// 지우면 curly_record3.cpp 에서 탐지 못함, 변수명 이후부터 쓰기 시작하기 때문
 @__const.main.var_1_name = private unnamed_addr constant [10 x i8] c"randomNum\00", align 1
 @__const.main.var_2_name = private unnamed_addr constant [10 x i8] c"userInput\00", align 1
 @__const.main.var_3_name = private unnamed_addr constant [11 x i8] c"thread_Cnt\00", align 1
@@ -27,11 +27,16 @@
 @__const.main.var_7_name = private unnamed_addr constant [7 x i8] c"result\00", align 1
 @__const.main.var_8_name = private unnamed_addr constant [8 x i8] c"tempnum\00", align 1
 
+; userKeyWord
+@.str.userKeyWord_isArr = private unnamed_addr constant [7 x i8] c"isArr \00", align 1
 
-; op type
+
+
+; keyWord
 @.str.op_declare = private unnamed_addr constant [9 x i8] c"declare \00", align 1
 @.str.op_store = private unnamed_addr constant [7 x i8] c"store \00", align 1
 @.str.op_call = private unnamed_addr constant [6 x i8] c"call \00", align 1
+@.str.op_load = private unnamed_addr constant [6 x i8] c"load \00", align 1
 
 @.str.op_operation = private unnamed_addr constant [11 x i8] c"operation\0A\00", align 1
 @.str.op_add = private unnamed_addr constant [5 x i8] c"add\0A\00", align 1
