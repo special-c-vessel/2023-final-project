@@ -485,6 +485,7 @@ int main()
         else if (tempv[i] == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc")
         {
           //string 사용시 
+
         }
 
         // 배열의 store, load 인 경우, 기록을 위한 작업 진행
@@ -535,7 +536,7 @@ int main()
                 if (tempStrForCompareResetArrIndex != vectorForResetArr.back().first)
                 {
                   cout << "tempStrForCompareResetArrIndex : " << tempStrForCompareResetArrIndex << " vectorForResetArr.back().first : " << vectorForResetArr.back().first << "              5555555555555\n";
-                  while (!vectorForResetArr.empty())
+                  // while (!vectorForResetArr.empty()) // 
                   {
                     vectorForResetArr.pop_back();
                   }
