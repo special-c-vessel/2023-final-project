@@ -29,8 +29,7 @@
 
 ; userKeyWord
 @.str.userKeyWord_isArr = private unnamed_addr constant [7 x i8] c"isArr \00", align 1
-
-
+@.str.userKeyWord_isString = private unnamed_addr constant [10 x i8] c"isString \00", align 1
 
 ; keyWord
 @.str.op_declare = private unnamed_addr constant [9 x i8] c"declare \00", align 1
@@ -44,7 +43,7 @@
 @.str.op_sub = private unnamed_addr constant [5 x i8] c"sub\0A\00", align 1
 
 ; 출력문 형식
-@.str.print_str = private unnamed_addr constant [4 x i8] c"%s \00", align 1
+@.str.print_string = private unnamed_addr constant [4 x i8] c"%s \00", align 1
 
 ; line, col 사용을 위해
 @.str.print_int = private unnamed_addr constant [4 x i8] c"%d \00", align 1
@@ -95,13 +94,15 @@ entry:
 @.str.i8 = private unnamed_addr constant [6 x i8]  c"char \00", align 1
 @.str.i16 = private unnamed_addr constant [7 x i8]  c"short \00", align 1
 @.str.i32 = private unnamed_addr constant [5 x i8]  c"int \00", align 1
-@.str.i64 = private unnamed_addr constant [15 x i8] c"long long int \00", align 1
+@.str.i32p = private unnamed_addr constant [6 x i8]  c"int* \00", align 1
+@.str.i32pp = private unnamed_addr constant [7 x i8]  c"int** \00", align 1
+@.str.i64 = private unnamed_addr constant [15 x i8] c"long_long_int \00", align 1
 
 @.str.float = private unnamed_addr constant [7 x i8]  c"float \00", align 1
 @.str.double = private unnamed_addr constant [8 x i8]  c"double \00", align 1
 
 ;@.str.char = private unnamed_addr constant [6 x i8] c"char \00", align 1
-@.str.string = private unnamed_addr constant [5 x i8] c"str \00", align 1
+@.str.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
 
 define internal void @_GLOBAL__sub_I_main.cc() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
 entry:
@@ -124,8 +125,16 @@ declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222
 declare void @llvm.memcpy.p0i8.p0i8.i64_curly(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
 
 
+; for string to char arr func
+declare i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4copyEPcmm_curly(%"class.std::__1::basic_string"*, i8*, i64, i64) #555555
+
 
 attributes #100009 = { argmemonly nofree nounwind willreturn }
+attributes #555555 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 
 ;======================================================================
 ;======================================================================
+
+
+
+
