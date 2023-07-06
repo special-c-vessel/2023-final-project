@@ -1,46 +1,71 @@
 
-  /*
-  ==========================================================================================
-  ==========================================================================================
+/*
+==========================================================================================
+==========================================================================================
 
-  가능한 것
-  int, short, long long int, char 변수의 store, load 기록 가능
-  int, short, long long int, char 타입의 배열의 stroe, load 기록 가능
-  int, short, long long int, char 타입의 8 이상 크기를 갖는 배열의 초기 할당값 기록 가능
+가능한 것
+int, short, long long int, char 변수의 store, load 기록 가능
+int, short, long long int, char 타입의 배열의 stroe, load 기록 가능
+int, short, long long int, char 타입의 8 이상 크기를 갖는 배열의 초기 할당값 기록 가능
 
-  불가능한 것 
-  int, short, long long int, char 타입의 8 이하 크기를 갖는 배열의 초기 할당값 기록 불가능 
+string 타입의 직접 접근 store, load 가능  ex) str[3] = 3, if(str[2] == 'G')   // -> 포인터 모두 같게 나옴
 
-  해야할 것
-    정리
-      코드 함수화
-      코드 주석 추가
-      코드 정리
+불가능한 것
+int, short, long long int, char 타입의 8 이하 크기를 갖는 배열의 초기 할당값 기록 불가능
 
-    기능
-      전역 변수 및 배열
-      string, vector
-      구조체
+해야할 것
 
-      invoke(cin, string 등)
+3차원 배열 초기 할당 다르게 나옴
 
-      기록 실행시 타겟 파일 입력 할 수 있도록 변경
-      기록에 사용하는 함수명 중복되지 않도록 유니크하게 변경  (현재 타겟 cpp에서 fstream 사용시 에러 발생)
+  정리
 
-    
+  기능
+    전역 변수 및 배열
+      - 전역 선언시 변수명 작성할 수 있도록 record_strfile.txt 작성 함수 수정
 
-  ==========================================================================================
-  ==========================================================================================
-  
-  메모 이것저것
+    string
+      - _ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEED1Ev   string 소멸자
+      - _ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc string 생성자   기록 가능  @@@@@@@@@@@
 
-  변수명 가장 앞에 @ 이 붙은 경우 전역으로 생성된 것 -> 변수명 출력 시 현재 함수 추가할 필요 없음
+      - _ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc string 재할당                   기록 가능  @@@@@@@@@@@
+      - _ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEixEm str[2] = 'A' 의 경우 사용
 
-  1. 전역 선언시 변수명 작성할 수 있도록 record_strfile.txt 작성 함수 수정
-  2. 배열
+      - _ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_   string 비교시 사용
+      - _ZNSt3__111char_traitsIcE6lengthEPKc
+
+      - _ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv  인자로 받은 string의 length 가져오는 함수  
+
+      - _ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv
+
+      - 함수에 기록 코드 넣는 방식으로
+
+    vector
+    구조체
+    포인터 -> 타입 기록 시 *빼고 p로 대체, above에 @.str.i32p, @.str.i32pp 추가, 다른 타입도 추가해야함, 3차 포이터까지 필요한지 질문
 
 
-  */
+    기록 실행시 타겟 파일 입력 할 수 있도록 변경
+    기록에 사용하는 함수명 중복되지 않도록 유니크하게 변경  (현재 타겟 cpp에서 fstream 사용시 에러 발생)
+
+
+    printf 를 사용한 기록
+
+  배열 선언 시 할당 크기 기록 &&&&&&&&&&&&& 23.07.05
+  깃허브 사용방법 업데이트
+
+
+
+==========================================================================================
+==========================================================================================
+
+메모 이것저것
+
+변수명 가장 앞에 @ 이 붙은 경우 전역으로 생성된 것 -> 변수명 출력 시 현재 함수 추가할 필요 없음
+
+1.
+
+
+*/
 
 #include <fstream>
 #include <iostream>
@@ -49,7 +74,8 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+using namespace std;;
+
 
 string output_result_FileName("record_result.ll"); // 실행시켜야 할 파일 이름, record_AddPrintf와 record_strfile을 결합한 것
 fstream output_result_fstream;
@@ -69,11 +95,13 @@ string ColNum;
 string currentFunc = "Global"; // 현재 함수
 string currentFunc_returnType = "";
 
-vector<vector<string> > previoustempv;
+vector<vector<string> > previoustempv;    // 배열 선언 후, load, stroe 사용 시 차수 저장을 위한 벡터
 
 stack<string> stackForResetArr;
 
-vector<pair<string , string> > vectorForResetArr;
+pair<string , string> pairForStringArrAndName;       // string 의 store 또는 load 시 변수명과 접근 차수 기록을 위한 페어
+
+vector<pair<string , string> > vectorForResetArr;   // 배열의 선언 및 초기화 시 차주 저장을 위한 벡터
 string var_name_ForResetArr = "";
 
 int globalNum = 0;
@@ -81,12 +109,16 @@ int globalNum = 0;
 void findLineAndColNumber(string , string);
 void addPrintfInstruction(string , string , string , string , string);
 void writeTxtFile(string);
-void writeArrayIndex(bool isArr, bool isResetArr);
+void writeArrayIndex(bool isArr , bool isResetArr);
 
 // 변수의 기록을 위한 (코드를 삽입하는) 함수
 void addPrintfInstruction(string var_name , string var_type , string debugNum , string func_name , string keyWord) // string currentFunc // string var_type
-{                                                                                                              //    %randomNum,       i32
+{
+  //    %randomNum,       i32
   globalNum++;
+  cout << "addPrintfInstruction start!!!!   globalNum count : " << globalNum << "  ################################ \n";
+
+  cout << "var_name is " << var_name << "  |||||  " << "var_type is " << var_type << "  ||||||  " << "\n";
 
   int pointerSize = var_name.size() - 1;
   int templocalNum = 1;
@@ -98,6 +130,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
   bool isArr = false;         // 배열인 경우              arr[1][2] = 5;
   bool isResetArr = false;    // 배열의 초기값 할당인 경우   int arr[5][5] = {{1, 2}, {3, 4}};
+  bool isString = false;      // string 인 경우 
 
   // 각 타입에 맞게 타입 출력 길이를 설정
   if (var_type == "i8")       // char
@@ -153,7 +186,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
       var_type_for_arr += previoustempv[0][tempcnt];
       var_type_for_arr += " ";
     }
-    
+
     var_type_for_arr += previoustempv[0][tempcnt];                                  // 마지막 i32]]], 저장
     var_type_for_arr = var_type_for_arr.substr(0 , var_type_for_arr.size() - 1);    // , 제거 -> [10 x [20 x [30 x i32]]] 
     cout << "previoustempv 's var_type is : " << var_type_for_arr << "\n";          // 
@@ -165,8 +198,19 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
   // %10 = bitcast [3 x [15 x i32]]* %arrJJJJJ to i8*   
   else if (var_name[1] == '0' || var_name[1] == '1' || var_name[1] == '2' || var_name[1] == '3' || var_name[1] == '4' || var_name[1] == '5' || var_name[1] == '6' || var_name[1] == '7' || var_name[1] == '8' || var_name[1] == '9')
   {
-    isResetArr = true;  
+
+    isResetArr = true;
     // cout << "isResetArr 's type : " << var_type << "\n";
+  }
+
+  else if (var_name.substr(1 , 4) == "call")
+  {
+    var_name = pairForStringArrAndName.first;     // %tempstr11111,
+    // var_type = "string";
+    // var_type_length = 5;
+    // var_type_print_length = 4;
+
+    isString = true;
   }
 
   string tempsVarName = var_name.substr(1);                     // %var_name, -> var_name,
@@ -185,7 +229,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
   }
 
   // 배열의 초기 할당의 기록을 위한 작업
-  if (isResetArr)   
+  if (isResetArr)
   {
     // vectorForResetArr에 저장된 var_name 과 store의 var_name이 같을 때    
     // tempsVarName 재설정
@@ -199,7 +243,11 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
   // 키워드 변수명 변수타입 기록
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
+
+  if(isString)
+    output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+  else
+    output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
 
   // ===================== 함수로 만들기 ============================================================
   if (isArr)
@@ -214,7 +262,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     {
       string previoustempv_arrnum = previoustempv[i][previoustempv[i].size() - 4];
       output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << previoustempv_arrnum.substr(0 , previoustempv_arrnum.size() - 1) << ")\n";
-      cout << previoustempv_arrnum << " " ;
+      cout << previoustempv_arrnum << " ";
     }
     cout << "\n";
     // 저장된 차수 모두 삭제
@@ -227,7 +275,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
   {
     // 배열의 차수를 출력하겠다는 의미로 isArr를 출력
     output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.userKeyWord_isArr, i32 0, i32 0))\n";
-    
+
     cout << "---------- print vectorForResetArr_arrnum  : ";
 
 
@@ -235,18 +283,26 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     {
       string vectorForResetArr_arrnum = vectorForResetArr[i].second;
       output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << vectorForResetArr_arrnum << ")\n";
-      cout << vectorForResetArr_arrnum << " " ;
+      cout << vectorForResetArr_arrnum << " ";
     }
     cout << " and ";
     cout << vectorForResetArr.back().second << " is removed --------\n";
     vectorForResetArr.pop_back();
     var_type_for_arr = var_type;
   }
+  else if (isString)
+  {
+    var_type_for_arr = "%\"class.std::__1::basic_string\"";
+    output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << pairForStringArrAndName.second.substr(0, pairForStringArrAndName.second.size() - 1) << ")\n";
+  }
+
   else
   {
     // var_name 가 arrayidx 가 아닌 경우
     var_type_for_arr = var_type;
   }
+
+  
 
   // 값 포인터 라인 컬럼 기록
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
@@ -259,7 +315,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
   return;
 }
 
-void writeArrayIndex(bool isArr, bool isResetArr)
+void writeArrayIndex(bool isArr , bool isResetArr)
 {
 
   return;
@@ -339,6 +395,8 @@ void writeTxtFile(string txtName)
 
 int main()
 {
+  cout << "***************************   record 2 start   ***************************\n";
+
   string line;
   string line2;
   vector<string> v;
@@ -396,6 +454,22 @@ int main()
         {
           // 함수 시작에 loadfile 추가
           output_printf_fstream << "%loadfile = load %struct.__sFILE*, %struct.__sFILE** @file, align 8\n";
+
+          cout << currentFunc << "\n\n\n";
+          if (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc_"
+          ||  currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc_"
+          )
+          {
+            cout << "find string reset func ))))))))))))))))))))))))))\n";
+
+            output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
+            output_printf_fstream << "%temp_var_12_3 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+            output_printf_fstream << "%call7 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s)\n";
+            output_printf_fstream << "%temp_var_12_5 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* %this)\n";
+            output_printf_fstream << "%temp_var_12_6 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 99999)\n";
+            output_printf_fstream << "%temp_var_12_7 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 999999)\n";
+          }
+
         }
 
         // 변수의 할당 및 불러오기, store 및 load 일 때 새로 할당된 값 또는 불러온 값을 기록
@@ -405,18 +479,26 @@ int main()
           if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
             continue;
 
+          // string type일 때 건너뜀
+          if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack,")
+            continue;
+
           string var_name;    // 변수 이름
-          string var_type;    // 변수 타임
+          string var_type;    // 변수 타입
           string debugNum;    // 현재 변수의 line, column 정보 
 
           if (tempv[i] == "store")    // store 일 경우, 지정된 형식에서 값을 가져옴
           {
+            cout << "find store  !!!!\n";
+
             var_name = tempv[6];  // %randomNum,
             var_type = tempv[3];  // i32  포인터 타입은 * 만 붙히면 됨
             debugNum = tempv[10]; // !864
           }
           else if (tempv[i] == "load")  // load 일 경우, 지정된 형식에서 값을 가져와 addPrintfInstruction 함수에 사용할 수 있도록 갈무리
           {
+            cout << "find load  !!!!!!!\n";
+
             string temp_var_type = tempv[5];
 
             var_type = temp_var_type.substr(0 , temp_var_type.size() - 1);
@@ -482,10 +564,14 @@ int main()
           }
         }
 
-        else if (tempv[i] == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc")
+        else if (tempv[4] == "call" && tempv[i] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEixEm(%\"class.std::__1::basic_string\"*")
         {
-          //string 사용시 
+          //string 을 배열로 접근할 때, ex) str[3] = 5;
+          pairForStringArrAndName.first = tempv[i + 1];
+          pairForStringArrAndName.second = tempv[i + 3];
 
+          cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
+          cout << pairForStringArrAndName.first << " " << pairForStringArrAndName.second << "\n";
         }
 
         // 배열의 store, load 인 경우, 기록을 위한 작업 진행
@@ -494,7 +580,7 @@ int main()
           // %arrayidx = getelementptr inbounds 의 형식일 때
           // 배열의 store 또는 load
           string tempStrForCompareArrayidx = tempv[2].substr(1 , 8);
-          if (tempStrForCompareArrayidx == "arrayidx")      
+          if (tempStrForCompareArrayidx == "arrayidx")
           {
             // cout << tempv[2] << " " << tempv[tempv.size() - 4] << "\n";
 
@@ -525,11 +611,11 @@ int main()
               {
                 if (tempv[j][0] == '%')
                 {
-                  tempStrForCompareResetArrIndex = tempv[j].substr(0 , tempv[j].size() - 1); 
+                  tempStrForCompareResetArrIndex = tempv[j].substr(0 , tempv[j].size() - 1);
                   break;
                 }
               }
-              
+
               if (!vectorForResetArr.empty()) // 비어 있지 않을 때
               {
                 // 연결되어 있지 않다면 (연결된 차수가 아니라면) 새로운 입력을 받기 위해 기존 값들 모두 제거
@@ -542,7 +628,7 @@ int main()
                   }
                 }
               }
-              
+
               // 변수명과 차수 저장, (%12, 0)
               vectorForResetArr.push_back(make_pair(tempv[2] , tempv[tempv.size() - 4].substr(0 , tempv[tempv.size() - 4].size() - 1)));
               cout << vectorForResetArr.back().first << "    " << vectorForResetArr.back().second << "   stored!!!!!!\n";
@@ -572,5 +658,7 @@ int main()
   output_printf_fstream.close();
   targetfile_fstream.close();
   output_result_fstream.close();
+
+  cout << "***************************   record 2 end     ***************************\n";
   return 0;
 }
