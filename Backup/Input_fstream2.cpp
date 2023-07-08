@@ -33,7 +33,7 @@ int, short, long long int, char 타입의 8 이하 크기를 갖는 배열의 �
       - _ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_   string 비교시 사용
       - _ZNSt3__111char_traitsIcE6lengthEPKc
 
-      - _ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv  인자로 받은 string의 length 가져오는 함수  
+      - _ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv  인자로 받은 string의 length 가져오는 함수
 
       - _ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv
 
@@ -73,6 +73,7 @@ int, short, long long int, char 타입의 8 이하 크기를 갖는 배열의 �
 #include <stack>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;;
 
@@ -92,7 +93,7 @@ fstream str_fstream;
 string LineNum; // 코드의 위치를 기록하기 위한 변수
 string ColNum;
 
-string currentFunc = "Global"; // 현재 함수
+string currentFunc = "Global_"; // 현재 함수
 string currentFunc_returnType = "";
 
 vector<vector<string> > previoustempv;    // 배열 선언 후, load, stroe 사용 시 차수 저장을 위한 벡터
@@ -174,7 +175,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     cout << "find arrayidx !!!!!!!!!!!!!!! \n";
 
     // var_name 을 배열 이름으로 설정하기 위해  previoustempv에서 배열 변수명 가져옴 
-    var_name = previoustempv[0][previoustempv[0].size() - 8];
+    var_name = previoustempv[0][previoustempv[0].size() - 8 ];
     cout << "previoustempv 's var_name is : " << var_name << "\n";
 
     // var_type 변경, 배열 크기에 따라 타입의 크기도 변하므로 변수타입 시작부터 , 가 나올 때 까지를 type으로 저장
@@ -244,7 +245,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const." << func_name << "var_name_" << tempsVarName << " i64 0, i64 0))\n";
 
-  if(isString)
+  if (isString)
     output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
   else
     output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
@@ -293,7 +294,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
   else if (isString)
   {
     var_type_for_arr = "%\"class.std::__1::basic_string\"";
-    output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << pairForStringArrAndName.second.substr(0, pairForStringArrAndName.second.size() - 1) << ")\n";
+    output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << pairForStringArrAndName.second.substr(0 , pairForStringArrAndName.second.size() - 1) << ")\n";
   }
 
   else
@@ -302,7 +303,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     var_type_for_arr = var_type;
   }
 
-  
+
 
   // 값 포인터 라인 컬럼 기록
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
@@ -425,6 +426,107 @@ int main()
       {
         if (tempv[i] == "enter")
           output_printf_fstream << "\n";
+
+        // string 함수에서 line, colnum을 받는 인자 추가
+        else if (tempv[i] == "define" && tempv[i + 1] == "internal" && tempv[i + 2] == "%\"class.std::__1::basic_string\"*")
+        {
+          if (tempv[i + 3] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*")
+          {
+            while (tempv[i] != "%__s)")
+            {
+              output_printf_fstream << tempv[i] << " ";
+              i++;
+            }
+
+            output_printf_fstream << "%__s," << " ";
+            output_printf_fstream << "i32" << " ";
+            output_printf_fstream << "%__line," << " ";
+            output_printf_fstream << "i32" << " ";
+            output_printf_fstream << "%__colnum)" << " ";
+
+            // i ++;
+          }
+          else
+            output_printf_fstream << tempv[i] << " ";
+
+        }
+        //  %call = call %"class.std::__1::basic_string"* @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc(%"class.std::__1::basic_string"* %str, i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str, i64 0, i64 0)), !dbg !1775 
+        // string call 함수에 디버그 정보 인자 전달
+        else if ((tempv[i] == "call" || tempv[i] == "invoke") && tempv[i + 1] == "%\"class.std::__1::basic_string\"*"
+              && tempv[i + 2] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*")
+        {
+          // invoke 시 사용
+          string templine;
+          vector<string> templinev;
+
+          // 항상 디버그 정보 존재
+          if(tempv[i] == "call")
+          {
+            LineNum = "";
+            ColNum = "";
+            findLineAndColNumber(targetFileName , tempv[tempv.size() - 2]);
+
+            while (tempv[i] != "0)),")
+            {
+              output_printf_fstream << tempv[i] << " ";
+              i++;
+            }
+          }
+          else
+          {
+            
+            getline(targetfile_fstream , templine);
+            stringstream tempss(templine);
+            
+            string tempword;
+            while (getline(tempss , tempword , ' '))
+            {
+              templinev.push_back(tempword);
+            }
+
+            cout << "templinev print start :   0000000000000 ";
+            for(int k = 0; k < templinev.size(); k ++)
+            {
+              cout << templinev[k] << " ";
+            }
+            cout << "templinev print end :  \n\n\n ";
+            cout << templinev[templinev.size() - 1];
+
+            LineNum = "";
+            ColNum = "";
+            findLineAndColNumber(targetFileName , templinev[templinev.size() - 1]);
+
+            cout << LineNum << " ffffffffffffff  " << ColNum << "\n";
+            while (tempv[i] != "0))")
+            {
+              output_printf_fstream << tempv[i] << " ";
+              i++;
+            }
+          }
+
+
+          // 0)), -> 0), i32 LineNum, i32 ColNum),
+          output_printf_fstream << "0)," << " ";
+          output_printf_fstream << "i32" << " ";
+          output_printf_fstream << LineNum << ", ";
+          output_printf_fstream << "i32" << " ";
+
+          if (tempv[4] == "call")
+            output_printf_fstream << ColNum << "), ";
+          else if (tempv[4] == "invoke")
+          {
+            output_printf_fstream << ColNum << ")\n";
+            
+            for (int k = 0; k < templinev.size(); k++)
+            {
+              output_printf_fstream << templinev[k] << " ";
+            }
+          }
+          // i ++;
+
+
+        }
+
         else
           output_printf_fstream << tempv[i] << " ";
       }
@@ -453,21 +555,21 @@ int main()
         else if (tempv[i] == "entry:")
         {
           // 함수 시작에 loadfile 추가
-          output_printf_fstream << "%loadfile = load %struct.__sFILE*, %struct.__sFILE** @file, align 8\n";
+          output_printf_fstream << "%loadfile   = load %struct.__sFILE*, %struct.__sFILE** @file, align 8\n";
 
           cout << currentFunc << "\n\n\n";
           if (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc_"
-          ||  currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc_"
-          )
+            || currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc_"
+            )
           {
-            cout << "find string reset func ))))))))))))))))))))))))))\n";
+
 
             output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
-            output_printf_fstream << "%temp_var_12_3 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
-            output_printf_fstream << "%call7 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s)\n";
-            output_printf_fstream << "%temp_var_12_5 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* %this)\n";
-            output_printf_fstream << "%temp_var_12_6 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 99999)\n";
-            output_printf_fstream << "%temp_var_12_7 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 999999)\n";
+            output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+            output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s)\n";
+            output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* %this)\n";
+            output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line)\n";
+            output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum)\n";
           }
 
         }
