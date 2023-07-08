@@ -2,7 +2,7 @@
 ;======================================================================
 
 
-; FILE * file = fopen("test.txt", "w+");
+; FILE * file = fopen("test.txt", "w+");  .curly
 %struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
 %struct.__sFILEX = type opaque
 %struct.__sbuf = type { i8*, i32 }
@@ -10,6 +10,19 @@
 @.str.openfile = private unnamed_addr constant [11 x i8] c"record.txt\00", align 1
 @.str.write = private unnamed_addr constant [3 x i8] c"w+\00", align 1
 @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }]
+
+; #include <string>
+%"class.curly.std::__1::basic_string" = type { %"class.curly.std::__1::__compressed_pair" }
+%"class.curly.std::__1::__compressed_pair" = type { %"struct.curly.std::__1::__compressed_pair_elem" }
+%"struct.curly.std::__1::__compressed_pair_elem" = type { %"struct.curly.std::__1::basic_string<char>::__rep" }
+%"struct.curly.std::__1::basic_string<char>::__rep" = type { %union.curly.anon }
+%union.curly.anon = type { %"struct.curly.std::__1::basic_string<char>::__long" }
+%"struct.curly.std::__1::basic_string<char>::__long" = type { i8*, i64, i64 }
+%"struct.curly.std::__1::__default_init_tag" = type { i8 }
+%"class.curly.std::__1::__basic_string_common" = type { i8 }
+%"struct.curly.std::__1::__compressed_pair_elem.0" = type { i8 }
+%"class.curly.std::__1::allocator" = type { i8 }
+%"struct.curly.std::__1::__non_trivial_if" = type { i8 }
 
 ; 비교를 위한 전역변수 선언
 ;int tempint;
@@ -126,7 +139,7 @@ declare void @llvm.memcpy.p0i8.p0i8.i64_curly(i8* noalias nocapture writeonly, i
 
 
 ; for string to char arr func
-declare i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4copyEPcmm_curly(%"class.std::__1::basic_string"*, i8*, i64, i64) #555555
+declare i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4copyEPcmm_curly(%"class.curly.std::__1::basic_string"*, i8*, i64, i64) #555555
 
 
 attributes #100009 = { argmemonly nofree nounwind willreturn }
