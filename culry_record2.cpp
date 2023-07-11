@@ -93,7 +93,7 @@ fstream output_printf_fstream;
 string targetFileName("test.ll"); // 기록하고자 하는 타겟의 ll 파일
 fstream targetfile_fstream(targetFileName);
 
-string strFileName("record_strfile.txt"); // test.ll에 있는 변수명 등을 전역으로 선언하기 위해 작성한 코드들을 저장
+string strFileName("record_strfile.ll"); // test.ll에 있는 변수명 등을 전역으로 선언하기 위해 작성한 코드들을 저장
 fstream str_fstream;
 
 string LineNum; // 코드의 위치를 기록하기 위한 변수
@@ -251,7 +251,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
   // 키워드 변수명 변수타입 기록
   output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
-  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const_curly." << tempsVarName << " i64 0, i64 0))\n";
+  output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const_culry." << tempsVarName << " i64 0, i64 0))\n";
 
   if (isString)
     output_printf_fstream << "%temp_var_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
@@ -710,12 +710,12 @@ int main()
           cout << " current Function name is =====> ";
           cout << currentFunc << "   and  current alloca name is ----->>>> " << tempallocastr << "\n";
           // str_fstream << "@__const." << currentFunc << "var_name_" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
-          // str_fstream << "@__const_curly.1" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
+          // str_fstream << "@__const_culry.1" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
           
           if(checkDuplVarName.find(tempallocastr) == checkDuplVarName.end() )
           {
             checkDuplVarName.insert(make_pair(tempallocastr, 1));
-            str_fstream << "@__const_curly." << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";  
+            str_fstream << "@__const_culry." << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";  
           }
           else
           {
@@ -733,7 +733,7 @@ int main()
           if (checkDuplVarName.find(tempallocastr) == checkDuplVarName.end())
           {
             checkDuplVarName.insert(make_pair(tempallocastr , 1));
-            str_fstream << "@__const_curly." << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
+            str_fstream << "@__const_culry." << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
           }
           else
           {
