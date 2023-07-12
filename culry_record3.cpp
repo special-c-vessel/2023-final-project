@@ -19,7 +19,7 @@ fstream output_result_fstream;
 string output_printf_FileName("record_AddPrintf.ll");
 ifstream output_printf_fstream;
 
-string strFileName("record_strfile.txt");
+string strFileName("record_strfile.ll");
 ifstream str_fstream;
 
 // string output_printf_FileName("record_AddPrintf.ll");
