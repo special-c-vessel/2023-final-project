@@ -58,6 +58,7 @@
 
 ; 출력문 형식
 @.str.print_string = private unnamed_addr constant [4 x i8] c"%s \00", align 1
+@.str.print_string_name = private unnamed_addr constant [3 x i8] c"%s\00", align 1
 
 ; line, col 사용을 위해
 @.str.print_int = private unnamed_addr constant [4 x i8] c"%d \00", align 1
@@ -145,6 +146,19 @@ declare i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4co
 
 attributes #100009 = { argmemonly nofree nounwind willreturn }
 attributes #555555 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+attributes #10000003 = { noinline nounwind optnone ssp uwtable "frame-pointer"="non-leaf" "min-legal-vector-width"="0" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" } 
+
+define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv_culry(%"class.std::__1::basic_string"* %this) #10000003 align 2 !dbg !1840 { 
+entry: 
+%loadfile   = load %struct.__sFILE*, %struct.__sFILE** @file, align 8 
+  %this.addr = alloca %"class.std::__1::basic_string"*, align 8 
+  store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8 
+  call void @llvm.dbg.declare(metadata %"class.std::__1::basic_string"** %this.addr, metadata !1841, metadata !DIExpression()), !dbg !1843 
+  %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8 
+  %call = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv(%"class.std::__1::basic_string"* %this1) #7, !dbg !1844 
+%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) 
+  ret i64 %call, !dbg !1845 
+} 
 
 ;======================================================================
 ;======================================================================
