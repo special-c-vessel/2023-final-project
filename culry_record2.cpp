@@ -90,7 +90,7 @@ fstream output_result_fstream;
 string output_printf_FileName("record_AddPrintf.ll"); // 기록을 위한 fprintf 코드를 추가한 결과
 fstream output_printf_fstream;
 
-string targetFileName("test.ll"); // 기록하고자 하는 타겟의 ll 파일
+string targetFileName("curly.ll"); // 기록하고자 하는 타겟의 ll 파일
 fstream targetfile_fstream(targetFileName);
 
 string strFileName("record_strfile.ll"); // test.ll에 있는 변수명 등을 전역으로 선언하기 위해 작성한 코드들을 저장
