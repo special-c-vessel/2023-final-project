@@ -113,12 +113,22 @@ pair<string , string> pairForStringArrAndName;       // string 의 store 또는 
 vector<pair<string , string> > vectorForResetArr;   // 배열의 선언 및 초기화 시 차주 저장을 위한 벡터
 string var_name_ForResetArr = "";
 
+struct checkDeclare
+{
+    bool checkString_base;
+    bool checkString_struct_anon;
+
+};
+
+checkDeclare checkDel;
+
 int globalNum = 0;
 
 void findLineAndColNumber(string , string);
 void addPrintfInstruction(string , string , string , string , string);
-void writeTxtFile(string);
+void writeLLFile(string);
 void writeArrayIndex(bool isArr , bool isResetArr);
+void writeDeclare();
 
 // 변수의 기록을 위한 (코드를 삽입하는) 함수
 void addPrintfInstruction(string var_name , string var_type , string debugNum , string func_name , string keyWord) // string currentFunc // string var_type
@@ -380,10 +390,10 @@ void findLineAndColNumber(string txtName , string debugNum)
 }
 
 // 파일을 읽는 함수
-void writeTxtFile(string txtName)
+void writeLLFile(string txtName)
 {
     ifstream tempTxtFstream;
-    vector<string> WTFv; // == WriteTxtFileVector
+    vector<string> WTFv; // == writeLLFileVector
     string WTFLine;
 
     tempTxtFstream.open(txtName , std::ios_base::out);
@@ -405,6 +415,42 @@ void writeTxtFile(string txtName)
     }
 
     return;
+}
+
+void writeDeclare()
+{
+    output_printf_fstream << "; ===========================================================\n";
+    output_printf_fstream << "; =================   writeDeclare start =================   \n";
+    output_printf_fstream << "; ===========================================================\n";
+
+    if(checkDel.checkString_base == false)
+    {
+        output_printf_fstream << "%\"class.std::__1::basic_string\" = type { %\"class.std::__1::__compressed_pair\" }" << "\n";
+        output_printf_fstream << "%\"class.std::__1::__compressed_pair\" = type { %\"struct.std::__1::__compressed_pair_elem\" }" << "\n";
+        output_printf_fstream << "%\"struct.std::__1::__compressed_pair_elem\" = type { %\"struct.std::__1::basic_string<char>::__rep\" }" << "\n";
+        output_printf_fstream << "%\"struct.std::__1::basic_string<char>::__rep\" = type { %union.anon }" << "\n";
+        output_printf_fstream << "%union.anon = type { %\"struct.std::__1::basic_string<char>::__long\" }" << "\n";
+        output_printf_fstream << "%\"struct.std::__1::basic_string<char>::__long\" = type { i8*, i64, i64 }" << "\n";
+        output_printf_fstream << "%\"struct.std::__1::__default_init_tag\" = type { i8 }" << "\n";
+        output_printf_fstream << "%\"class.std::__1::__basic_string_common\" = type { i8 }" << "\n";
+        output_printf_fstream << "%\"struct.std::__1::__compressed_pair_elem.0\" = type { i8 }" << "\n";
+        output_printf_fstream << "%\"class.std::__1::allocator\" = type { i8 }" << "\n";
+        output_printf_fstream << "%\"struct.std::__1::__non_trivial_if\" = type { i8 }" << "\n";
+
+    }
+
+    if(checkDel.checkString_struct_anon == false)
+    {
+        output_printf_fstream << "%\"struct.std::__1::basic_string<char>::__short\" = type { [23 x i8], %struct.anon }" << "\n";
+        output_printf_fstream << "%struct.anon = type { i8 }" << "\n";
+    }
+
+    output_printf_fstream << "; ===========================================================\n";
+    output_printf_fstream << "; =================   writeDeclare end   =================   \n";
+    output_printf_fstream << "; ===========================================================\n";
+    output_printf_fstream << "\n";
+
+    return ;
 }
 
 int main()
@@ -440,13 +486,28 @@ int main()
                 if (tempv[i] == "enter")
                     output_printf_fstream << "\n";
 
+                // ll코드 재선언을 방지하기 위해 한 판별
+                // %"class.std::__1::basic_string" = type { %"class.std::__1::__compressed_pair" }
+                else if (tempv[i] == "%\"class.std::__1::basic_string\"" && tempv[i + 4] == "%\"class.std::__1::__compressed_pair\"")
+                {
+                    output_printf_fstream << tempv[i] << " ";
+                    checkDel.checkString_base = true;
+                }
+
+                // %"struct.std::__1::basic_string<char>::__short" = type { [23 x i8], %struct.anon }
+                else if(tempv[i] == "%\"struct.std::__1::basic_string<char>::__short\"" && tempv[i + 7] == "%struct.anon")
+                    {
+                        output_printf_fstream << tempv[i] << " ";
+                        checkDel.checkString_struct_anon = true;
+                    }
+
                     // string 함수에서 line, colnum을 받는 인자 추가
                 else if (tempv[i] == "define" && tempv[i + 1] == "internal"
                          &&
                          (
                                  (tempv[i + 2] == "%\"class.std::__1::basic_string\"*" && tempv[i + 3] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*")
                                  || (tempv[i + 6] == "%\"class.std::__1::basic_string\"*" && tempv[i + 7] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%\"class.std::__1::basic_string\"*")
-                                 // || (tempv[i + 2] == "zeroext" && tempv[i + 4] == "@_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_(%\"class.std::__1::basic_string\"*")
+                                  || (tempv[i + 2] == "zeroext" && tempv[i + 4] == "@_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_(%\"class.std::__1::basic_string\"*")
                          )
                         )
                 {
@@ -475,7 +536,7 @@ int main()
                         && (tempv[i + 1] == "%\"class.std::__1::basic_string\"*" || tempv[i + 5] == "%\"class.std::__1::basic_string\"*" || tempv[i + 1] == "zeroext")
                         && (   tempv[i + 2] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*"
                                || tempv[i + 6] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc(%\"class.std::__1::basic_string\"*"
-                                // || tempv[i + 3] == "@_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_(%\"class.std::__1::basic_string\"*"
+                                 || tempv[i + 3] == "@_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_(%\"class.std::__1::basic_string\"*"
                         )
                         )
                 {
@@ -667,14 +728,8 @@ int main()
                     addPrintfInstruction(var_name , var_type , debugNum , currentFunc , tempv[i]);  // 변수의 정보를 바탕으로 기록 코드 작성
                 }
 
-                else if (tempv[i] == "target" && tempv[i + 1] == "triple")  // 기록 정보 저장에 사용되는 ll 코드 추가
-                {
-                    cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@ record_above txt file write start @@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-                    writeTxtFile("record_above.ll");
-                    cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@ record_above txt file write end   @@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n";
-                }
 
-                    // 새로운 변수가 선언된 경우(메모리 할당된 경우), 변수명 출력을 위해 변수명 크기에 맞게 전역 string 선언 코드 추가
+                // 새로운 변수가 선언된 경우(메모리 할당된 경우), 변수명 출력을 위해 변수명 크기에 맞게 전역 string 선언 코드 추가
                 else if (tempv[i] == "alloca")
                 {
                     cout << "find alloca!   ";
@@ -851,10 +906,10 @@ int main()
                              && tempv[i + 1] == "%\"class.std::__1::basic_string\"*"
                              && tempv[i + 2] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc(%\"class.std::__1::basic_string\"*"
                              && tempv[i + 3] == "%this1,")
-                    // || (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6__"
-                    //   && tempv[i] == "%9"
-                    //   && tempv[i + 2] == "load"
-                    //   && tempv[i + 5] == "%retval,")
+                    || (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6__"
+                      && tempv[i] == "%9"
+                      && tempv[i + 2] == "load"
+                      && tempv[i + 5] == "%retval,")
                         )
                 {
                     string stringValue;
@@ -898,7 +953,14 @@ int main()
                     output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv_culry(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
 
                     // 내용 출력
-                    output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* " << stringValue << ")\n";
+                    if(isStore)
+                    {
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* " << stringValue << ")\n";
+                    }
+                    else
+                    {
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), %\"class.std::__1::basic_string\"* %__lhs) \n";
+                    }
 
                     // String 값 출력 끝
                     output_printf_fstream << "%var_print_stringEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_isStringEnd, i32 0, i32 0))\n";
@@ -917,6 +979,13 @@ int main()
         } // while end
     }
 
+    writeDeclare();
+
+
+    cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@ record_above ll file write start @@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+    writeLLFile("record_above.ll");
+    cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@ record_above ll file write end   @@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n";
+
     // 열었던 파일 모두 닫음
     str_fstream.close();
     output_printf_fstream.close();
@@ -925,6 +994,6 @@ int main()
 
     cout << "\n\n";
     cout << "target file name is " << targetFileName << "\n";
-    cout << "***************************   record 2 end     ***************************\n";
+    cout << "***************************   record 2 end  222   ***************************\n";
     return 0;
 }

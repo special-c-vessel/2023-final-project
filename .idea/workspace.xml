@@ -12,10 +12,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="220b060e-dbd5-48e6-aa71-daff292745ff" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instrument" beforeDir="false" afterPath="$PROJECT_DIR$/instrument" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/node_visitor.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/node_visitor.cc" afterDir="false" />
+    <list default="true" id="220b060e-dbd5-48e6-aa71-daff292745ff" name="변경" comment="1. string type의 초기화 및 재할당 시&#10; 변수명, 타입, 값시작, stringLength, 값, 값종료, 포인터, line, colnum 기록 가능&#10;ex)   string ssstttrrr = &quot;1234567890&quot;;&#10;&#10;-&gt; store ssstttrrr string StringStart 10 1234567890 StringEnd 0x16f486570 7 22&#10;&#10;2. 편리한 쉘 스크립트 사용을 위해 &#10;targetFileName 을 test.ll -&gt; culry.ll 로 변경&#10;&#10;3. record_above.txt -&gt; record_above.ll 로 파일명 변경">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/record_result.ll" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +26,25 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="recentNewPullRequestHead">
+      <RepoCoordinatesHolder>
+        <option name="owner" value="wjdrud2532" />
+        <option name="repository" value="2023-final-project" />
+      </RepoCoordinatesHolder>
+    </option>
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="ffc598f3-44b0-41b7-bde9-32efdd36da29" />
+        <option name="url" value="https://github.com/special-c-vessel/2023-final-project.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -49,16 +67,40 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
-    <configuration name="scv" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="2023-final-project" TARGET_NAME="main.cpp" CONFIG_NAME="scv">
-      <option name="sourceFile" value="$PROJECT_DIR$/src/main.cpp" />
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="C/C++ 파일.record3_build">
+    <configuration name="record2_build" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="2023-final-project" TARGET_NAME="culry_record2.cpp" CONFIG_NAME="record2_build">
+      <option name="sourceFile" value="$PROJECT_DIR$/culry_record2.cpp" />
       <method v="2">
         <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="record3_build" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="2023-final-project" TARGET_NAME="culry_record3.cpp" CONFIG_NAME="record3_build">
+      <option name="sourceFile" value="$PROJECT_DIR$/culry_record3.cpp" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_build" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="2023-final-project" TARGET_NAME="test.cpp" CONFIG_NAME="test_build">
+      <option name="sourceFile" value="$PROJECT_DIR$/test.cpp" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="C/C++ 파일.record2_build" />
+      <item itemvalue="C/C++ 파일.test_build" />
+      <item itemvalue="C/C++ 파일.record3_build" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -83,10 +125,46 @@
       <workItem from="1679636925737" duration="598000" />
       <workItem from="1680613113208" duration="598000" />
       <workItem from="1680786498547" duration="215000" />
+      <workItem from="1689166365108" duration="123000" />
+      <workItem from="1689166496428" duration="802000" />
+      <workItem from="1689176474274" duration="854000" />
+      <workItem from="1689223036378" duration="158000" />
+      <workItem from="1689314990279" duration="1285000" />
     </task>
+    <task id="LOCAL-00001" summary="타깃 ll파일 이름 변경">
+      <created>1689166538975</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1689166538975</updated>
+    </task>
+    <task id="LOCAL-00002" summary="1. string type의 초기화 및 재할당 시&#10; 변수명, 타입, 값시작, stringLength, 값, 값종료, 포인터, line, colnum 기록 가능&#10;ex)   string ssstttrrr = &quot;1234567890&quot;;&#10;&#10;-&gt; store ssstttrrr string StringStart 10 1234567890 StringEnd 0x16f486570 7 22&#10;&#10;2. 편리한 쉘 스크립트 사용을 위해 &#10;targetFileName 을 test.ll -&gt; culry.ll 로 변경&#10;&#10;3. record_above.txt -&gt; record_above.ll 로 파일명 변경">
+      <created>1689177009973</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1689177009974</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="타깃 ll파일 이름 변경" />
+    <MESSAGE value="1. string type의 초기화 및 재할당 시&#10; 변수명, 타입, 값시작, stringLength, 값, 값종료, 포인터, line, colnum 기록 가능&#10;ex)   string ssstttrrr = &quot;1234567890&quot;;&#10;&#10;-&gt; store ssstttrrr string StringStart 10 1234567890 StringEnd 0x16f486570 7 22&#10;&#10;2. 편리한 쉘 스크립트 사용을 위해 &#10;targetFileName 을 test.ll -&gt; culry.ll 로 변경&#10;&#10;3. record_above.txt -&gt; record_above.ll 로 파일명 변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. string type의 초기화 및 재할당 시&#10; 변수명, 타입, 값시작, stringLength, 값, 값종료, 포인터, line, colnum 기록 가능&#10;ex)   string ssstttrrr = &quot;1234567890&quot;;&#10;&#10;-&gt; store ssstttrrr string StringStart 10 1234567890 StringEnd 0x16f486570 7 22&#10;&#10;2. 편리한 쉘 스크립트 사용을 위해 &#10;targetFileName 을 test.ll -&gt; culry.ll 로 변경&#10;&#10;3. record_above.txt -&gt; record_above.ll 로 파일명 변경" />
   </component>
 </project>
