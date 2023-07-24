@@ -26,7 +26,7 @@ rm -rf $LLVM_CULRY_PATH
 mkdir $LLVM_CULRY_PATH
 
 # 기록을 위한 파일 복사 및 컴파일
-cd $CULRY_RECORD_PATH & cp culry_record2.cpp culry_record3.cpp record_above.txt $TARGET_CPP_PATH $LLVM_CULRY_PATH
+cd $CULRY_RECORD_PATH & cp culry_record2.cpp culry_record3.cpp record_above.txt record_above_stringLength.ll $TARGET_CPP_PATH $LLVM_CULRY_PATH
 clang -S -emit-llvm -fno-discard-value-names $TARGET_CPP_PATH -g -o $LLVM_CULRY_PATH/culry.ll
 clang++ culry_record2.cpp -o $LLVM_CULRY_PATH/record2
 clang++ culry_record3.cpp -o $LLVM_CULRY_PATH/record3
