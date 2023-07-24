@@ -12,20 +12,20 @@
 @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }]
 
 ; ; #include <string>
-; %"class.std::__1::basic_string" = type { %"class.std::__1::__compressed_pair" }
-; %"class.std::__1::__compressed_pair" = type { %"struct.std::__1::__compressed_pair_elem" }
-; %"struct.std::__1::__compressed_pair_elem" = type { %"struct.std::__1::basic_string<char>::__rep" }
-; %"struct.std::__1::basic_string<char>::__rep" = type { %union.anon }
-; %union.anon = type { %"struct.std::__1::basic_string<char>::__long" }
-; %"struct.std::__1::basic_string<char>::__long" = type { i8*, i64, i64 }
-; %"struct.std::__1::__default_init_tag" = type { i8 }
-; %"class.std::__1::__basic_string_common" = type { i8 }
-; %"struct.std::__1::__compressed_pair_elem.0" = type { i8 }
-; %"class.std::__1::allocator" = type { i8 }
-; %"struct.std::__1::__non_trivial_if" = type { i8 }
+; %"class.std::__1::basic_string.1000009.100001" = type { %"class.std::__1::__compressed_pair.100001" }
+; %"class.std::__1::__compressed_pair.100001" = type { %"struct.std::__1::__compressed_pair_elem.100001" }
+; %"struct.std::__1::__compressed_pair_elem.100001" = type { %"struct.std::__1::basic_string<char>::__rep.100001" }
+; %"struct.std::__1::basic_string<char>::__rep.100001" = type { %union.anon.100001 }
+; %union.anon.100001 = type { %"struct.std::__1::basic_string<char>::__long.100001" }
+; %"struct.std::__1::basic_string<char>::__long.100001" = type { i8*, i64, i64 }
+; %"struct.std::__1::__default_init_tag.100001" = type { i8 }
+; %"class.std::__1::__basic_string_common.100001" = type { i8 }
+; %"struct.std::__1::__compressed_pair_elem.100002" = type { i8 }
+; %"class.std::__1::allocator.100001" = type { i8 }
+; %"struct.std::__1::__non_trivial_if.100001" = type { i8 }
 
-; %"struct.std::__1::basic_string<char>::__short" = type { [23 x i8], %struct.anon }
-; %struct.anon = type { i8 }
+; %"struct.std::__1::basic_string<char>::__short.100001" = type { [23 x i8], %struct.anon.100001 }
+; %struct.anon.100001 = type { i8 }
 
 ; 비교를 위한 전역변수 선언
 ;int tempint;
@@ -143,124 +143,13 @@ declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222
 declare void @llvm.memcpy.p0i8.p0i8.i64_culry(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
 
 
-; for string to char arr func
-declare i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4copyEPcmm_culry(%"class.std::__1::basic_string"*, i8*, i64, i64) #555555
-
-
 attributes #100009 = { argmemonly nofree nounwind willreturn }
 attributes #555555 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 attributes #10000003 = { noinline nounwind optnone ssp uwtable "frame-pointer"="non-leaf" "min-legal-vector-width"="0" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" } 
 attributes #10000007 = { nounwind }
 
-;;3 7
-
-;;; string 길이 출력 함수 
-define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv_culry(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
-entry:
-%loadfile   = load %struct.__sFILE*, %struct.__sFILE** @file, align 8 
-  %this.addr = alloca %"class.std::__1::basic_string"*, align 8
-  store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
-  %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
-  %call = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv_culry(%"class.std::__1::basic_string"* %this1) #10000007
-  %var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) 
-  ret i64 %call
-}
-
-define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv_culry(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
-entry:
-  %this.addr = alloca %"class.std::__1::basic_string"*, align 8
-  store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
-  %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
-  %call = call zeroext i1 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv_culry(%"class.std::__1::basic_string"* %this1) #10000007
-  br i1 %call, label %cond.true, label %cond.false
-
-cond.true:                                        ; preds = %entry
-  %call2 = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv_culry(%"class.std::__1::basic_string"* %this1) #10000007
-  br label %cond.end
-
-cond.false:                                       ; preds = %entry
-  %call3 = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv_culry(%"class.std::__1::basic_string"* %this1) #10000007
-  br label %cond.end
-
-cond.end:                                         ; preds = %cond.false, %cond.true
-  %cond = phi i64 [ %call2, %cond.true ], [ %call3, %cond.false ]
-  ret i64 %cond
-}
-
-; Function Attrs: noinline nounwind optnone ssp uwtable
-define internal zeroext i1 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv_culry(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
-entry:
-  %this.addr = alloca %"class.std::__1::basic_string"*, align 8
-  store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
-  %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
-  %__r_ = getelementptr inbounds %"class.std::__1::basic_string", %"class.std::__1::basic_string"* %this1, i32 0, i32 0
-  %call = call nonnull align 8 dereferenceable(24) %"struct.std::__1::basic_string<char>::__rep"* @_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv_culry(%"class.std::__1::__compressed_pair"* %__r_) #10000007
-  %0 = getelementptr inbounds %"struct.std::__1::basic_string<char>::__rep", %"struct.std::__1::basic_string<char>::__rep"* %call, i32 0, i32 0
-  %__s = bitcast %union.anon* %0 to %"struct.std::__1::basic_string<char>::__short"*
-  %1 = getelementptr inbounds %"struct.std::__1::basic_string<char>::__short", %"struct.std::__1::basic_string<char>::__short"* %__s, i32 0, i32 1
-  %__size_ = getelementptr inbounds %struct.anon, %struct.anon* %1, i32 0, i32 0
-  %2 = load i8, i8* %__size_, align 1
-  %conv = zext i8 %2 to i64
-  %and = and i64 %conv, 128
-  %tobool = icmp ne i64 %and, 0
-  ret i1 %tobool
-}
-
-; Function Attrs: noinline nounwind optnone ssp uwtable
-define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv_culry(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
-entry:
-  %this.addr = alloca %"class.std::__1::basic_string"*, align 8
-  store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
-  %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
-  %__r_ = getelementptr inbounds %"class.std::__1::basic_string", %"class.std::__1::basic_string"* %this1, i32 0, i32 0
-  %call = call nonnull align 8 dereferenceable(24) %"struct.std::__1::basic_string<char>::__rep"* @_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv_culry(%"class.std::__1::__compressed_pair"* %__r_) #10000007
-  %0 = getelementptr inbounds %"struct.std::__1::basic_string<char>::__rep", %"struct.std::__1::basic_string<char>::__rep"* %call, i32 0, i32 0
-  %__l = bitcast %union.anon* %0 to %"struct.std::__1::basic_string<char>::__long"*
-  %__size_ = getelementptr inbounds %"struct.std::__1::basic_string<char>::__long", %"struct.std::__1::basic_string<char>::__long"* %__l, i32 0, i32 1
-  %1 = load i64, i64* %__size_, align 8
-  ret i64 %1
-}
-
-; Function Attrs: noinline nounwind optnone ssp uwtable
-define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv_culry(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
-entry:
-  %this.addr = alloca %"class.std::__1::basic_string"*, align 8
-  store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
-  %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
-  %__r_ = getelementptr inbounds %"class.std::__1::basic_string", %"class.std::__1::basic_string"* %this1, i32 0, i32 0
-  %call = call nonnull align 8 dereferenceable(24) %"struct.std::__1::basic_string<char>::__rep"* @_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv_culry(%"class.std::__1::__compressed_pair"* %__r_) #10000007
-  %0 = getelementptr inbounds %"struct.std::__1::basic_string<char>::__rep", %"struct.std::__1::basic_string<char>::__rep"* %call, i32 0, i32 0
-  %__s = bitcast %union.anon* %0 to %"struct.std::__1::basic_string<char>::__short"*
-  %1 = getelementptr inbounds %"struct.std::__1::basic_string<char>::__short", %"struct.std::__1::basic_string<char>::__short"* %__s, i32 0, i32 1
-  %__size_ = getelementptr inbounds %struct.anon, %struct.anon* %1, i32 0, i32 0
-  %2 = load i8, i8* %__size_, align 1
-  %conv = zext i8 %2 to i64
-  ret i64 %conv
-}
-
-; Function Attrs: noinline nounwind optnone ssp uwtable
-define internal nonnull align 8 dereferenceable(24) %"struct.std::__1::basic_string<char>::__rep"* @_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv_culry(%"class.std::__1::__compressed_pair"* %this) #10000003 align 2 {
-entry:
-  %this.addr = alloca %"class.std::__1::__compressed_pair"*, align 8
-  store %"class.std::__1::__compressed_pair"* %this, %"class.std::__1::__compressed_pair"** %this.addr, align 8
-  %this1 = load %"class.std::__1::__compressed_pair"*, %"class.std::__1::__compressed_pair"** %this.addr, align 8
-  %0 = bitcast %"class.std::__1::__compressed_pair"* %this1 to %"struct.std::__1::__compressed_pair_elem"*
-  %call = call nonnull align 8 dereferenceable(24) %"struct.std::__1::basic_string<char>::__rep"* @_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv_culry(%"struct.std::__1::__compressed_pair_elem"* %0) #10000007
-  ret %"struct.std::__1::basic_string<char>::__rep"* %call
-}
-
-; Function Attrs: noinline nounwind optnone ssp uwtable
-define internal nonnull align 8 dereferenceable(24) %"struct.std::__1::basic_string<char>::__rep"* @_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv_culry(%"struct.std::__1::__compressed_pair_elem"* %this) #10000003 align 2 {
-entry:
-  %this.addr = alloca %"struct.std::__1::__compressed_pair_elem"*, align 8
-  store %"struct.std::__1::__compressed_pair_elem"* %this, %"struct.std::__1::__compressed_pair_elem"** %this.addr, align 8
-  %this1 = load %"struct.std::__1::__compressed_pair_elem"*, %"struct.std::__1::__compressed_pair_elem"** %this.addr, align 8
-  %__value_ = getelementptr inbounds %"struct.std::__1::__compressed_pair_elem", %"struct.std::__1::__compressed_pair_elem"* %this1, i32 0, i32 0
-  ret %"struct.std::__1::basic_string<char>::__rep"* %__value_
-}
-
-;======================================================================
-;======================================================================
+; ;======================================================================
+; ;======================================================================
 
 
 
