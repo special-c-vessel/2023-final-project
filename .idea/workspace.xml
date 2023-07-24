@@ -14,7 +14,6 @@
   <component name="ChangeListManager">
     <list default="true" id="220b060e-dbd5-48e6-aa71-daff292745ff" name="변경" comment="1. string type의 초기화 및 재할당 시&#10; 변수명, 타입, 값시작, stringLength, 값, 값종료, 포인터, line, colnum 기록 가능&#10;ex)   string ssstttrrr = &quot;1234567890&quot;;&#10;&#10;-&gt; store ssstttrrr string StringStart 10 1234567890 StringEnd 0x16f486570 7 22&#10;&#10;2. 편리한 쉘 스크립트 사용을 위해 &#10;targetFileName 을 test.ll -&gt; culry.ll 로 변경&#10;&#10;3. record_above.txt -&gt; record_above.ll 로 파일명 변경">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/record_result.ll" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,11 +61,12 @@
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/han/GitHub/2023-final-project&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/han/GitHub/2023-final-project_wjdrud2532&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -130,6 +130,9 @@
       <workItem from="1689176474274" duration="854000" />
       <workItem from="1689223036378" duration="158000" />
       <workItem from="1689314990279" duration="1285000" />
+      <workItem from="1689602993232" duration="935000" />
+      <workItem from="1689680664623" duration="204000" />
+      <workItem from="1689752939083" duration="75000" />
     </task>
     <task id="LOCAL-00001" summary="타깃 ll파일 이름 변경">
       <created>1689166538975</created>
