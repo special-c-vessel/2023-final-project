@@ -12,9 +12,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="220b060e-dbd5-48e6-aa71-daff292745ff" name="변경" comment="1. string type의 초기화 및 재할당 시&#10; 변수명, 타입, 값시작, stringLength, 값, 값종료, 포인터, line, colnum 기록 가능&#10;ex)   string ssstttrrr = &quot;1234567890&quot;;&#10;&#10;-&gt; store ssstttrrr string StringStart 10 1234567890 StringEnd 0x16f486570 7 22&#10;&#10;2. 편리한 쉘 스크립트 사용을 위해 &#10;targetFileName 을 test.ll -&gt; culry.ll 로 변경&#10;&#10;3. record_above.txt -&gt; record_above.ll 로 파일명 변경">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="220b060e-dbd5-48e6-aa71-daff292745ff" name="변경" comment="1. string type의 초기화 및 재할당 시&#10; 변수명, 타입, 값시작, stringLength, 값, 값종료, 포인터, line, colnum 기록 가능&#10;ex)   string ssstttrrr = &quot;1234567890&quot;;&#10;&#10;-&gt; store ssstttrrr string StringStart 10 1234567890 StringEnd 0x16f486570 7 22&#10;&#10;2. 편리한 쉘 스크립트 사용을 위해 &#10;targetFileName 을 test.ll -&gt; culry.ll 로 변경&#10;&#10;3. record_above.txt -&gt; record_above.ll 로 파일명 변경" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
