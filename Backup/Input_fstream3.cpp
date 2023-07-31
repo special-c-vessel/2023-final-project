@@ -19,7 +19,7 @@ fstream output_result_fstream;
 string output_printf_FileName("record_AddPrintf.ll");
 ifstream output_printf_fstream;
 
-string strFileName("record_strfile.txt");
+string strFileName("record_strfile.ll");
 ifstream str_fstream;
 
 // string output_printf_FileName("record_AddPrintf.ll");
@@ -38,6 +38,9 @@ int main()
 
   string line;
   vector<string> v;
+  bool isWrite;
+
+  isWrite = false;
 
   output_printf_fstream.open(output_printf_FileName , std::ios_base::out);
 
@@ -74,22 +77,26 @@ int main()
           output_result_fstream << tempv[i] << " ";
       }
 
+
+    
       for (int i = 0; i < tempv.size(); i++)
       {
-        if (tempv[i] == "변수명")
+        if (tempv[i] == "target" && tempv[i + 1] == "triple")
         {
 
           str_fstream.open(strFileName , std::ios_base::out);
 
           output_result_fstream << "; 새로운 전역 str 작성 시작\n";
 
+          if(isWrite == false)
           while (getline(str_fstream , line))
           {
 
             stringstream ss2(line);
             vector<string> tempv2;
             string word2;
-
+            isWrite = true;
+            
             while (getline(ss2 , word2 , ' '))
             {
               tempv2.push_back(word2);
@@ -106,18 +113,21 @@ int main()
                 // cout << "write string is : " << tempv2[j] << "\n";
               }
             }
+
           }
           output_result_fstream << "; 새로운 전역 str 작성 종료\n";
-          cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@   record 3 end     @@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
 
           break;
         }
       }
+
+
       // str_fstream.close();
       // output_printf_fstream.close();
       // targetfile_fstream.close();
       // output_result_fstream.close();
     }
+        cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@   record 3 end     @@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
   }
   else
   {
