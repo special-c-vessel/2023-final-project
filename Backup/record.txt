@@ -1,12 +1,13 @@
-store retval int 0 0x16bb924f4 0 0
-store string hello world 0x16bb924d8 99999 999999
-store num int 11111 0x16bb924d4 44 7
-store __vla_expr0 long_long_int 12 0x16bb924c0 45 3
-store aaaa int 5 0x16bb924bc 46 7
-store bbbbb int 10 0x16bb924a8 48 7
-store ccccccc int 20 0x16bb924a4 50 7
-store string ggggggggggggg 0x16bb924d8 99999 999999
-store __vla_expr1 long_long_int 14 0x16bb92498 52 3
-store dddddddddd int 33333 0x16bb92494 55 7
-store retval int 0 0x16bb924f4 57 3
-load retval int 0 0x16bb924f4 58 1
+store arr int isArr 0 0 0 1 0x16d682090 9 7
+store arr int isArr 0 0 1 2 0x16d682094 9 7
+store arr222 int isArr 0 0 0 0 0 3 0x16d67f4d0 10 7
+store arr222 int isArr 0 0 0 0 1 4 0x16d67f4d4 10 7
+store tempstr string StringStart 8 bbadfgae StringEnd 0x16d67f430 19 18
+store tempstr string StringStart 22 vaaeg
+etsetset
+dfydreg StringEnd 0x16d67f430 21 9
+22 22 22 store ref.tmp string StringStart 8 qqqqqqqq StringEnd 0x16d67f418 27 17
+8 8 store ref.tmp40 int 1111 0x16d67f414 32 17
+store ref.tmp42 int 2222 0x16d67f410 33 17
+store ref.tmp44 int 3333 0x16d67f40c 34 17
+store ref.tmp46 int 4444 0x16d67f408 35 17
