@@ -47,6 +47,8 @@
 @.str.userKeyWord_isArr = private unnamed_addr constant [7 x i8] c"isArr \00", align 1
 @.str.userKeyWord_isStringStart = private unnamed_addr constant [13 x i8] c"StringStart \00", align 1
 @.str.userKeyWord_isStringEnd = private unnamed_addr constant [11 x i8] c"StringEnd \00", align 1
+@.str.userKeyWord_pushBack = private unnamed_addr constant [11 x i8] c"push_back \00", align 1
+@.str.userKeyWord_popBack = private unnamed_addr constant [10 x i8] c"pop_back \00", align 1
 
 ; keyWord
 @.str.op_declare = private unnamed_addr constant [9 x i8] c"declare \00", align 1
