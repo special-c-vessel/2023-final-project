@@ -115,6 +115,8 @@ pair<string , string> pairForStringArrAndName;       // string 의 store 또는 
 vector<pair<string , string> > vectorForResetArr;   // 배열의 선언 및 초기화 시 차주 저장을 위한 벡터
 string var_name_ForResetArr = "";
 
+string vector_type_num;
+
 struct checkDeclare
 {
     bool checkString_base;
@@ -640,13 +642,31 @@ int main()
                         || (tempv[i + 2] == "zeroext" && tempv[i + 4] == "@_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_(%\"class.std::__1::basic_string\"*")
 
                         // vector int tpye push_back
-                        || (tempv[i + 2] == "void" && tempv[i + 3] == "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%\"class.std::__1::vector\"*")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIfNS_9allocatorIfEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIxNS_9allocatorIxEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIsNS_9allocatorIsEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIcNS_9allocatorIcEEE9push_backERK")
                         )
                     )
                 {
-                    // if (tempv[i + 3] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*")
-                    // {
+                    if (tempv[i + 3].substr(0, 18) == "@_ZNSt3__16vectorI")
+                    {
+                        //vector_type_num
+                        vector_type_num = "";
+                        if(tempv[i + 3].size() > 78)
+                        {
+                            vector_type_num = ".";
+                            for(int k = 77; tempv[i + 3][k] != '\"'; k ++)
+                            {
+                                vector_type_num += tempv[i + 3][k];
+                            }
 
+                            cout << "vector type8 is : " << vector_type_num << "\n\n\n\n\n\nnnnnnn\n\n\n\n\n\"";
+
+                        }
+                    }
 
                     while (tempv[i] != "%__s)" && tempv[i] != "%__rhs)" && tempv[i] != "%__x)")
                     {
@@ -785,13 +805,32 @@ int main()
                 else if (tempv[i] == "invoke" && tempv[i + 1] == "void" && tempv[i + 2].substr(0 , 18) == "@_ZNSt3__16vectorI")
                 {
 
-                    if (tempv[i + 2] != "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%\"class.std::__1::vector\"*")
+                    // if (tempv[i + 2] != "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%\"class.std::__1::vector\"*")
+                    // {
+                    //     output_printf_fstream << tempv[i] << " ";
+                    //     continue;
+                    // }
+
+                    if (currentFunc_returnType == "linkonce_odr")
                     {
                         output_printf_fstream << tempv[i] << " ";
                         continue;
                     }
 
-                    if (tempv[i + 2][18] == 'i')
+                    if( (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERK")
+                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIfNS_9allocatorIfEEE9push_backERK")
+                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIxNS_9allocatorIxEEE9push_backERK")
+                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIsNS_9allocatorIsEEE9push_backERK")
+                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERK")
+                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIcNS_9allocatorIcEEE9push_backERK")
+                       )
+                       {
+                            output_printf_fstream << tempv[i] << " ";
+                            continue;
+                       }
+
+
+                    // if (tempv[i + 2][18] == 'i')
                     {
                         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -869,10 +908,10 @@ int main()
                         }
 
                     }   // if end
-                    else    // int 타입이 아닌 경우 일단 예외처리
-                    {
-                        output_printf_fstream << tempv[i] << " ";
-                    }
+                    // else    // int 타입이 아닌 경우 일단 예외처리
+                    // {
+                    //     output_printf_fstream << tempv[i] << " ";
+                    // }
 
                 }
 
@@ -886,17 +925,61 @@ int main()
                     output_printf_fstream << tempv[i] << " ";
                     // output_printf_fstream << ";asfaewfew" << " ";
 
-                    if (currentFunc == "_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi_")
+                    if (currentFunc_returnType == "linkonce_odr")
+                    {
+                        continue;
+                    }
+
+                    // if (currentFunc == "_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi_")
                     {
 
                         char currentVectorTempType = currentFunc[17];
                         string currentVectorType;
                         string currentPrintType;
+                        int currentTypeSize;
+                        int currentPrintTypeSize;
 
                         if (currentVectorTempType == 'i')
                         {
                             currentVectorType = "i32";
                             currentPrintType = "int";
+                            currentTypeSize = 5;
+                            currentPrintTypeSize = 4;
+                        }
+                        else if(currentVectorTempType == 'f')
+                        {
+                            currentVectorType = "float";
+                            currentPrintType = "float";
+                            currentTypeSize = 7;
+                            currentPrintTypeSize = 4;
+                        }
+                        else if(currentVectorTempType == 'x')
+                        {
+                            currentVectorType = "i64";
+                            currentPrintType = "i64";
+                            currentTypeSize = 15;
+                            currentPrintTypeSize = 5;
+                        }
+                        else if(currentVectorTempType == 's')
+                        {
+                            currentVectorType = "i16";
+                            currentPrintType = "i16";
+                            currentTypeSize = 7;
+                            currentPrintTypeSize = 4;
+                        }
+                        else if(currentVectorTempType == 'd')
+                        {
+                            currentVectorType = "double";
+                            currentPrintType = "double";
+                            currentTypeSize = 8;
+                            currentPrintTypeSize = 5;
+                        }
+                        else if(currentVectorTempType == 'c')
+                        {
+                            currentVectorType = "i8";
+                            currentPrintType = "i8";
+                            currentTypeSize = 6;
+                            currentPrintTypeSize = 4;
                         }
                         else
                         {
@@ -911,10 +994,10 @@ int main()
                         output_printf_fstream << "%var_push_back =  call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_pushBack, i32 0, i32 0)) " << "\n";
 
                         output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) " << "\n";
-                        output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str." << currentVectorType << ", i64 0, i64 0)) " << "\n";
+                        output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentTypeSize << " x i8], [ "<< currentTypeSize <<" x i8]* @.str." << currentVectorType << ", i64 0, i64 0)) " << "\n";
                         output_printf_fstream << "%var_3_value = load " << currentVectorType << ", " << currentVectorType << "* %__x, align 4 " << "\n";
-                        output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::vector\"* %this) " << "\n";
-                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_" << currentPrintType << ", i64 0, i64 0), " << currentVectorType << " %var_3_value) " << "\n";
+                        output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::vector" << vector_type_num << "\"* %this) " << "\n";
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentPrintTypeSize << " x i8], [" << currentPrintTypeSize <<" x i8]* @.str.print_" << currentPrintType << ", i64 0, i64 0), " << currentVectorType << " %var_3_value) " << "\n";
                         output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line) " << "\n";
                         output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum) " << "\n";
                         output_printf_fstream << "" << "\n";
