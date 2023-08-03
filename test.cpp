@@ -1,51 +1,66 @@
 #include <iostream>
-// #include <string>
+#include <vector>
+#include <map>
+#include <queue>
 
 using namespace std;
 
 int main()
 {
-  string tempstr = "11111";
-  tempstr = "32222";
+  // int arr[5][7][8] = {{{1,2}}};
+  // int arr222[5][7][8][10] = {{{{3,4}}}};
+  vector<int> vvvvv(10);
+  vector<float> kkkkk;
+  // vector<vector<int> > nnnnn(20);
+  vector<long long int> lllll;
+  vector<short> hhhhh;
+  
+  vector<double> ddddd;
+  vector<char> ccccc;
 
-  tempstr[2] = 'A';
+  ddddd.push_back(11111.22222);
+  ccccc.push_back('G');
+  // vector<string> sssss;
 
-  cout << tempstr << "\n";
+// string tempstr = "bbadfgae";
+// // 
+// tempstr = "vaaeg\netsetset\ndfydreg";
 
-  if(tempstr[2] == 'B')
-    tempstr[3] = 'B';
-  else
-    tempstr[5] = 'G';
+// cout << tempstr.length() << "\n";
+// tempstr.length();
+// tempstr.length();
 
-int num1 = 44444;
-  if(tempstr == "11111")
-  {
-    int num333 = 555555;
-    tempstr[555] = 'd';
-  }
+// sssss.push_back("qqqqqqqq");
 
-tempstr[7] = 'Q';
-  if(tempstr == "aaaba")
-  {
+// sssss[0].length();
+// cout << sssss[0].length() << "\n"; 
 
-  }
+vvvvv.push_back(5555);
+vvvvv.push_back(6666);
+vvvvv.push_back(7777);
+kkkkk.push_back(22222.22);
+lllll.push_back(33333333333);
+hhhhh.push_back(444);
+// sssss.push_back("qwergfewerfd");
+
+// nnnnn.push_back(vvvvv);
+
+// cout << nnnnn[0][0] << "\n";
+
+// // cout << vvvvv.front() << "\n";
+
+// string ssttrr = "123424242"; 
+
+// ssttrr = "12345";
+
+// if(ssttrr == "12345")
+// {
+//   ssttrr[5] = 'K';
+// }
+
+// if(ssttrr == "12345")
+// {
+//   cout << ssttrr << "(" << ssttrr.length() << ")" << endl;
+// }
+
 }
-
-
-/*
-%"class.std::__1::basic_string" = type { %"class.std::__1::__compressed_pair" }
-%"class.std::__1::__compressed_pair" = type { %"struct.std::__1::__compressed_pair_elem" }
-%"struct.std::__1::__compressed_pair_elem" = type { %"struct.std::__1::basic_string<char>::__rep" }
-%"struct.std::__1::basic_string<char>::__rep" = type { %union.anon }
-%union.anon = type { %"struct.std::__1::basic_string<char>::__long" }
-%"struct.std::__1::basic_string<char>::__long" = type { i8*, i64, i64 }
-%"struct.std::__1::__default_init_tag" = type { i8 }
-%"class.std::__1::__basic_string_common" = type { i8 }
-%"struct.std::__1::__compressed_pair_elem.0" = type { i8 }
-%"class.std::__1::allocator" = type { i8 }
-%"struct.std::__1::__non_trivial_if" = type { i8 }
-
-%"struct.std::__1::basic_string<char>::__short" = type { [23 x i8], %struct.anon }
-%struct.anon = type { i8 }
-
-*/
