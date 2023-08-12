@@ -114,14 +114,11 @@ entry:
 @.str.i8 = private unnamed_addr constant [6 x i8]  c"char \00", align 1
 @.str.i16 = private unnamed_addr constant [7 x i8]  c"short \00", align 1
 @.str.i32 = private unnamed_addr constant [5 x i8]  c"int \00", align 1
-@.str.i32p = private unnamed_addr constant [6 x i8]  c"int* \00", align 1
-@.str.i32pp = private unnamed_addr constant [7 x i8]  c"int** \00", align 1
 @.str.i64 = private unnamed_addr constant [15 x i8] c"long_long_int \00", align 1
-
 @.str.float = private unnamed_addr constant [7 x i8]  c"float \00", align 1
 @.str.double = private unnamed_addr constant [8 x i8]  c"double \00", align 1
-
 ;@.str.char = private unnamed_addr constant [6 x i8] c"char \00", align 1
+
 @.str.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
 
 define internal void @_GLOBAL__sub_I_main.cc() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
