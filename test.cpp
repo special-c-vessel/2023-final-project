@@ -1,66 +1,46 @@
 #include <iostream>
-#include <vector>
-#include <map>
-#include <queue>
 
 using namespace std;
 
 int main()
 {
-  // int arr[5][7][8] = {{{1,2}}};
-  // int arr222[5][7][8][10] = {{{{3,4}}}};
-  vector<int> vvvvv(10);
-  vector<float> kkkkk;
-  // vector<vector<int> > nnnnn(20);
-  vector<long long int> lllll;
-  vector<short> hhhhh;
-  
-  vector<double> ddddd;
-  vector<char> ccccc;
+  int num1 = 5;
+  num1 = 55;
+  // cout << num1 << "\n";
 
-  ddddd.push_back(11111.22222);
-  ccccc.push_back('G');
-  // vector<string> sssss;
+  int * numptr = &num1;
+  int ** nnuummppttrr = &numptr;
+  int *** nnnptr = &nnuummppttrr;
 
-// string tempstr = "bbadfgae";
-// // 
-// tempstr = "vaaeg\netsetset\ndfydreg";
+  *numptr = 44;
+  **nnuummppttrr = 77;
+  ***nnnptr = 99;
 
-// cout << tempstr.length() << "\n";
-// tempstr.length();
-// tempstr.length();
+  // int num2 = 11111;
 
-// sssss.push_back("qqqqqqqq");
+  // int arr[50] = {11, 22, 33, 44, 55};
 
-// sssss[0].length();
-// cout << sssss[0].length() << "\n"; 
+  // **nnuummppttrr = 77;
 
-vvvvv.push_back(5555);
-vvvvv.push_back(6666);
-vvvvv.push_back(7777);
-kkkkk.push_back(22222.22);
-lllll.push_back(33333333333);
-hhhhh.push_back(444);
-// sssss.push_back("qwergfewerfd");
+  // cout << num1 << "\n";
 
-// nnnnn.push_back(vvvvv);
+  // temprecFunc("int", 2);
 
-// cout << nnnnn[0][0] << "\n";
+  char char1 = 'a';
+  char1 = 'b';
+  char * charptr = &char1;
+  char ** cchhaarrptr = &charptr;
 
-// // cout << vvvvv.front() << "\n";
+  short short1 = 22;
+  short1 = 33;
+  short * shortptr = &short1;
+  short ** shortccc = &shortptr;
 
-// string ssttrr = "123424242"; 
-
-// ssttrr = "12345";
-
-// if(ssttrr == "12345")
-// {
-//   ssttrr[5] = 'K';
-// }
-
-// if(ssttrr == "12345")
-// {
-//   cout << ssttrr << "(" << ssttrr.length() << ")" << endl;
-// }
+  long long int lli1 = 11112123123213;
+  lli1 = 456453654363456;
+  long long int * lli1ptr = &lli1;
+  long long int ** lli222 = &lli1ptr;
 
 }
+
+
