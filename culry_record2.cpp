@@ -104,46 +104,46 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     bool isResetArr = false;    // 배열의 초기값 할당인 경우   int arr[5][5] = {{1, 2}, {3, 4}};
     bool isString = false;      // string 인 경우
 
-    if(var_type[var_type.size() - 1] == '*')
+    if (var_type[var_type.size() - 1] == '*')
     {
-        for(int i = var_type.size() - 1; i > 0; i --)
+        for (int i = var_type.size() - 1; i > 0; i--)
         {
-            if(var_type[i] == '*')
-                var_ptr_cnt ++;
+            if (var_type[i] == '*')
+                var_ptr_cnt++;
             else
                 break;
         }
     }
 
-    maxPtrCnt = max(var_ptr_cnt, maxPtrCnt);
+    maxPtrCnt = max(var_ptr_cnt , maxPtrCnt);
 
     // 각 타입에 맞게 타입 출력 길이를 설정
-    if (var_type.substr(0, 2) == "i8")       // char
+    if (var_type.substr(0 , 2) == "i8")       // char
     {
         var_type_length = 6;
         var_type_print_length = 4;
     }
-    else if (var_type.substr(0, 3) == "i16") // short
+    else if (var_type.substr(0 , 3) == "i16") // short
     {
         var_type_length = 7;
         var_type_print_length = 4;
     }
-    else if (var_type.substr(0, 3) == "i32") // int
+    else if (var_type.substr(0 , 3) == "i32") // int
     {
         var_type_length = 5;
         var_type_print_length = 4;
     }
-    else if (var_type.substr(0, 3) == "i64") // long long int
+    else if (var_type.substr(0 , 3) == "i64") // long long int
     {
         var_type_length = 15;
         var_type_print_length = 5;
     }
-    else if (var_type.substr(0, 5) == "float") // float
+    else if (var_type.substr(0 , 5) == "float") // float
     {
         var_type_length = 7;
         var_type_print_length = 4;
     }
-    else if (var_type.substr(0, 6) == "double") // double
+    else if (var_type.substr(0 , 6) == "double") // double
     {
         var_type_length = 8;
         var_type_print_length = 5;
@@ -154,12 +154,17 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     //     var_type_print_length = 4;
     // }
 
+
+    // 파일 입출력 a+로 이어쓰기
+    output_printf_fstream << "%openFile" << globalNum << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+
+
     // 변수가 가진 값을 가져와 %var_num_value에 저장, 변수값 출력 시 사용
     output_printf_fstream << "%var_" << globalNum << "_value = load " << var_type << ", " << var_type << "* " << var_name << " align 4\n";
 
     // var_name가 arrayidx 일 경우 배열이므로 차수 기록을 위한 작업 수행
     // cout << var_name.substr(1 , 8) << "\n";
-    if (var_name.substr(1 , 8) == "arrayidx")
+    if (var_name.substr(1 , 8) == "arrayidx"  || previoustempv.size())
     {
         cout << "find arrayidx !!!!!!!!!!!!!!! \n";
 
@@ -188,10 +193,10 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     // %10 = bitcast [3 x [15 x i32]]* %arrJJJJJ to i8*
     else if (var_name[1] == '0' || var_name[1] == '1' || var_name[1] == '2' || var_name[1] == '3' || var_name[1] == '4' || var_name[1] == '5' || var_name[1] == '6' || var_name[1] == '7' || var_name[1] == '8' || var_name[1] == '9')
     {
-        maxNumValueName = max(maxNumValueName, stoi(var_name.substr(1 , var_name.size() - 1)));   //// %var_name, -> var_name
+        maxNumValueName = max(maxNumValueName , stoi(var_name.substr(1 , var_name.size() - 1)));   //// %var_name, -> var_name
 
         // if(tempv[7] != "getelementptr")
-        if(!vectorForResetArr.empty())
+        if (!vectorForResetArr.empty())
             isResetArr = true;
 
         // cout << "isResetArr 's type : " << var_type << "\n";
@@ -242,7 +247,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     // type 출력 
 
     // type이 pointer 인 경우 
-    if(var_ptr_cnt > 0)
+    if (var_ptr_cnt > 0)
     {
         // %temp_varVal_10_4 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), i32** %var_10_value) 
         // output_printf_fstream << "%temp_varVal_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
@@ -254,17 +259,17 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         output_printf_fstream << "%temp_ValTYpe_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
     else
     {
-        if(var_ptr_cnt > 0)
+        if (var_ptr_cnt > 0)
         {
             string temp_var_type;
             int temp_var_type_cnt = 0;
-            for(int i = 0; i < var_type.size(); i ++)
+            for (int i = 0; i < var_type.size(); i++)
             {
-                if(var_type[i] == '*')
-                    {
-                        temp_var_type += 'p';
-                        temp_var_type_cnt ++;
-                    }
+                if (var_type[i] == '*')
+                {
+                    temp_var_type += 'p';
+                    temp_var_type_cnt++;
+                }
                 else
                     temp_var_type += var_type[i];
             }
@@ -338,7 +343,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
 
     // 값 포인터 라인 컬럼 기록
-    if(var_ptr_cnt > 0)
+    if (var_ptr_cnt > 0)
     {
         // %temp_varVal_10_4 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), i32** %var_10_value) 
         // output_printf_fstream << "%temp_varVal_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
@@ -354,6 +359,9 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     output_printf_fstream << "%temp_varPtr_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type_for_arr << "* " << tempPtrStr << ")\n";
     output_printf_fstream << "%temp_varLine_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
     output_printf_fstream << "%temp_varColnum_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << ColNum << ")\n";
+
+    // 파일 닫기
+    output_printf_fstream << "%closeFile" << globalNum << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
 
     cout << " >>>>>>> write is completed!!!    \n";
     cout << " >>>>>>> var_name is " << var_name << "\n";
@@ -431,32 +439,35 @@ void writeLLFile(string txtName)
             output_printf_fstream << WTFLine << "\n";
         }
 
-        for(int i = 1; i <= maxPtrCnt; i ++)
+        if (txtName == "record_above.ll")
         {
-            string p = "";
-            string star = "";
-            for(int j = 0; j < i; j ++)
+            for (int i = 1; i <= maxPtrCnt; i++)
             {
-                p += "p";
-                star += '*';
-            }
-            output_printf_fstream << "@.str.i8" << p << " = private unnamed_addr constant [" << 6 + i << " x i8]  c\"char" << p << " \\00\", align 1" << "\n";
-            output_printf_fstream << "@.str.i16" << p << " = private unnamed_addr constant [" << 7 + i << " x i8]  c\"short" << p << " \\00\", align 1" << "\n";
-            output_printf_fstream << "@.str.i32" << p << " = private unnamed_addr constant [" << 5 + i << " x i8]  c\"int" << p << " \\00\", align 1" << "\n";
-            output_printf_fstream << "@.str.i64" << p << " = private unnamed_addr constant [" << 15 + i << " x i8]  c\"long_long_int" << p << " \\00\", align 1" << "\n";
-            output_printf_fstream << "@.str.float" << p << " = private unnamed_addr constant [" << 7 + i << " x i8]  c\"float" << p << " \\00\", align 1" << "\n";
-            output_printf_fstream << "@.str.double" << p << " = private unnamed_addr constant [" << 8 + i << " x i8]  c\"double" << p << " \\00\", align 1" << "\n";
-        }
-
-        if(maxNumValueName > -1)
-        {
-            for(int i = 0; i <= maxNumValueName; i ++)
-            {
-                string valName = to_string(i);
-                output_printf_fstream << "@__const_culry." << valName << " = private unnamed_addr constant [" << valName.size() + 2 << " x i8] c\"" << valName << " \\00\", align 1"<< "\n";
-                //@__const_culry.arr = private unnamed_addr constant [5 x i8] c"arr \00", align 1 
+                string p = "";
+                string star = "";
+                for (int j = 0; j < i; j++)
+                {
+                    p += "p";
+                    star += '*';
+                }
+                output_printf_fstream << "@.str.i8" << p << " = private unnamed_addr constant [" << 6 + i << " x i8]  c\"char" << p << " \\00\", align 1" << "\n";
+                output_printf_fstream << "@.str.i16" << p << " = private unnamed_addr constant [" << 7 + i << " x i8]  c\"short" << p << " \\00\", align 1" << "\n";
+                output_printf_fstream << "@.str.i32" << p << " = private unnamed_addr constant [" << 5 + i << " x i8]  c\"int" << p << " \\00\", align 1" << "\n";
+                output_printf_fstream << "@.str.i64" << p << " = private unnamed_addr constant [" << 15 + i << " x i8]  c\"long_long_int" << p << " \\00\", align 1" << "\n";
+                output_printf_fstream << "@.str.float" << p << " = private unnamed_addr constant [" << 7 + i << " x i8]  c\"float" << p << " \\00\", align 1" << "\n";
+                output_printf_fstream << "@.str.double" << p << " = private unnamed_addr constant [" << 8 + i << " x i8]  c\"double" << p << " \\00\", align 1" << "\n";
             }
 
+            if (maxNumValueName > -1)
+            {
+                for (int i = 0; i <= maxNumValueName; i++)
+                {
+                    string valName = to_string(i);
+                    output_printf_fstream << "@__const_culry." << valName << " = private unnamed_addr constant [" << valName.size() + 2 << " x i8] c\"" << valName << " \\00\", align 1" << "\n";
+                    //@__const_culry.arr = private unnamed_addr constant [5 x i8] c"arr \00", align 1 
+                }
+
+            }
         }
 
         output_printf_fstream << "; " << txtName << " File Write End\n";
@@ -680,23 +691,23 @@ int main()
                         || (tempv[i + 2] == "zeroext" && tempv[i + 4] == "@_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_(%\"class.std::__1::basic_string\"*")
 
                         // vector int tpye push_back
-                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERK")
-                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIfNS_9allocatorIfEEE9push_backERK")
-                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIxNS_9allocatorIxEEE9push_backERK")
-                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIsNS_9allocatorIsEEE9push_backERK")
-                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERK")
-                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0, 50) == "@_ZNSt3__16vectorIcNS_9allocatorIcEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0 , 50) == "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0 , 50) == "@_ZNSt3__16vectorIfNS_9allocatorIfEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0 , 50) == "@_ZNSt3__16vectorIxNS_9allocatorIxEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0 , 50) == "@_ZNSt3__16vectorIsNS_9allocatorIsEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0 , 50) == "@_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERK")
+                        || (tempv[i + 2] == "void" && tempv[i + 3].substr(0 , 50) == "@_ZNSt3__16vectorIcNS_9allocatorIcEEE9push_backERK")
                         )
                     )
                 {
-                    if (tempv[i + 3].substr(0, 18) == "@_ZNSt3__16vectorI")
+                    if (tempv[i + 3].substr(0 , 18) == "@_ZNSt3__16vectorI")
                     {
                         //vector_type_num
                         vector_type_num = "";
-                        if(tempv[i + 3].size() > 78)
+                        if (tempv[i + 3].size() > 78)
                         {
                             vector_type_num = ".";
-                            for(int k = 77; tempv[i + 3][k] != '\"'; k ++)
+                            for (int k = 77; tempv[i + 3][k] != '\"'; k++)
                             {
                                 vector_type_num += tempv[i + 3][k];
                             }
@@ -855,17 +866,17 @@ int main()
                         continue;
                     }
 
-                    if( (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERK")
-                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIfNS_9allocatorIfEEE9push_backERK")
-                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIxNS_9allocatorIxEEE9push_backERK")
-                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIsNS_9allocatorIsEEE9push_backERK")
-                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERK")
-                       && (tempv[i + 2].substr(0, 50) != "@_ZNSt3__16vectorIcNS_9allocatorIcEEE9push_backERK")
-                       )
-                       {
-                            output_printf_fstream << tempv[i] << " ";
-                            continue;
-                       }
+                    if ((tempv[i + 2].substr(0 , 50) != "@_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERK")
+                        && (tempv[i + 2].substr(0 , 50) != "@_ZNSt3__16vectorIfNS_9allocatorIfEEE9push_backERK")
+                        && (tempv[i + 2].substr(0 , 50) != "@_ZNSt3__16vectorIxNS_9allocatorIxEEE9push_backERK")
+                        && (tempv[i + 2].substr(0 , 50) != "@_ZNSt3__16vectorIsNS_9allocatorIsEEE9push_backERK")
+                        && (tempv[i + 2].substr(0 , 50) != "@_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERK")
+                        && (tempv[i + 2].substr(0 , 50) != "@_ZNSt3__16vectorIcNS_9allocatorIcEEE9push_backERK")
+                        )
+                    {
+                        output_printf_fstream << tempv[i] << " ";
+                        continue;
+                    }
 
 
                     // if (tempv[i + 2][18] == 'i')
@@ -984,35 +995,35 @@ int main()
                             currentTypeSize = 5;
                             currentPrintTypeSize = 4;
                         }
-                        else if(currentVectorTempType == 'f')
+                        else if (currentVectorTempType == 'f')
                         {
                             currentVectorType = "float";
                             currentPrintType = "float";
                             currentTypeSize = 7;
                             currentPrintTypeSize = 4;
                         }
-                        else if(currentVectorTempType == 'x')
+                        else if (currentVectorTempType == 'x')
                         {
                             currentVectorType = "i64";
                             currentPrintType = "i64";
                             currentTypeSize = 15;
                             currentPrintTypeSize = 5;
                         }
-                        else if(currentVectorTempType == 's')
+                        else if (currentVectorTempType == 's')
                         {
                             currentVectorType = "i16";
                             currentPrintType = "i16";
                             currentTypeSize = 7;
                             currentPrintTypeSize = 4;
                         }
-                        else if(currentVectorTempType == 'd')
+                        else if (currentVectorTempType == 'd')
                         {
                             currentVectorType = "double";
                             currentPrintType = "double";
                             currentTypeSize = 8;
                             currentPrintTypeSize = 5;
                         }
-                        else if(currentVectorTempType == 'c')
+                        else if (currentVectorTempType == 'c')
                         {
                             currentVectorType = "i8";
                             currentPrintType = "i8";
@@ -1024,7 +1035,7 @@ int main()
 
                             continue;
                         }
-                        
+
 
 
                         output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0)) " << "\n";
@@ -1032,10 +1043,10 @@ int main()
                         output_printf_fstream << "%var_push_back =  call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_pushBack, i32 0, i32 0)) " << "\n";
 
                         output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) " << "\n";
-                        output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentTypeSize << " x i8], [ "<< currentTypeSize <<" x i8]* @.str." << currentVectorType << ", i64 0, i64 0)) " << "\n";
+                        output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentTypeSize << " x i8], [ " << currentTypeSize << " x i8]* @.str." << currentVectorType << ", i64 0, i64 0)) " << "\n";
                         output_printf_fstream << "%var_3_value = load " << currentVectorType << ", " << currentVectorType << "* %__x, align 4 " << "\n";
                         output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::vector" << vector_type_num << "\"* %this) " << "\n";
-                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentPrintTypeSize << " x i8], [" << currentPrintTypeSize <<" x i8]* @.str.print_" << currentPrintType << ", i64 0, i64 0), " << currentVectorType << " %var_3_value) " << "\n";
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentPrintTypeSize << " x i8], [" << currentPrintTypeSize << " x i8]* @.str.print_" << currentPrintType << ", i64 0, i64 0), " << currentVectorType << " %var_3_value) " << "\n";
                         output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line) " << "\n";
                         output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum) " << "\n";
                         output_printf_fstream << "" << "\n";
@@ -1086,7 +1097,7 @@ int main()
                 }
 
                 // 변수의 할당 및 불러오기, store 및 load 일 때 새로 할당된 값 또는 불러온 값을 기록
-                else if ((tempv[i] == "store" && tempv[6] != "getelementptr") ) //|| tempv[i] == "load"
+                else if ((tempv[i] == "store" && tempv[6] != "getelementptr")) //|| tempv[i] == "load"
                 {
                     // 기록할 필요 없는 기본 내장 함수 건너뜀
                     if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
@@ -1150,6 +1161,13 @@ int main()
                     if (checkDuplVarName.find(tempallocastr) == checkDuplVarName.end())
                     {
                         checkDuplVarName.insert(make_pair(tempallocastr , 1));
+                        if (tempallocastr[0] == '0' || tempallocastr[0] == '1' ||
+                            tempallocastr[0] == '2' || tempallocastr[0] == '3' ||
+                            tempallocastr[0] == '4' || tempallocastr[0] == '5' ||
+                            tempallocastr[0] == '6' || tempallocastr[0] == '7' ||
+                            tempallocastr[0] == '8' || tempallocastr[0] == '9')
+                            continue;
+
                         str_fstream << "@__const_culry." << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
                     }
                     else
@@ -1427,3 +1445,4 @@ int main()
     cout << "***************************   record 2 end  222   ***************************\n";
     return 0;
 }
+
