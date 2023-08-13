@@ -1,20 +1,11 @@
-store num1 int 5 0x16d81252c 16 7
-store num1 int 55 0x16d81252c 17 8
-store numptr intp 0x16d81252c 0x16d812520 20 9
-store nnuummppttrr intpp 0x16d812520 0x16d812518 21 10
-store nnnptr intppp 0x16d812518 0x16d812510 22 11
-store 0 int 44 0x16d81252c 24 11
-store 2 int 77 0x16d81252c 25 18
-store 5 int 99 0x16d81252c 26 13
-store char1 char a 0x16d81250f 38 8
-store char1 char b 0x16d81250f 39 9
-store charptr charp 0x16d81250f 0x16d812500 40 10
-store cchhaarrptr charpp 0x16d812500 0x16d8124f8 41 11
-store short1 short 22 0x16d8124f6 43 9
-store short1 short 33 0x16d8124f6 44 10
-store shortptr shortp 0x16d8124f6 0x16d8124e8 45 11
-store shortccc shortpp 0x16d8124e8 0x16d8124e0 46 12
-store lli1 long_long_int 11112123123213 0x16d8124d8 48 17
-store lli1 long_long_int 456453654363456 0x16d8124d8 49 8
-store lli1ptr long_long_intp 0x16d8124d8 0x16d8124d0 50 19
-store lli222 long_long_intpp 0x16d8124d0 0x16d8124c8 51 20
+store num1 int 10 0x16d16fd64 8 7
+store num2 int 20 0x16d16fd60 8 18
+store num3 int 30 0x16d16fd5c 8 29
+store ptr1num1 intp 0x16d16fd64 0x16d16fd50 9 9
+store arrptr intp isArr 2 2 0x16d16fd64 0x16d171ca8 18 16
+store arrptr intp isArr 10 10 0x16d16fd60 0x16d171ca8 19 18
+store ooooo int isArr 5 11 0x16d1724c8 21 13
+store arrpptr intpp isArr 15 13 0x16d16fd50 0x16d1709e8 23 19
+store arrpptr int isArr 15 13 99999 0x16d1709e8 25 21
+store temparr int isArr 11 22 66666 0x16d16fd68 27 19
+store temparr int isArr 12 33 77777 0x16d16fd68 28 19
