@@ -70,7 +70,7 @@ checkDeclare checkDel;
 int globalNum = 0;
 
 int maxPtrCnt = 0;
-int maxNumValueName = 0;
+int maxNumValueName = -1;
 
 void findLineAndColNumber(string , string);
 void addPrintfInstruction(string , string , string , string , string);
@@ -448,11 +448,15 @@ void writeLLFile(string txtName)
             output_printf_fstream << "@.str.double" << p << " = private unnamed_addr constant [" << 8 + i << " x i8]  c\"double" << p << " \\00\", align 1" << "\n";
         }
 
-        for(int i = 0; i <= maxNumValueName; i ++)
+        if(maxNumValueName > -1)
         {
-            string valName = to_string(i);
-            output_printf_fstream << "@__const_culry." << valName << " = private unnamed_addr constant [" << valName.size() + 2 << " x i8] c\"" << valName << " \\00\", align 1"<< "\n";
-            //@__const_culry.arr = private unnamed_addr constant [5 x i8] c"arr \00", align 1 
+            for(int i = 0; i <= maxNumValueName; i ++)
+            {
+                string valName = to_string(i);
+                output_printf_fstream << "@__const_culry." << valName << " = private unnamed_addr constant [" << valName.size() + 2 << " x i8] c\"" << valName << " \\00\", align 1"<< "\n";
+                //@__const_culry.arr = private unnamed_addr constant [5 x i8] c"arr \00", align 1 
+            }
+
         }
 
         output_printf_fstream << "; " << txtName << " File Write End\n";
@@ -1351,7 +1355,7 @@ int main()
                     // type
                     output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
 
-                    // String 값 출력 시작
+                    // String 값 출력 시작`
                     output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
 
                     // string length record
