@@ -1,66 +1,42 @@
 #include <iostream>
-#include <vector>
-#include <map>
-#include <queue>
+#include <fstream>
 
 using namespace std;
 
 int main()
 {
-  // int arr[5][7][8] = {{{1,2}}};
-  // int arr222[5][7][8][10] = {{{{3,4}}}};
-  vector<int> vvvvv(10);
-  vector<float> kkkkk;
-  // vector<vector<int> > nnnnn(20);
-  vector<long long int> lllll;
-  vector<short> hhhhh;
+  int num1 = 10, num2 = 20, num3 = 30;
+  int * ptr1num1 = &num1;
+  int * tempptr2;
+
+  int * ooooo[12];
+  int * arrptr[13][20];
+  int ** arrpptr[30][20];
   
-  vector<double> ddddd;
-  vector<char> ccccc;
+  int temparr[20][40];
 
-  ddddd.push_back(11111.22222);
-  ccccc.push_back('G');
-  // vector<string> sssss;
+  arrptr[2][2] = &num1;
+  arrptr[10][10] = &num2;
 
-// string tempstr = "bbadfgae";
-// // 
-// tempstr = "vaaeg\netsetset\ndfydreg";
+  // segmentation fault !!!!!
+  // 그러나 기록됨
+  *ooooo[5] = 11;
 
-// cout << tempstr.length() << "\n";
-// tempstr.length();
-// tempstr.length();
+  arrpptr[15][13] = &ptr1num1;
 
-// sssss.push_back("qqqqqqqq");
+  **arrpptr[15][13] = 99999;
 
-// sssss[0].length();
-// cout << sssss[0].length() << "\n"; 
+  temparr[11][22] = 66666;
+  temparr[12][33] = 77777;
 
-vvvvv.push_back(5555);
-vvvvv.push_back(6666);
-vvvvv.push_back(7777);
-kkkkk.push_back(22222.22);
-lllll.push_back(33333333333);
-hhhhh.push_back(444);
-// sssss.push_back("qwergfewerfd");
+  // segmentation fault !!!!!
+  // 이 아래로 기록되지 않음
+  *tempptr2 = 22222;
 
-// nnnnn.push_back(vvvvv);
-
-// cout << nnnnn[0][0] << "\n";
-
-// // cout << vvvvv.front() << "\n";
-
-// string ssttrr = "123424242"; 
-
-// ssttrr = "12345";
-
-// if(ssttrr == "12345")
-// {
-//   ssttrr[5] = 'K';
-// }
-
-// if(ssttrr == "12345")
-// {
-//   cout << ssttrr << "(" << ssttrr.length() << ")" << endl;
-// }
-
+  temparr[12][35] = 88888;
+  temparr[12][36] = 99999;
+  
+  return 0;
 }
+
+

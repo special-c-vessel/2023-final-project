@@ -1,16 +1,11 @@
-store ref.tmp double 11111.222220 0x16bc16468 21 19
-store push_back ddddd double 0x16bc16488 11111.222220 21 9
-store ref.tmp16 char G 0x16bc16467 22 19
-store push_back ccccc char 0x16bc16470 G 22 9
-store ref.tmp18 int 5555 0x16bc16460 38 17
-store push_back vvvvv int 0x16bc164f8 5555 38 7
-store ref.tmp20 int 6666 0x16bc1645c 39 17
-store push_back vvvvv int 0x16bc164f8 6666 39 7
-store ref.tmp22 int 7777 0x16bc16458 40 17
-store push_back vvvvv int 0x16bc164f8 7777 40 7
-store ref.tmp24 float 22222.220703 0x16bc16454 41 17
-store push_back kkkkk float 0x16bc164e0 22222.220703 41 7
-store ref.tmp26 long_long_int 33333333333 0x16bc16448 42 17
-store push_back lllll long_long_int 0x16bc164b8 33333333333 42 7
-store ref.tmp28 short 444 0x16bc16446 43 17
-store push_back hhhhh short 0x16bc164a0 444 43 7
+store num1 int 10 0x16d16fd64 8 7
+store num2 int 20 0x16d16fd60 8 18
+store num3 int 30 0x16d16fd5c 8 29
+store ptr1num1 intp 0x16d16fd64 0x16d16fd50 9 9
+store arrptr intp isArr 2 2 0x16d16fd64 0x16d171ca8 18 16
+store arrptr intp isArr 10 10 0x16d16fd60 0x16d171ca8 19 18
+store ooooo int isArr 5 11 0x16d1724c8 21 13
+store arrpptr intpp isArr 15 13 0x16d16fd50 0x16d1709e8 23 19
+store arrpptr int isArr 15 13 99999 0x16d1709e8 25 21
+store temparr int isArr 11 22 66666 0x16d16fd68 27 19
+store temparr int isArr 12 33 77777 0x16d16fd68 28 19
