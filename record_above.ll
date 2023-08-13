@@ -9,6 +9,7 @@
 @file = global %struct.__sFILE* null, align 8
 @.str.openfile = private unnamed_addr constant [11 x i8] c"record.txt\00", align 1
 @.str.write = private unnamed_addr constant [3 x i8] c"w+\00", align 1
+@.str.continue = private unnamed_addr constant [3 x i8] c"a+\00", align 1
 @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }]
 
 ; ; #include <string>
@@ -45,6 +46,7 @@
 
 ; userKeyWord
 @.str.userKeyWord_isArr = private unnamed_addr constant [7 x i8] c"isArr \00", align 1
+@.str.userKeyWord_isPointer = private unnamed_addr constant [11 x i8] c"isPointer \00", align 1
 @.str.userKeyWord_isStringStart = private unnamed_addr constant [13 x i8] c"StringStart \00", align 1
 @.str.userKeyWord_isStringEnd = private unnamed_addr constant [11 x i8] c"StringEnd \00", align 1
 @.str.userKeyWord_pushBack = private unnamed_addr constant [11 x i8] c"push_back \00", align 1
@@ -137,6 +139,7 @@ entry:
 declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #222
 
 declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222
+declare i32 @fclose(%struct.__sFILE*) #222
 
 ; Function Attrs: argmemonly nofree nounwind willreturn
 declare void @llvm.memcpy.p0i8.p0i8.i64_culry(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
