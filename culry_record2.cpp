@@ -176,7 +176,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
     // var_name가 arrayidx 일 경우 배열이므로 차수 기록을 위한 작업 수행
     // cout << var_name.substr(1 , 8) << "\n";
-    if (var_name.substr(1 , 8) == "arrayidx"  || previoustempv.size() > 0)
+    if (var_name.substr(1 , 8) == "arrayidx" || previoustempv.size() > 0)
     {
         cout << "find arrayidx !!!!!!!!!!!!!!! \n";
 
@@ -245,7 +245,12 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         LineNum = "";
         ColNum = "";
         findLineAndColNumber(targetFileName , debugNum);
+
+        
     }
+
+    if(LineNum == "0" && ColNum == "0")
+            return ;
 
     // 배열의 초기 할당의 기록을 위한 작업
     if (isResetArr)
@@ -262,73 +267,92 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
     // 키워드 변수명
     output_printf_fstream << "%temp_KeyWord_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
-    
+
     // tempsVarName == %varName, 
-    // 이미 존재하는 경우
-    if(find(varName.begin(), varName.end(), tempsVarName.substr(0, tempsVarName.size() - 1)) != varName.end())
+    if (tempsVarName[0] != '\"')
     {
-        output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempsVarName.size() + 1 << " x i8], [" << tempsVarName.size() + 1 << " x i8]* @__const_culry." << tempsVarName << " i64 0, i64 0))\n";
+        // %varName, -> varName
+        string compareVarName = "";
+        for (int j = 0; j < tempsVarName.size() - 1; j++)
+        {
+            if (tempsVarName[j] == '%')
+                j++;
+            compareVarName += tempsVarName[j];
+        }
+
+        // 이미 존재하는 경우
+        if (find(varName.begin() , varName.end() , compareVarName) != varName.end())
+        {
+
+        }
+
+        // 존재하지 않은 경우
+        else
+        {
+            // cout << tempsVarName << " 99999999999999999999999999\n";
+            if (compareVarName[0] == '0' || compareVarName[0] == '1' ||
+                compareVarName[0] == '2' || compareVarName[0] == '3' ||
+                compareVarName[0] == '4' || compareVarName[0] == '5' ||
+                compareVarName[0] == '6' || compareVarName[0] == '7' ||
+                compareVarName[0] == '8' || compareVarName[0] == '9')
+            {
+
+            }
+            else
+            {
+                str_fstream << "@__const_culry." << compareVarName << " = private unnamed_addr constant [" << tempsVarName.substr(0 , tempsVarName.size() - 1).size() + 2 << " x i8] c\"" << tempsVarName.substr(0 , tempsVarName.size() - 1) << " \\00\", align 1\n";
+                varName.push_back(compareVarName);
+            }
+
+        }
+
+        output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << compareVarName.size() + 2 << " x i8], [" << compareVarName.size() + 2 << " x i8]* @__const_culry." << compareVarName << ", i64 0, i64 0))\n";
+
     }
-    
-    // 존재하지 않은 경우
-    else
-    {
-        cout << tempsVarName << " 99999999999999999999999999\n";
-        str_fstream << "@__const_culry." << tempsVarName.substr(0, tempsVarName.size() - 1) << " = private unnamed_addr constant [" << tempsVarName.substr(0, tempsVarName.size() - 1).size() + 2 << " x i8] c\"" << tempsVarName.substr(0, tempsVarName.size() - 1) << " \\00\", align 1\n";
-        varName.push_back(tempsVarName.substr(0, tempsVarName.size() - 1));
-        output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @__const_culry.tmpName, i64 0, i64 0))\n";
-    }
+
 
     // type 출력 
 
     // type이 pointer 인 경우 
     if (var_ptr_cnt > 0)
     {
-        // %temp_varVal_10_4 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), i32** %var_10_value) 
-        // output_printf_fstream << "%temp_varVal_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
-        // var_type_print_length = 4;
-        // var_type = "ptr";
     }
-    
+
     // 변수타입
-    
 
-    if (isString)
-        output_printf_fstream << "%temp_ValTYpe_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
-    else
+    string compareVarType = var_type;
+    compareVarType = "";
+    for (int i = 0; i < var_type.size(); i++)
     {
-        if (var_ptr_cnt > 0)
-        {
-            string temp_var_type;
-            int temp_var_type_cnt = 0;
-            for (int i = 0; i < var_type.size(); i++)
-            {
-                if (var_type[i] == '*')
-                {
-                    temp_var_type += 'p';
-                    temp_var_type_cnt++;
-                }
-                else
-                    temp_var_type += var_type[i];
-            }
-            output_printf_fstream << "%temp_ValTYpe_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length + temp_var_type_cnt << " x i8], [" << var_type_length + temp_var_type_cnt << " x i8]* @.str." << temp_var_type << ", i64 0, i64 0))\n";
+        if (var_type[i] == '\"' || var_type[i] == '%' || var_type[i] == ':') // " 문자 건너뜀
+            continue;
 
-            
-            if(find(varType.begin(), varType.end(), temp_var_type.substr(1, temp_var_type.size() - 1)) == varType.end()
-            && temp_var_type[0] != '\"')
-            {
-                varType.push_back(temp_var_type.substr(1, temp_var_type.size() - 1));
-                str_fstream << "@__const_culry." << temp_var_type.substr(1, temp_var_type.size() - 1) << " = private unnamed_addr constant [" << temp_var_type.substr(1, temp_var_type.size() - 1).size() + 2 << " x i8] c\"" << temp_var_type.substr(1, temp_var_type.size() - 1) << " \\00\", align 1\n";
-            }
-        }
+        if (var_type[i] == '*')  // * -> p로 변경
+            compareVarType += 'p';
         else
-        {
-            if(var_type[0] != '\"')
-                output_printf_fstream << "%temp_ValTYpe_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_length << " x i8], [" << var_type_length << " x i8]* @.str." << var_type << ", i64 0, i64 0))\n";
-
-        }
-
+            compareVarType += var_type[i];
     }
+
+    // 해당 타입을 한번도 사용하지 않은 경우
+    if (find(varType.begin() , varType.end() , var_type) == varType.end())
+    {
+
+
+        cout << var_type << " 000000000000000000\n\n\n\n";
+        cout << compareVarType << " 99999999999999999999999\n\n\n\n";
+        varType.push_back(var_type);
+
+        str_fstream << "@__const_culry.TYPE." << compareVarType << " = private unnamed_addr constant [" << compareVarType.size() + 2 << " x i8] c\"" << compareVarType << " \\00\", align 1\n";
+    }
+
+    // 타입이 선언되어 있는 경우
+
+
+
+
+
+    // if(compareVarType.size() > 0)
+    output_printf_fstream << "%temp_ValTYpe_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << compareVarType.size() + 2 << " x i8], [" << compareVarType.size() + 2 << " x i8]* @__const_culry.TYPE." << compareVarType << ", i64 0, i64 0))\n";
 
     // cout << "\n\n\n\n\n\n\n\n\n\n var_type is :  ";
     // cout << var_type << "\n\n\n\n\n\n\n\n\n";
@@ -337,7 +361,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     // ===================== 함수로 만들기 ============================================================
     if (isArr)
     {
-        if(isPointer)
+        if (isPointer)
         {
             output_printf_fstream << "%temp_isPointerArr_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.userKeyWord_isPointerArr, i32 0, i32 0))\n";
         }
@@ -399,17 +423,25 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     // 값 포인터 라인 컬럼 기록
     if (var_ptr_cnt > 0)
     {
-        // %temp_varVal_10_4 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), i32** %var_10_value) 
-        // output_printf_fstream << "%temp_varVal_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
-        // var_type_print_length = 4;
-        // var_type = "ptr";
-        output_printf_fstream << "%temp_varVal_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr" << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
+        for (int i = var_type.size(); var_type[i] == '*'; i--)
+        {
+            if (var_type[i] == 'p')
+                var_type[i] = '*';
+        }
+        output_printf_fstream << "%temp_varVal_777" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr" << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
     }
     else
     {
         output_printf_fstream << "%temp_varVal_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << var_type_print_length << " x i8], [" << var_type_print_length << " x i8]* @.str.print_" << var_type << ", i32 0, i32 0), " << var_type << " %var_" << globalNum << "_value)\n";
 
     }
+
+    for (int i = var_type_for_arr.size(); var_type_for_arr[i] == '*'; i--)
+    {
+        if (var_type_for_arr[i] == 'p')
+            var_type_for_arr[i] = '*';
+    }
+
     output_printf_fstream << "%temp_varPtr_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type_for_arr << "* " << tempPtrStr << ")\n";
     output_printf_fstream << "%temp_varLine_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
     output_printf_fstream << "%temp_varColnum_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << ColNum << ")\n";
@@ -577,7 +609,7 @@ void writeDeclare()
     {
         writeLLFile("record_above_stringLength.ll");
 
-        if(checkDel.checkString__ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv == false)
+        if (checkDel.checkString__ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv == false)
         {
             //_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv
             output_printf_fstream << "define internal zeroext i1 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv(%\"class.std::__1::basic_string\"* %this) #10000003 align 2 {" << "\n";
@@ -599,20 +631,20 @@ void writeDeclare()
             output_printf_fstream << "}" << "\n";
         }
 
-            // _ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv
-            output_printf_fstream << "define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv(%\"class.std::__1::basic_string\"* %this) #10000003 align 2 {" << "\n";
-            output_printf_fstream << "entry:" << "\n";
-            output_printf_fstream << "  %this.addr = alloca %\"class.std::__1::basic_string\"*, align 8" << "\n";
-            output_printf_fstream << "  store %\"class.std::__1::basic_string\"* %this, %\"class.std::__1::basic_string\"** %this.addr, align 8" << "\n";
-            output_printf_fstream << "  %this1 = load %\"class.std::__1::basic_string\"*, %\"class.std::__1::basic_string\"** %this.addr, align 8" << "\n";
-            output_printf_fstream << "  %__r_ = getelementptr inbounds %\"class.std::__1::basic_string\", %\"class.std::__1::basic_string\"* %this1, i32 0, i32 0" << "\n";
-            output_printf_fstream << "  %call = call nonnull align 8 dereferenceable(24) %\"struct.std::__1::basic_string<char>::__rep\"* @_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv(%\"class.std::__1::__compressed_pair" << checkDel.compressed_pair_Num << "\"* %__r_) #10000007" << "\n";
-            output_printf_fstream << "  %0 = getelementptr inbounds %\"struct.std::__1::basic_string<char>::__rep\", %\"struct.std::__1::basic_string<char>::__rep\"* %call, i32 0, i32 0" << "\n";
-            output_printf_fstream << "  %__l = bitcast %union.anon* %0 to %\"struct.std::__1::basic_string<char>::__long\"*" << "\n";
-            output_printf_fstream << "  %__size_ = getelementptr inbounds %\"struct.std::__1::basic_string<char>::__long\", %\"struct.std::__1::basic_string<char>::__long\"* %__l, i32 0, i32 1" << "\n";
-            output_printf_fstream << "  %1 = load i64, i64* %__size_, align 8" << "\n";
-            output_printf_fstream << "  ret i64 %1" << "\n";
-            output_printf_fstream << "}" << "\n";
+        // _ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv
+        output_printf_fstream << "define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv(%\"class.std::__1::basic_string\"* %this) #10000003 align 2 {" << "\n";
+        output_printf_fstream << "entry:" << "\n";
+        output_printf_fstream << "  %this.addr = alloca %\"class.std::__1::basic_string\"*, align 8" << "\n";
+        output_printf_fstream << "  store %\"class.std::__1::basic_string\"* %this, %\"class.std::__1::basic_string\"** %this.addr, align 8" << "\n";
+        output_printf_fstream << "  %this1 = load %\"class.std::__1::basic_string\"*, %\"class.std::__1::basic_string\"** %this.addr, align 8" << "\n";
+        output_printf_fstream << "  %__r_ = getelementptr inbounds %\"class.std::__1::basic_string\", %\"class.std::__1::basic_string\"* %this1, i32 0, i32 0" << "\n";
+        output_printf_fstream << "  %call = call nonnull align 8 dereferenceable(24) %\"struct.std::__1::basic_string<char>::__rep\"* @_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv(%\"class.std::__1::__compressed_pair" << checkDel.compressed_pair_Num << "\"* %__r_) #10000007" << "\n";
+        output_printf_fstream << "  %0 = getelementptr inbounds %\"struct.std::__1::basic_string<char>::__rep\", %\"struct.std::__1::basic_string<char>::__rep\"* %call, i32 0, i32 0" << "\n";
+        output_printf_fstream << "  %__l = bitcast %union.anon* %0 to %\"struct.std::__1::basic_string<char>::__long\"*" << "\n";
+        output_printf_fstream << "  %__size_ = getelementptr inbounds %\"struct.std::__1::basic_string<char>::__long\", %\"struct.std::__1::basic_string<char>::__long\"* %__l, i32 0, i32 1" << "\n";
+        output_printf_fstream << "  %1 = load i64, i64* %__size_, align 8" << "\n";
+        output_printf_fstream << "  ret i64 %1" << "\n";
+        output_printf_fstream << "}" << "\n";
 
 
         //_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv
@@ -632,7 +664,7 @@ void writeDeclare()
         output_printf_fstream << "  ret i64 %conv" << "\n";
         output_printf_fstream << "}" << "\n";
 
-        if(checkDel.checkString__ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv == false)
+        if (checkDel.checkString__ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv == false)
         {
             //_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv
             output_printf_fstream << "define internal nonnull align 8 dereferenceable(24) %\"struct.std::__1::basic_string<char>::__rep\"* @_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv(%\"class.std::__1::__compressed_pair" << checkDel.compressed_pair_Num << "\"* %this) #10000003 align 2 {" << "\n";
@@ -646,7 +678,7 @@ void writeDeclare()
             output_printf_fstream << "}" << "\n";
         }
 
-        if(checkDel.checkString__ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv == false)
+        if (checkDel.checkString__ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv == false)
         {
             //_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv
             output_printf_fstream << "define internal nonnull align 8 dereferenceable(24) %\"struct.std::__1::basic_string<char>::__rep\"* @_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv(%\"struct.std::__1::__compressed_pair_elem" << checkDel.compressed_pair_elem_Num << "\"* %this) #10000003 align 2 {" << "\n";
@@ -663,12 +695,12 @@ void writeDeclare()
 
     }
 
-    if(checkDel.checkFstream_fprint == false)
+    if (checkDel.checkFstream_fprint == false)
     {
         output_printf_fstream << "declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222" << "\n";
     }
 
-    if(checkDel.checkFstream_fclose == false)
+    if (checkDel.checkFstream_fclose == false)
     {
         output_printf_fstream << "declare i32 @fclose(%struct.__sFILE*) #222" << "\n";
     }
@@ -810,7 +842,6 @@ int main()
                     // i ++;
                 }
 
-                //  %call = call %"class.std::__1::basic_string"* @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc(%"class.std::__1::basic_string"* %str, i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str, i64 0, i64 0)), !dbg !1775
                 // string call 함수에 디버그 정보 인자 전달
                 else if (
                     (tempv[i] == "call" || tempv[i] == "invoke")
@@ -835,7 +866,7 @@ int main()
                         LineNum = "";
                         ColNum = "";
                         findLineAndColNumber(targetFileName , tempv[tempv.size() - 2]);
-
+                    
                         while (tempv[i] != "0))," && tempv[i] != "0))")
                         {
                             if (i > 2 && tempv[i][0] == '%')
@@ -894,6 +925,24 @@ int main()
 
                     // i8* getelementptr inbounds ([30 x i8], [30 x i8]* @.str, i64 0, i64 0),
                     output_printf_fstream << "i8* getelementptr inbounds ([" << string_var_length << " x i8], [" << string_var_length << " x i8]* @__const_culry." << string_var_name << "i64 0, i64 0), ";
+
+                    string tempstrName = string_var_name.substr(0 , string_var_name.size() - 1);
+
+                    // 이미 존재하는 경우
+                    if (find(varName.begin() , varName.end() , tempstrName) != varName.end())
+                    {
+
+                    }
+
+                    // 존재하지 않은 경우
+                    else
+                    {
+                            str_fstream << "@__const_culry." << tempstrName << " = private unnamed_addr constant [" << tempstrName.size() + 2 << " x i8] c\"" << tempstrName << " \\00\", align 1\n";
+                            varName.push_back(tempstrName);
+                    }
+                    
+
+
                     output_printf_fstream << "i32" << " ";
                     output_printf_fstream << LineNum << ", ";
                     output_printf_fstream << "i32" << " ";
@@ -1166,22 +1215,26 @@ int main()
                         currentFunc += tempv[i][j];
                     currentFunc += '_';
 
-                    if(currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv_")
+                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv_")
                     {
                         checkDel.checkString__ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv = true;
                     }
 
-                    if(currentFunc == "_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv_")
+                    if (currentFunc == "_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv_")
                     {
                         checkDel.checkString__ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv = true;
                     }
 
-                    if(currentFunc == "_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv_")
+                    if (currentFunc == "_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv_")
                     {
                         checkDel.checkString__ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv = true;
                     }
 
-
+                    // 다른 함수에서 썼던 것들 초기화
+                    while(!previoustempv.empty())
+                    {
+                        previoustempv.pop_back();
+                    }
 
                 }
 
@@ -1247,98 +1300,42 @@ int main()
                     addPrintfInstruction(var_name , var_type , debugNum , currentFunc , tempv[i]);  // 변수의 정보를 바탕으로 기록 코드 작성
                 }
 
-
-                // 새로운 변수가 선언된 경우(메모리 할당된 경우), 변수명 출력을 위해 변수명 크기에 맞게 전역 string 선언 코드 추가
-                // else if (tempv[i] == "alloca")
-                // {
-                //     cout << "find alloca!   ";
-                //     cout << tempv[i - 2] << "  ";
-
-                //     string tempallocastr = tempv[i - 2].substr(1);
-
-                //     cout << " current Function name is =====> ";
-                //     cout << currentFunc << "   and  current alloca name is ----->>>> " << tempallocastr << "\n";
-                //     // str_fstream << "@__const." << currentFunc << "var_name_" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
-                //     // str_fstream << "@__const_culry.1" << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
-
-                //     if (checkDuplVarName.find(tempallocastr) == checkDuplVarName.end())
-                //     {
-                //         checkDuplVarName.insert(make_pair(tempallocastr , 1));
-                //         if (tempallocastr[0] == '0' || tempallocastr[0] == '1' ||
-                //             tempallocastr[0] == '2' || tempallocastr[0] == '3' ||
-                //             tempallocastr[0] == '4' || tempallocastr[0] == '5' ||
-                //             tempallocastr[0] == '6' || tempallocastr[0] == '7' ||
-                //             tempallocastr[0] == '8' || tempallocastr[0] == '9')
-                //             continue;
-
-                //         str_fstream << "@__const_culry." << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
-                        
-                //         if(find(varName.begin(), varName.end(), tempallocastr) == varName.end())
-                //         {
-                //             varName.push_back(tempallocastr);
-                //             cout << tempallocastr << " 8888888888888888888\n";
-                //         }
-                //     }
-                //     else
-                //     {
-                //         checkDuplVarName[tempallocastr]++;
-                //     }
-                // }
-
-                // 전역 변수 선언시 변수명 기록
-                // 함수 하나 만들어야 할 듯
-                // 전역 선언 예시) @thread_Cnt = global i32 0, align 4, !dbg !1787
-                // else if (tempv[0][0] == '@' && tempv[2] == "global")
-                // {
-                //     string tempallocastr = tempv[0].substr(1);
-
-                //     if (checkDuplVarName.find(tempallocastr) == checkDuplVarName.end())
-                //     {
-                //         checkDuplVarName.insert(make_pair(tempallocastr , 1));
-                //         str_fstream << "@__const_culry." << tempallocastr << " = private unnamed_addr constant [" << tempallocastr.size() + 2 << " x i8] c\"" << tempallocastr << " \\00\", align 1\n";
-                //     }
-                //     else
-                //     {
-                //         checkDuplVarName[tempallocastr]++;
-                //     }
-                // }
-
                 // cin 함수를 사용한 경우, 새로운 값 할당과 같으므로 store와 같은 기록 진행을 위한 작업 진행
-                else if (tempv[i] == "@_ZNSt3__13cinE,")
-                {
-                    //&& tempv[i  + 1] != "%\"class.std::__1::basic_string\"*"
+                // else if (tempv[i] == "@_ZNSt3__13cinE,")
+                // {
+                //     //&& tempv[i  + 1] != "%\"class.std::__1::basic_string\"*"
 
-                    cout << "find cin\n";
-                    if (tempv[4] == "call")
-                    {
-                        // 코드 예제: %call = call nonnull align 8 dereferenceable(16) %"class.std::__1::basic_istream"* @_ZNSt3__113basic_istreamIcNS_11char_traitsIcEEErsERi(%"class.std::__1::basic_istream"* @_ZNSt3__13cinE, i32* nonnull align 4 dereferenceable(4) %num1), !dbg !987
-                        // invork  인 경우 따로 만들어야 함
+                //     cout << "find cin\n";
+                //     if (tempv[4] == "call")
+                //     {
+                //         // 코드 예제: %call = call nonnull align 8 dereferenceable(16) %"class.std::__1::basic_istream"* @_ZNSt3__113basic_istreamIcNS_11char_traitsIcEEErsERi(%"class.std::__1::basic_istream"* @_ZNSt3__13cinE, i32* nonnull align 4 dereferenceable(4) %num1), !dbg !987
+                //         // invork  인 경우 따로 만들어야 함
 
-                        string temp_var_name = tempv[tempv.size() - 4]; // %randomNum),
-                        string temp_var_type = tempv[i + 1];            // type*
-                        string debugNum = tempv[tempv.size() - 2];      //  !864
+                //         string temp_var_name = tempv[tempv.size() - 4]; // %randomNum),
+                //         string temp_var_type = tempv[i + 1];            // type*
+                //         string debugNum = tempv[tempv.size() - 2];      //  !864
 
-                        string var_name;
-                        string var_type;
+                //         string var_name;
+                //         string var_type;
 
-                        var_name = temp_var_name.substr(0 , temp_var_name.size() - 2);
-                        var_name += ",";
+                //         var_name = temp_var_name.substr(0 , temp_var_name.size() - 2);
+                //         var_name += ",";
 
-                        var_type = temp_var_type.substr(0 , temp_var_type.size() - 1);
+                //         var_type = temp_var_type.substr(0 , temp_var_type.size() - 1);
 
-                        // cin으로 새로 값을 할당하는 것이므로 keyword는 store로 설정
-                        addPrintfInstruction(var_name , var_type , debugNum , currentFunc , "store");
+                //         // cin으로 새로 값을 할당하는 것이므로 keyword는 store로 설정
+                //         addPrintfInstruction(var_name , var_type , debugNum , currentFunc , "store");
 
-                    }
+                //     }
 
-                    //
-                    else if (tempv[4] == "invoke")
-                    {
-                        // cin 이고 invoke 인 경우
-                        // findLineAndColNumber 사용하여 다음 getline의  %invoke.cont_num의 다음줄에 기록 코드 작성
-                        cout << "find cin invoke\n";
-                    }
-                }
+                //     //
+                //     else if (tempv[4] == "invoke")
+                //     {
+                //         // cin 이고 invoke 인 경우
+                //         // findLineAndColNumber 사용하여 다음 getline의  %invoke.cont_num의 다음줄에 기록 코드 작성
+                //         cout << "find cin invoke\n";
+                //     }
+                // }
 
                 else if (tempv[4] == "call" && tempv[i] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEixEm(%\"class.std::__1::basic_string\"*")
                 {
@@ -1426,7 +1423,13 @@ int main()
                     && tempv[i + 4] == "@_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv(%\"class.std::__1::basic_string\"*"
                     && tempv[i] == "%call" && tempv[i + 3] == "i64")
                 {
-                    output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) \n";
+
+                    // 기본적으로 stringLength.ll 파일에서 읽어오는 방식]
+                    // 그러나 length 함수가 사용되었다면 아래 코드 사용
+                    output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+                    output_printf_fstream << "%var_length22 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) \n";
+                    output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+
                     checkDel.checkString_length_Func = true;
                 }
 
@@ -1467,6 +1470,12 @@ int main()
                         isStore = false;
                     }
 
+                    // string length record
+                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
+
+                    // file open
+                    output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+
                     if (isStore)
                     {
                         output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
@@ -1485,8 +1494,8 @@ int main()
                     // String 값 출력 시작`
                     output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
 
-                    // string length record
-                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
+                    output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
+
 
                     // 내용 출력
                     if (isStore)
@@ -1504,6 +1513,9 @@ int main()
                     output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* " << stringPointer << ")\n";
                     output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line)\n";
                     output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum)\n";
+
+                    // file close
+                    output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
 
                 }
 
