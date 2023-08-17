@@ -1,11 +1,26 @@
-store num1 int 10 0x16d16fd64 8 7
-store num2 int 20 0x16d16fd60 8 18
-store num3 int 30 0x16d16fd5c 8 29
-store ptr1num1 intp 0x16d16fd64 0x16d16fd50 9 9
-store arrptr intp isArr 2 2 0x16d16fd64 0x16d171ca8 18 16
-store arrptr intp isArr 10 10 0x16d16fd60 0x16d171ca8 19 18
-store ooooo int isArr 5 11 0x16d1724c8 21 13
-store arrpptr intpp isArr 15 13 0x16d16fd50 0x16d1709e8 23 19
-store arrpptr int isArr 15 13 99999 0x16d1709e8 25 21
-store temparr int isArr 11 22 66666 0x16d16fd68 27 19
-store temparr int isArr 12 33 77777 0x16d16fd68 28 19
+store num1 i32 10 0x16af7d464 99 7
+store num2 i32 20 0x16af7d460 100 7
+store num3 i32 30 0x16af7d45c 101 7
+store num4 i64 111111 0x16af7d450 103 17
+store ffff float 112.241402 0x16af7d44c 104 9
+store vvvv double 525.124000 0x16af7d440 105 10
+store isisis i8  0x16af7d43f 106 8
+store arr float isArr 30 12.000000 0x16af82418 110 11
+store arr2 i64 isArr 25 25 55555 0x16af7d5f8 111 16
+store num333 i32 5 0x16af7d438 115 7
+store ptrarr i32p 0x16af7d438 0x16af7d430 116 9
+store pptrarr i32pp 0x16af7d430 0x16af7d428 117 10
+store ppptrarr i32ppp 0x16af7d428 0x16af7d420 118 11
+store kkk i32 11111 0x16af7d41c 121 7
+store 3 i32 22222 0x16af7d438 122 13
+store 6 i32 55555 0x16af7d438 123 15
+12 store str1111 string StringStart 12 hello world
+ StringEnd 0x16af7d400 125 20
+9 store str1111 string StringStart 9 faewfefe
+ StringEnd 0x16af7d400 126 11
+12 store str2222 string StringStart 12 hello world
+ StringEnd 0x16af7d3d8 128 20
+13 store str2222 string StringStart 13 change value
+ StringEnd 0x16af7d3d8 129 11
+store lll i32 123123 0x16af7d3d4 130 7
+store str2222 i8 5 e 0x16af7d3d8 132 14

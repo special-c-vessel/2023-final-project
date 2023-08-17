@@ -1,42 +1,47 @@
 #include <iostream>
-#include <fstream>
+#include <vector>
+#include <map>
+#include <queue>
 
 using namespace std;
 
 int main()
 {
-  int num1 = 10, num2 = 20, num3 = 30;
-  int * ptr1num1 = &num1;
-  int * tempptr2;
 
-  int * ooooo[12];
-  int * arrptr[13][20];
-  int ** arrpptr[30][20];
-  
-  int temparr[20][40];
+  int num1 = 10;
+  int num2 = 20;
+  int num3 = num1 + num2;
 
-  arrptr[2][2] = &num1;
-  arrptr[10][10] = &num2;
+  long long int num4 = 111111;
+  float ffff = 112.2414;
+  double vvvv = 525.124;
+  bool isisis = true;
 
-  // segmentation fault !!!!!
-  // 그러나 기록됨
-  *ooooo[5] = 11;
+  float arr[50];
+  long long int arr2[50][50];
+  arr[30] = 12;
+  arr2[25][25] = 55555;
 
-  arrpptr[15][13] = &ptr1num1;
+  int arr1[100];
 
-  **arrpptr[15][13] = 99999;
+  int num333 = 5;
+  int * ptrarr = &num333;
+  int ** pptrarr = &ptrarr;
+  int *** ppptrarr = &pptrarr;
 
-  temparr[11][22] = 66666;
-  temparr[12][33] = 77777;
 
-  // segmentation fault !!!!!
-  // 이 아래로 기록되지 않음
-  *tempptr2 = 22222;
+  int kkk = 11111;
+  **pptrarr = 22222;
+  ***ppptrarr = 55555;
 
-  temparr[12][35] = 88888;
-  temparr[12][36] = 99999;
-  
-  return 0;
+  string str1111 = "hello world\n";
+  str1111 = "faewfefe\n";
+
+  string str2222 = "hello world\n";
+  str2222 = "change value\n";
+  int lll = 123123;
+
+  str2222[5] = 'e';
+
 }
-
 
