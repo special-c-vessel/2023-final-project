@@ -51,6 +51,8 @@ string vector_type_num;
 vector<string> varName;
 vector<string> varType;
 
+vector<string> writeString;
+
 struct checkDeclare
 {
     bool checkString_base;
@@ -89,40 +91,130 @@ void writeLLFile(string);
 void writeArrayIndex(bool isArr , bool isResetArr);
 void writeDeclare();
 
-void ifDontWriteVarNameOrTypeThanWrite(string NameOrTypeString, bool ItsName)
+// string ifDontWriteVarNameOrTypeThanWrite(string, bool);
+
+void ifDontWriteVarNameThanWrite(string NameString)
 {
-    if(ItsName == true) // Name 일 경우
+    cout << "ifDontWriteVarNameThanWrite fffffffffffffffff\n\n\n";
+    if(NameString[0] == '%')
+        NameString = NameString.substr(1, NameString.size());
+    
+    if(NameString[NameString.size() - 1] == ',')
+        NameString = NameString.substr(0, NameString.size() - 1);
+
+    if(auto it = find(writeString.begin(), writeString.end(), NameString) == writeString.end())
     {
-        auto it = find(varName.begin(), varName.end(), NameOrTypeString);
+        if (NameString[0] == '0' || NameString[0] == '1' ||
+            NameString[0] == '2' || NameString[0] == '3' ||
+            NameString[0] == '4' || NameString[0] == '5' ||
+            NameString[0] == '6' || NameString[0] == '7' ||
+            NameString[0] == '8' || NameString[0] == '9')
+        {
+
+        }
+        else
+        {
+            writeString.push_back(NameString);
+            str_fstream << "@__const_culry." << NameString << " = private unnamed_addr constant [" << NameString.size() + 2 << " x i8] c\"" << NameString << " \\00\", align 1\n";
+            cout << "fffName is : " <<  NameString << "    ";
+            cout << "nnnnnnnnnnnnnn\n";
+        }
     }
+    return ;
+}
+
+string ifDontWriteVarNameThanWrite(string NameString, bool * isPointer, bool * isArr, bool * isString, bool * isResetArr)
+{
+    cout << "ifDontWriteVarNameThanWrite is start \n";
+
+    // Type이 아닌 변수명이라면 % , 빼고 str_file에 작성 
+    if (previoustempv.size() > 0)
+    {
+        cout << "find arrayidx !!!!!!!!!!!!!!! \n";
+
+        *isPointer = true;
+
+        NameString = previoustempv[0][previoustempv[0].size() - 8];
+        cout << "previoustempv 's var_name is : " << NameString << "\n";
+    }
+    else if (NameString[1] == '0' || NameString[1] == '1' || 
+             NameString[1] == '2' || NameString[1] == '3' || 
+             NameString[1] == '4' || NameString[1] == '5' || 
+             NameString[1] == '6' || NameString[1] == '7' || 
+             NameString[1] == '8' || NameString[1] == '9')
+    {
+        maxNumValueName = max(maxNumValueName , stoi(NameString.substr(1 , NameString.size() - 1)));   //// %var_name, -> var_name
+
+        // if(tempv[7] != "getelementptr")
+        if (!vectorForResetArr.empty())
+            *isResetArr = true;
+
+        // cout << "isResetArr 's type : " << var_type << "\n";
+    }
+
+    else if (NameString.substr(1 , 4) == "call")
+    {
+        NameString = pairForStringArrAndName.first;     // %tempstr11111,
+        // var_type = "string";
+        // var_type_print_length = 4;
+
+        *isString = true;
+    }
+
+    // type 이라면 
     else
     {
-        auto it = find(varType.begin(), varType.end(), NameOrTypeString);
+        cout << "### ifDontWriteVarNameThanWrite is middle " << NameString << "\n";
     }
 
-    if(auto it == varName.end() || auto it == varType.end())
+    string tempstr = ""; // = NameString.substr(1 , NameString.size() - 2);   // %var, -> var
+    
+    if(NameString[0] == '%')
+        tempstr = NameString.substr(1); // %var, -> var,
+
+    if(tempstr[tempstr.size() - 1] == ',')
+        tempstr = tempstr.substr(0, tempstr.size() - 1);    // var, -> var
+
+    cout << "### ifDontWriteVarNameThanWrite is middle 222 " << tempstr << "\n";
+
+    cout << tempstr << "\n\n\n";
+    // 존재하지 않다면 추가
+    if(auto it = find(writeString.begin(), writeString.end(), tempstr) == writeString.end())
     {
+        if (tempstr[0] == '0' || tempstr[0] == '1' ||
+            tempstr[0] == '2' || tempstr[0] == '3' ||
+            tempstr[0] == '4' || tempstr[0] == '5' ||
+            tempstr[0] == '6' || tempstr[0] == '7' ||
+            tempstr[0] == '8' || tempstr[0] == '9')
+        {
+
+        }
+        else
+        {
+            writeString.push_back(tempstr);
+            str_fstream << "@__const_culry." << tempstr << " = private unnamed_addr constant [" << tempstr.size() + 2 << " x i8] c\"" << tempstr << " \\00\", align 1\n";
+
+        }
 
     }
 
+    // % , * 같은 특수문자 처리 후 반환 
+    return tempstr;
 }
 
 // 변수의 기록을 위한 (코드를 삽입하는) 함수
 void addPrintfInstruction(string var_name , string var_type , string debugNum , string func_name , string keyWord) // string currentFunc // string var_type
 {
-
-    // if (var_type == "i8*" || var_type == "i8**")
-    //     return;
-
-
-    //    %randomNum,       i32
     globalNum++;
-    cout << "addPrintfInstruction start!!!!   globalNum count : " << globalNum << "  ################################ \n";
+
+    cout << "################################     addPrintfInstruction start!!!!   globalNum count : " << globalNum << "  ################################ \n";
+    cout << "### var_name = " << var_name << "\n";
+    cout << "### var_type = " << var_type << "\n";
+    cout << "### current Func Name = " << func_name << "\n";
 
     int pointerSize = var_name.size() - 1;
     int templocalNum = 1;
 
-    int var_type_length;
     int var_type_print_length;
 
     int var_ptr_cnt = 0;
@@ -147,42 +239,15 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
     maxPtrCnt = max(var_ptr_cnt , maxPtrCnt);
 
-    // 각 타입에 맞게 타입 출력 길이를 설정
-    if (var_type.substr(0 , 2) == "i8" || var_type.substr(0 , 2) == "i1")       // char
-    {
-        var_type_length = 6;
-        var_type_print_length = 4;
-    }
-    else if (var_type.substr(0 , 3) == "i16") // short
-    {
-        var_type_length = 7;
-        var_type_print_length = 4;
-    }
-    else if (var_type.substr(0 , 3) == "i32") // int
-    {
-        var_type_length = 5;
-        var_type_print_length = 4;
-    }
-    else if (var_type.substr(0 , 3) == "i64") // long long int
-    {
-        var_type_length = 15;
+    if (var_type.substr(0 , 3) == "i64" || var_type.substr(0 , 6) == "double") 
+    {   // long long int, double 만 %ld, %lf 이므로 5로 설정 , 나머지는 4
         var_type_print_length = 5;
     }
-    else if (var_type.substr(0 , 5) == "float") // float
+    else
     {
-        var_type_length = 7;
         var_type_print_length = 4;
     }
-    else if (var_type.substr(0 , 6) == "double") // double
-    {
-        var_type_length = 8;
-        var_type_print_length = 5;
-    }
-    // else    // 포인터인 경우
-    // {
-    //     var_type_length = 4;
-    //     var_type_print_length = 4;
-    // }
+    
 
 
     // 파일 입출력 a+로 이어쓰기
@@ -192,27 +257,16 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     // 변수가 가진 값을 가져와 %var_num_value에 저장, 변수값 출력 시 사용
     output_printf_fstream << "%var_" << globalNum << "_value = load " << var_type << ", " << var_type << "* " << var_name << " align 4\n";
 
+    cout << "### var_name change " << var_name << " -> ";
+    var_name = ifDontWriteVarNameThanWrite(var_name, &isPointer, &isArr, &isString, &isResetArr);
+    cout << var_name << "\n";
+    // %var, -> var
+
+
     // var_name가 arrayidx 일 경우 배열이므로 차수 기록을 위한 작업 수행
     // cout << var_name.substr(1 , 8) << "\n";
-    if (var_name.substr(1 , 8) == "arrayidx" || previoustempv.size() > 0)
+    if (previoustempv.size() > 0)
     {
-        cout << "find arrayidx !!!!!!!!!!!!!!! \n";
-
-        if ((var_name[1] == '0' || var_name[1] == '1' ||
-            var_name[1] == '2' || var_name[1] == '3' ||
-            var_name[1] == '4' || var_name[1] == '5' ||
-            var_name[1] == '6' || var_name[1] == '7' ||
-            var_name[1] == '8' || var_name[1] == '9')
-            && previoustempv.size() > 0)
-            isPointer = true;
-
-        // var_name 을 배열 이름으로 설정하기 위해  previoustempv에서 배열 변수명 가져옴
-        var_name = previoustempv[0][previoustempv[0].size() - 8];
-        cout << "previoustempv 's var_name is : " << var_name << "\n";
-
-        // var_type 변경, 배열 크기에 따라 타입의 크기도 변하므로 변수타입 시작부터 , 가 나올 때 까지를 type으로 저장
-        // %arrayidx5 = getelementptr inbounds [10 x [20 x [30 x i32]]], [10 x [20 x [30 x i32]]]* %arr_iiiint, i64 0, i64 9, !dbg !2505
-        // 변수 타입 예시 : [10 x [20 x [30 x i32]]]
         int tempcnt = 6;
         for (; previoustempv[0][tempcnt][previoustempv[0][tempcnt].size() - 1] != ','; tempcnt++)
         {
@@ -222,36 +276,11 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
         var_type_for_arr += previoustempv[0][tempcnt];                                  // 마지막 i32]]], 저장
         var_type_for_arr = var_type_for_arr.substr(0 , var_type_for_arr.size() - 1);    // , 제거 -> [10 x [20 x [30 x i32]]]
-        cout << "previoustempv 's var_type is : " << var_type_for_arr << "\n";          //
+        cout << "### previoustempv 's var_type is : " << var_type_for_arr << "\n";          //
 
         isArr = true; // 현재 기록하고자 하는 것이 배열임을 표시
     }
 
-    // 배열의 초기값 할당 시 차수 기록을 위한 작업 수행
-    // %10 = bitcast [3 x [15 x i32]]* %arrJJJJJ to i8*
-    else if (var_name[1] == '0' || var_name[1] == '1' || var_name[1] == '2' || var_name[1] == '3' || var_name[1] == '4' || var_name[1] == '5' || var_name[1] == '6' || var_name[1] == '7' || var_name[1] == '8' || var_name[1] == '9')
-    {
-        maxNumValueName = max(maxNumValueName , stoi(var_name.substr(1 , var_name.size() - 1)));   //// %var_name, -> var_name
-
-        // if(tempv[7] != "getelementptr")
-        if (!vectorForResetArr.empty())
-            isResetArr = true;
-
-        // cout << "isResetArr 's type : " << var_type << "\n";
-    }
-
-    else if (var_name.substr(1 , 4) == "call")
-    {
-        var_name = pairForStringArrAndName.first;     // %tempstr11111,
-        // var_type = "string";
-        // var_type_length = 5;
-        // var_type_print_length = 4;
-
-        isString = true;
-    }
-
-    string tempsVarName = var_name.substr(1);                     // %var_name, -> var_name,
-    string tempPtrStr = var_name.substr(0 , var_name.size() - 1); // %var_name, -> %var_name
 
     // main의 반환인 retval 같은 경우 변수 선언을 하지 않아도 값이 할당되고 기록됨
     // 실제 코드에 작성되지 않은 부분이므로 line, col 을 (0, 0) 으로 설정
@@ -271,34 +300,30 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     if (isResetArr)
     {
         // vectorForResetArr에 저장된 var_name 과 store의 var_name이 같을 때
-        // tempsVarName 재설정
 
         if (vectorForResetArr.back().first == var_name.substr(0 , var_name.size() - 1))
         {
-            cout << "start print vectorForResetArr       ";
-            tempsVarName = var_name_ForResetArr.substr(1);
+            cout << "### start print vectorForResetArr       ";
+            var_name = var_name_ForResetArr.substr(1, var_name_ForResetArr.size() - 2);  // % 빼줌 
         }
     }
 
     // 키워드 변수명
     output_printf_fstream << "%temp_KeyWord_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
 
-    // tempsVarName == %varName, 
-    if (tempsVarName[0] != '\"')
+    if (var_name[0] != '\"')
     {
         // %varName, -> varName
         string compareVarName = "";
-        for (int j = 0; j < tempsVarName.size() - 1; j++)
+        for (int j = 0; j < var_name.size(); j++)
         {
-            if (tempsVarName[j] == '%')
-                j++;
-            compareVarName += tempsVarName[j];
+            compareVarName += var_name[j];
         }
 
         // 이미 존재하는 경우
         if (find(varName.begin() , varName.end() , compareVarName) == varName.end())
         {
-            // cout << tempsVarName << " 99999999999999999999999999\n";
+            // cout << var_name << " 99999999999999999999999999\n";
             if (compareVarName[0] == '0' || compareVarName[0] == '1' ||
                 compareVarName[0] == '2' || compareVarName[0] == '3' ||
                 compareVarName[0] == '4' || compareVarName[0] == '5' ||
@@ -311,8 +336,8 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
             {
                 // 존재하지 않고 숫자가 아닐 경우 추가 
 
-                str_fstream << "@__const_culry." << compareVarName << " = private unnamed_addr constant [" << tempsVarName.substr(0 , tempsVarName.size() - 1).size() + 2 << " x i8] c\"" << tempsVarName.substr(0 , tempsVarName.size() - 1) << " \\00\", align 1\n";
-                varName.push_back(compareVarName);
+                // str_fstream << "@__const_culry." << var_name << " = private unnamed_addr constant [" << var_name.size() + 2 << " x i8] c\"" << var_name << " \\00\", align 1\n";
+                // varName.push_back(compareVarName);
             }
         }
 
@@ -350,8 +375,8 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     {
 
 
-        cout << var_type << " 000000000000000000\n\n\n\n";
-        cout << compareVarType << " 99999999999999999999999\n\n\n\n";
+        cout << "### " << var_type << " 000000000000000000\n\n\n\n";
+        cout << "### " << compareVarType << " 99999999999999999999999\n\n\n\n";
         varType.push_back(var_type);
 
         str_fstream << "@__const_culry.TYPE." << compareVarType << " = private unnamed_addr constant [" << compareVarType.size() + 2 << " x i8] c\"" << compareVarType << " \\00\", align 1\n";
@@ -384,7 +409,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         }
 
         // 배열의 모든 차수 출력
-        cout << "=========== print previoustempv  : ";
+        cout << "### =========== print previoustempv  : ";
 
         for (int i = 0; i < previoustempv.size(); i++)
         {
@@ -392,7 +417,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
             output_printf_fstream << "%temp_ArrayIndex_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 " << previoustempv_arrnum.substr(0 , previoustempv_arrnum.size() - 1) << ")\n";
             cout << previoustempv_arrnum << " ";
         }
-        cout << "\n";
+        cout << "### \n";
         // 저장된 차수 모두 삭제
         while (!previoustempv.empty())
         {
@@ -404,7 +429,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         // 배열의 차수를 출력하겠다는 의미로 isArr를 출력
         output_printf_fstream << "%temp_ArrayIndex_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.userKeyWord_isArr, i32 0, i32 0))\n";
 
-        cout << "---------- print vectorForResetArr_arrnum  : ";
+        cout << "### ---------- print vectorForResetArr_arrnum  : ";
 
 
         for (int i = 0; i < vectorForResetArr.size(); i++)
@@ -413,7 +438,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
             output_printf_fstream << "%temp_ArrayIndex_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 " << vectorForResetArr_arrnum << ")\n";
             cout << vectorForResetArr_arrnum << " ";
         }
-        cout << " and ";
+        cout << "###  and ";
         cout << vectorForResetArr.back().second << " is removed --------\n";
         vectorForResetArr.pop_back();
         var_type_for_arr = var_type;
@@ -454,17 +479,18 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
             var_type_for_arr[i] = '*';
     }
 
-    output_printf_fstream << "%temp_varPtr_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type_for_arr << "* " << tempPtrStr << ")\n";
+    output_printf_fstream << "%temp_varPtr_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << var_type_for_arr << "* %" << var_name << ")\n";
     output_printf_fstream << "%temp_varLine_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << LineNum << ")\n";
     output_printf_fstream << "%temp_varColnum_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << ColNum << ")\n";
 
     // 파일 닫기
     output_printf_fstream << "%closeFile" << globalNum << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
 
-    cout << " >>>>>>> write is completed!!!    \n";
-    cout << " >>>>>>> var_name is " << var_name << "\n";
-    cout << " >>>>>>> var_type is " << var_type << "\n";
-    cout << "keyWord is " << keyWord << "!! current Function && Line number is =====> " << currentFunc << " " << LineNum << "\n\n\n";
+    cout << "###  >>>>>>> write is completed!!!    \n";
+    cout << "###  >>>>>>> var_name is " << var_name << "\n";
+    cout << "###  >>>>>>> var_type is " << var_type << "\n";
+    cout << "### keyWord is " << keyWord << "!! current Function && Line number is =====> " << currentFunc << " " << LineNum << "\n";
+    cout << "################################     addPrintfInstruction end!!!!   globalNum count : " << globalNum << "  ################################ \n\n\n\n";
 
     return;
 }
@@ -948,20 +974,9 @@ int main()
 
                     string tempstrName = string_var_name.substr(0 , string_var_name.size() - 1);
 
-                    // 이미 존재하는 경우
-                    if (find(varName.begin() , varName.end() , tempstrName) != varName.end())
-                    {
-
-                    }
-
-                    // 존재하지 않은 경우
-                    else
-                    {
-                            str_fstream << "@__const_culry." << tempstrName << " = private unnamed_addr constant [" << tempstrName.size() + 2 << " x i8] c\"" << tempstrName << " \\00\", align 1\n";
-                            varName.push_back(tempstrName);
-                    }
-                    
-
+                    // 존재하는지 판별 
+                    cout << "vector qqqqqqqqqqqqq " << tempstrName << "\n";
+                    ifDontWriteVarNameThanWrite(tempstrName);
 
                     output_printf_fstream << "i32" << " ";
                     output_printf_fstream << LineNum << ", ";
@@ -1081,13 +1096,15 @@ int main()
                         // i8* getelementptr inbounds ([30 x i8], [30 x i8]* @.str, i64 0, i64 0),
                         output_printf_fstream << "i8* getelementptr inbounds ([" << string_var_length << " x i8], [" << string_var_length << " x i8]* @__const_culry." << string_var_name << "i64 0, i64 0), ";
 
-                        if(find(varName.begin(), varName.end(), string_var_name) == varName.end())
-                        {
-                            // 없는 경우
-                            varName.push_back(string_var_name);
-                            string tempVarName = string_var_name.substr(0, string_var_name.size() - 1);
-                            str_fstream << "@__const_culry." << tempVarName << " = private unnamed_addr constant [" << tempVarName.size() + 2 << " x i8] c\"" << tempVarName << " \\00\", align 1\n";
-                        }
+
+                        ifDontWriteVarNameThanWrite(string_var_name);
+                        // if(find(varName.begin(), varName.end(), string_var_name) == varName.end())
+                        // {
+                        //     // 없는 경우
+                        //     varName.push_back(string_var_name);
+                        //     string tempVarName = string_var_name.substr(0, string_var_name.size() - 1);
+                        //     // str_fstream << "@__const_culry." << tempVarName << " = private unnamed_addr constant [" << tempVarName.size() + 2 << " x i8] c\"" << tempVarName << " \\00\", align 1\n";
+                        // }
 
                         output_printf_fstream << "i32" << " ";
                         output_printf_fstream << LineNum << ", ";
