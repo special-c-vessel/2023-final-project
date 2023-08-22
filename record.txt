@@ -1,26 +1,69 @@
-store num1 i32 10 0x16af7d464 99 7
-store num2 i32 20 0x16af7d460 100 7
-store num3 i32 30 0x16af7d45c 101 7
-store num4 i64 111111 0x16af7d450 103 17
-store ffff float 112.241402 0x16af7d44c 104 9
-store vvvv double 525.124000 0x16af7d440 105 10
-store isisis i8  0x16af7d43f 106 8
-store arr float isArr 30 12.000000 0x16af82418 110 11
-store arr2 i64 isArr 25 25 55555 0x16af7d5f8 111 16
-store num333 i32 5 0x16af7d438 115 7
-store ptrarr i32p 0x16af7d438 0x16af7d430 116 9
-store pptrarr i32pp 0x16af7d430 0x16af7d428 117 10
-store ppptrarr i32ppp 0x16af7d428 0x16af7d420 118 11
-store kkk i32 11111 0x16af7d41c 121 7
-store 3 i32 22222 0x16af7d438 122 13
-store 6 i32 55555 0x16af7d438 123 15
+store num11 i32 99 0x16bb91374 56 9
+store num22 i32 -1 0x16bb91370 57 9
+store tempnum1 i32p 0x16bb91380 0x16bb91368 59 12
+store tempnum2 i32p 0x16bb91384 0x16bb91360 60 12
+store 2 i32 55555 0x16bb91380 62 13
+store num11 i32 55565 0x16bb91374 77 9
+store num22 i32 -1 0x16bb91370 78 9
+store xxxxx19 i32 55 0x16bb91378 86 16
+store yyyyy20 i32 99 0x16bb9137c 87 16
+store num11 i32 55 0x16bb91374 89 9
+store num22 i32 99 0x16bb91370 90 9
+store num22 i32 88 0x16bb91370 97 9
+store ptr1111 i32p 0x16bb91380 0x16bb91358 99 9
+store ptr2222 i32 55565 0x16bb91354 100 7
+store num1 i32 10 0x16bb91350 102 7
+store num2 i32 20 0x16bb9134c 103 7
+store num3 i32 30 0x16bb91348 104 7
+store num4 i64 111111 0x16bb91340 106 17
+store ffffstatic float 112.241402 0x16bb9133c 107 9
+store vvvv double 525.124000 0x16bb91330 108 10
+store isisis i8  0x16bb9132f 109 8
+store 22 i32 isArr 0 11 0x16bb91520 114 7
+store 23 i32 isArr 1 22 0x16bb91524 114 7
+store 24 i32 isArr 2 33 0x16bb91528 114 7
+store 25 i32 isArr 3 44 0x16bb9152c 114 7
+store 26 i32 isArr 4 55 0x16bb91530 114 7
+store arrTest float isPointerArr 30 12.000000 0x16bb96410 116 15
+store arrTest2 i64 isPointerArr 25 25 55555 0x16bb915f0 117 20
+store num333 i32 5 0x16bb91328 121 7
+store ptrarrTest i32p 0x16bb91328 0x16bb91320 122 9
+store pptrarrTest i32pp 0x16bb91320 0x16bb91318 123 10
+store ppptrarrTest i32ppp 0x16bb91318 0x16bb91310 124 11
+store kkk i32 11111 0x16bb9130c 127 7
+store 28 i32 22222 0x16bb91328 128 17
+store 31 i32 55555 0x16bb91328 129 19
 12 store str1111 string StringStart 12 hello world
- StringEnd 0x16af7d400 125 20
+ StringEnd 0x16bb912f0 131 20
 9 store str1111 string StringStart 9 faewfefe
- StringEnd 0x16af7d400 126 11
+ StringEnd 0x16bb912f0 132 11
 12 store str2222 string StringStart 12 hello world
- StringEnd 0x16af7d3d8 128 20
+ StringEnd 0x16bb912c8 134 20
 13 store str2222 string StringStart 13 change value
- StringEnd 0x16af7d3d8 129 11
-store lll i32 123123 0x16af7d3d4 130 7
-store str2222 i8 5 e 0x16af7d3d8 132 14
+ StringEnd 0x16bb912c8 135 11
+store lll i32 123123 0x16bb912c4 136 7
+store str2222 i8 5 e 0x16bb912c8 138 14
+store ref.tmp i32 55555 0x16bb9125c 145 19
+store push_back vvvvv i32 0x16bb9125c 0x16bb912a8 145 9
+store ref.tmp53 i32 66 0x16bb91258 146 19
+store push_back vvvvv i32 0x16bb91258 0x16bb912a8 146 9
+store ref.tmp55 i32 77 0x16bb91254 147 19
+store push_back vvvvv i32 0x16bb91254 0x16bb912a8 147 9
+store ref.tmp57 i64 12345 0x16bb91248 149 21
+store push_back vvvvv22 i64 0x16bb91248 0x16bb91290 149 11
+store ref.tmp59 i64 3456 0x16bb91240 150 21
+store push_back vvvvv22 i64 0x16bb91240 0x16bb91290 150 11
+store ref.tmp61 i64 56789 0x16bb91238 151 21
+store push_back vvvvv22 i64 0x16bb91238 0x16bb91290 151 11
+store ref.tmp63 float 111.241241 0x16bb91234 154 19
+store push_back fffff float 0x16bb91234 0x16bb91278 154 9
+18 store ref.tmp65 string StringStart 18 vector string test StringEnd 0x16bb91218 156 19
+store push_back sssss string 0x16bb91218 0x16bb91260 156 9
+14 store compareStringTest string StringStart 14 asdfgzxcvbn
+
+
+ StringEnd 0x16bb911e8 159 30
+store push_back VA 5AAAAA 0x16bb91380 0x16bb911d0 163 6
+store push_back VA 5AAAAA 0x16bb91380 0x16bb911d0 164 6
+store push_back VA 5AAAAA 0x16bb91378 0x16bb911d0 165 6
+store retval i32 0 0x16bb9138c 167 3
