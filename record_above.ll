@@ -13,6 +13,7 @@
 @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }]
 
 @__const_culry.tmpName = private unnamed_addr constant [9 x i8] c"NotRocd \00", align 1
+@__const_culry.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
 
 ; ; #include <string>
 ; %"class.std::__1::basic_string.1000009.100001" = type { %"class.std::__1::__compressed_pair.100001" }
@@ -37,14 +38,14 @@
 @tempfloat = global float 0.000000e+00, align 4
 
 ; 변수명 출력	// 지우면 culry_record3.cpp 에서 탐지 못함, 변수명 이후부터 쓰기 시작하기 때문
-@__const.main.var_1_name = private unnamed_addr constant [10 x i8] c"randomNum\00", align 1
-@__const.main.var_2_name = private unnamed_addr constant [10 x i8] c"userInput\00", align 1
-@__const.main.var_3_name = private unnamed_addr constant [11 x i8] c"thread_Cnt\00", align 1
+; @__const.main.var_1_name = private unnamed_addr constant [10 x i8] c"randomNum\00", align 1
+; @__const.main.var_2_name = private unnamed_addr constant [10 x i8] c"userInput\00", align 1
+; @__const.main.var_3_name = private unnamed_addr constant [11 x i8] c"thread_Cnt\00", align 1
 
-@__const.main.var_5_name = private unnamed_addr constant [7 x i8] c"divNum\00", align 1
-@__const.main.var_6_name = private unnamed_addr constant [8 x i8] c"message\00", align 1
-@__const.main.var_7_name = private unnamed_addr constant [7 x i8] c"result\00", align 1
-@__const.main.var_8_name = private unnamed_addr constant [8 x i8] c"tempnum\00", align 1
+; @__const.main.var_5_name = private unnamed_addr constant [7 x i8] c"divNum\00", align 1
+; @__const.main.var_6_name = private unnamed_addr constant [8 x i8] c"message\00", align 1
+; @__const.main.var_7_name = private unnamed_addr constant [7 x i8] c"result\00", align 1
+; @__const.main.var_8_name = private unnamed_addr constant [8 x i8] c"tempnum\00", align 1
 
 ; userKeyWord
 @.str.userKeyWord_isArr = private unnamed_addr constant [7 x i8] c"isArr \00", align 1
@@ -53,6 +54,8 @@
 @.str.userKeyWord_isStringEnd = private unnamed_addr constant [11 x i8] c"StringEnd \00", align 1
 @.str.userKeyWord_pushBack = private unnamed_addr constant [11 x i8] c"push_back \00", align 1
 @.str.userKeyWord_popBack = private unnamed_addr constant [10 x i8] c"pop_back \00", align 1
+
+@.str.userKeyWord_isStruct = private unnamed_addr constant [10 x i8] c"isStruct \00", align 1
 
 ; keyWord
 @.str.op_declare = private unnamed_addr constant [9 x i8] c"declare \00", align 1
