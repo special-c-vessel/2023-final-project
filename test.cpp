@@ -5,6 +5,24 @@
 
 using namespace std;
 
+int globalllll = 55555;
+
+void testFunc111()
+{
+  int a = 1;
+  int b = 2;
+
+  int c = a + b;
+}
+
+// void testFunc222()
+// {
+//   int aa = 1;
+//   int bb = 2;
+
+//   int cc = aa + bb;
+// }
+
 class B {
   public:
   int x;
@@ -16,7 +34,8 @@ class AAAAA {
   public:
   int xxxxx;
   int yyyyy;
-  // B z;
+  string classString;
+  B z;
   AAAAA() : xxxxx(99), yyyyy(-1) {}
 
   void inc_x(int zz111) {
@@ -43,14 +62,42 @@ class AAAAA {
   }
 };
 
+class QQQQQ {
+  public:
+  int a123 = 30;
+  int b1123 = 40;
+};
+
 int main()
 {
-
-
   AAAAA x11111;
   AAAAA x22222;
 
+  AAAAA * x1Ptr;
+
+  B xBBBBB;
+
+  QQQQQ qwe;
+
+  testFunc111();
+
+  x11111.xxxxx = 50;
+  x11111.yyyyy = 100;
+
+  x1Ptr = &x11111;
+
+  x22222.xxxxx = 11;
+  x22222.yyyyy = 22;
+
+  qwe.a123 = 10;
+
+  // cin >> qwe.b1123;
+  // cout << qwe.b1123 << "\n";
+
+  // testFunc222();
+
   int num11, num22;
+  int num33, num44;
   int *tempnum1, *tempnum2;
 
   num11 = x11111.xxxxx;
@@ -58,6 +105,14 @@ int main()
 
   tempnum1 = &x11111.xxxxx;
   tempnum2 = &x11111.yyyyy;
+
+  num33 = x11111.xxxxx;
+  num44 = x11111.yyyyy;
+
+
+  xBBBBB = x11111.z;
+
+  cout << num33 << " " << num44 << "\n";
 
   *tempnum1 = 55555;
 
@@ -96,6 +151,12 @@ int main()
 
   num22 = x22222.yyyyy;
 
+  vector<AAAAA> VA;
+
+  VA.push_back(x11111);
+  VA.push_back(x11111);
+  VA.push_back(x22222);
+
   int * ptr1111 = x11111.get_x_ptr();
   int ptr2222 = x11111.get_x_ref();
 
@@ -129,7 +190,8 @@ int main()
   ***ppptrarrTest = 55555;
 
   string str1111 = "hello world\n";
-  str1111 = "faewfefe\n";
+  str1111 = "faewfefe";
+  cout << str1111 << "\n";
 
   string str2222 = "hello world\n";
   str2222 = "change value\n";
@@ -158,11 +220,7 @@ int main()
   string tempvectorStringTest = sssss[0];
   string compareStringTest = "asdfgzxcvbn\n\n\n";
 
-  vector<AAAAA> VA;
-
-  VA.push_back(x11111);
-  VA.push_back(x11111);
-  VA.push_back(x22222);
+  
 
   return 0;
 }
