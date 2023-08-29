@@ -11,30 +11,34 @@ entry:
   store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
   %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
   %call = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv(%"class.std::__1::basic_string"* %this1) #10000007
+
+  %openFile = call %struct.__sFILE* @"_fopen"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) 
   %var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) 
+  %closeFile = call i32 @fclose(%struct.__sFILE* %loadfile) 
+
   ret i64 %call
 }
 
-define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
-entry:
-  %this.addr = alloca %"class.std::__1::basic_string"*, align 8
-  store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
-  %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
-  %call = call zeroext i1 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv(%"class.std::__1::basic_string"* %this1) #10000007
-  br i1 %call, label %cond.true, label %cond.false
+; define internal i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
+; entry:
+;   %this.addr = alloca %"class.std::__1::basic_string"*, align 8
+;   store %"class.std::__1::basic_string"* %this, %"class.std::__1::basic_string"** %this.addr, align 8
+;   %this1 = load %"class.std::__1::basic_string"*, %"class.std::__1::basic_string"** %this.addr, align 8
+;   %call = call zeroext i1 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv(%"class.std::__1::basic_string"* %this1) #10000007
+;   br i1 %call, label %cond.true, label %cond.false
 
-cond.true:                                        ; preds = %entry
-  %call2 = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv(%"class.std::__1::basic_string"* %this1) #10000007
-  br label %cond.end
+; cond.true:                                        ; preds = %entry
+;   %call2 = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv(%"class.std::__1::basic_string"* %this1) #10000007
+;   br label %cond.end
 
-cond.false:                                       ; preds = %entry
-  %call3 = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv(%"class.std::__1::basic_string"* %this1) #10000007
-  br label %cond.end
+; cond.false:                                       ; preds = %entry
+;   %call3 = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv(%"class.std::__1::basic_string"* %this1) #10000007
+;   br label %cond.end
 
-cond.end:                                         ; preds = %cond.false, %cond.true
-  %cond = phi i64 [ %call2, %cond.true ], [ %call3, %cond.false ]
-  ret i64 %cond
-}
+; cond.end:                                         ; preds = %cond.false, %cond.true
+;   %cond = phi i64 [ %call2, %cond.true ], [ %call3, %cond.false ]
+;   ret i64 %cond
+; }
 
 ; Function Attrs: noinline nounwind optnone ssp uwtable
 ; define internal zeroext i1 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv(%"class.std::__1::basic_string"* %this) #10000003 align 2 {
