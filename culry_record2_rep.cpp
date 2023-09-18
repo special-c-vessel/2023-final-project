@@ -33,7 +33,7 @@ string ColNum;
 string xType; // %__x 의 타입 저장
 
 vector<string> totalFunc;
-string currentFunc = "Global_"; // 현재 함수
+string currentFunc = "Global-"; // 현재 함수
 string currentFunc_returnType = "";
 
 vector<vector<string> > previoustempv;    // 배열 선언 후, load, stroe 사용 시 차수 저장을 위한 벡터
@@ -80,7 +80,7 @@ struct checkDeclare
         %"struct.std::__1::basic_string<char>::__long" = type { i8*, i64, i64 }
     */
 
-    bool check_global_ctors;
+    bool check_global_ctors = false;
 
     string compressed_pair_Num;
     string compressed_pair_elem_Num;
@@ -368,7 +368,7 @@ string ifDontWriteVarNameThanWrite(string NameString , bool isName)
     string tempstr;
 
     if (checkFeature1.ifStratAtsing_ReturnTrue(NameString))      // @var, 일 경우 
-        tempFuncName = "global_";
+        tempFuncName = "Global-";
 
     NameString = galmoori1.removePersentOrAtsignAndLastComma(NameString);   // %var, -> var
 
@@ -408,6 +408,11 @@ string ifDontWriteVarNameThanWrite(string NameString , string NameType , bool* i
     string tempFuncName = currentFunc;
     string tempFuncPlusVarNamestr;
 
+    if(globalNum == 110)
+    {
+        cout << "find @@@\n\n";
+    }
+
     if (previoustempv.size() > 0)       // 배열인 경우 변수명 가져옴
     {
         cout << "find arrayidx !!!!!!!!!!!!!!! \n";
@@ -415,6 +420,12 @@ string ifDontWriteVarNameThanWrite(string NameString , string NameType , bool* i
         *isPointer = true;
 
         NameString = previoustempv[0][previoustempv[0].size() - 8]; // 변수명 가져옴
+
+        if(NameString.substr(0, 7) == "%struct")
+        {
+            NameString = previoustempv[0][2];
+        }
+
         cout << "previoustempv 's var_name is : " << NameString << "\n";
     }
 
@@ -440,7 +451,7 @@ string ifDontWriteVarNameThanWrite(string NameString , string NameType , bool* i
 
     if (checkFeature1.ifStratAtsing_ReturnTrue(NameString))      // @var, 일 경우 
     {
-        tempFuncName = "global_";
+        tempFuncName = "Global-";
         *isGlobalVar = true;
     }
 
@@ -508,6 +519,11 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     if(var_name == "bitcast")
         return ;
 
+    if(globalNum == 110)
+    {
+        cout << "find !! \n\n";
+    }
+
     ostreamInfo1.writeOpenStream(globalNum);    // open a+
     ostreamInfo1.writeLoadVarValue(globalNum , var_type , var_name);  // 변수값 load
     ostreamInfo1.writeKeyWord(globalNum , templocalNum++ , keyWord);  // 키워드
@@ -515,7 +531,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     // var_name = var_name + currentFunc;
     cout << "### var_name change " << var_name << " -> ";
     var_name = ifDontWriteVarNameThanWrite(var_name , var_type , &isPointer , &isArr , &isString , &isResetArr , &isGlobalVar);
-    cout << var_name << "\n";
+    // cout << "### current var_name is : " << var_name << "\n";
     // %var, -> var
 
     if(isString == true)
@@ -573,7 +589,9 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         if (isGlobalVar == false)
             ostreamInfo1.writeVarName(globalNum , templocalNum++ , currentFunc , var_name);    // 변수명 
         else
-            ostreamInfo1.writeVarName(globalNum , templocalNum++ , "global_" , var_name);
+            ostreamInfo1.writeVarName(globalNum , templocalNum++ , "Global-" , var_name);
+
+
     }
     else
     {
@@ -609,6 +627,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
 
     // ===================== 함수로 만들기 ============================================================
+
     if (isArr)
     {
         if (isPointer)
@@ -1019,24 +1038,23 @@ void writeDeclare()
                 " } " << "\n";
         }
 
-        if(checkDel.check_global_ctors == false)
-        {
-            output_printf_fstream << " @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }] \n";
-            output_printf_fstream << "define internal void @_GLOBAL__sub_I_main.cc() #333 section \"__TEXT,__StaticInit,regular,pure_instructions\" { \n"
-                                    "entry: \n"
-                                    "call void @__cxx_global_var_init() \n"
-                                    "ret void \n"
-                                    "} \n\n"
+    }
 
-                                    "define internal void @__cxx_global_var_init() #333 section \"__TEXT,__StaticInit,regular,pure_instructions\" { \n"
-                                    "entry: \n"
-                                    "%call = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.write, i64 0, i64 0)) \n"
-                                    "store %struct.__sFILE* %call, %struct.__sFILE** @file, align 8 \n"
-                                    "ret void \n"
-                                    "} \n";
-        }
+    if(checkDel.check_global_ctors == false)
+    {
+        output_printf_fstream << " @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }] \n";
+        output_printf_fstream << "define internal void @_GLOBAL__sub_I_main.cc() #333 section \"__TEXT,__StaticInit,regular,pure_instructions\" { \n"
+                                "entry: \n"
+                                "call void @__cxx_global_var_init() \n"
+                                "ret void \n"
+                                "} \n\n"
 
-
+                                "define internal void @__cxx_global_var_init() #333 section \"__TEXT,__StaticInit,regular,pure_instructions\" { \n"
+                                "entry: \n"
+                                "%call = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.write, i64 0, i64 0)) \n"
+                                "store %struct.__sFILE* %call, %struct.__sFILE** @file, align 8 \n"
+                                "ret void \n"
+                                "} \n";
     }
 
     if (checkDel.checkFstream_fprint == false)
@@ -1087,6 +1105,12 @@ int main()
 
             for (int i = 0; i < tempv.size(); i++)
             {
+                // cout << tempv[i] << "\n";
+                if(tempv[i] == "@llvm.global_ctors")
+                {
+                    checkDel.check_global_ctors = true;
+                }
+
                 // define 인 경우 새로운 함수의 시작, 현재 함수명을 저장하며 변수 기록 시 사용
                 if (tempv[i] == "define")
                 {
@@ -1120,47 +1144,43 @@ int main()
 
                     for (int j = 1; tempv[i][j] != '('; j++)
                         currentFunc += tempv[i][j];
-                    currentFunc += '_';
+                    currentFunc += '-';
 
                     totalFunc.push_back(currentFunc);
 
-                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv_")
+                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv-")
                     {
                         checkDel.checkString__ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE9__is_longEv = true;
                     }
 
-                    if (currentFunc == "_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv_")
+                    if (currentFunc == "_ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv-")
                     {
                         checkDel.checkString__ZNKSt3__117__compressed_pairINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repES5_E5firstEv = true;
                     }
 
-                    if (currentFunc == "_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv_")
+                    if (currentFunc == "_ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv-")
                     {
                         checkDel.checkString__ZNKSt3__122__compressed_pair_elemINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE5__repELi0ELb0EE5__getEv = true;
                     }
 
-                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv_")
+                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv-")
                     {
                         checkDel.checkString__ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE15__get_long_sizeEv = true;
                     }
 
-                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv_")
+                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv-")
                     {
                         checkDel.checkString__ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE16__get_short_sizeEv = true;
                     }
 
-                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv_")
+                    if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv-")
                     {
                         checkDel.checkString__ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv = true;
                     }
 
-
                 }
 
-                if(tempv[i] == "@llvm.global_ctors")
-                {
-                    checkDel.check_global_ctors = true;
-                }
+                
 
             }
 
@@ -1793,7 +1813,7 @@ int main()
 
                     for (int j = 1; tempv[i][j] != '('; j++)
                         currentFunc += tempv[i][j];
-                    currentFunc += '_';
+                    currentFunc += '-';
 
                     // 다른 함수에서 썼던 것들 초기화
                     while (!previoustempv.empty())
@@ -2025,7 +2045,7 @@ int main()
                 }
 
                 // string length 계산 함수에 길이 기록 코드 추가
-                else if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv_"
+                else if (currentFunc == "_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv-"
                     && tempv[i + 4] == "@_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv(%\"class.std::__1::basic_string\"*"
                     && tempv[i] == "%call" && tempv[i + 3] == "i64")
                 {
