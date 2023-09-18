@@ -10,7 +10,7 @@
 @.str.openfile = private unnamed_addr constant [11 x i8] c"record.txt\00", align 1
 @.str.write = private unnamed_addr constant [3 x i8] c"w+\00", align 1
 @.str.continue = private unnamed_addr constant [3 x i8] c"a+\00", align 1
-@llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }]
+
 
 @__const_culry.tmpName = private unnamed_addr constant [9 x i8] c"NotRocd \00", align 1
 @__const_culry.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
@@ -80,7 +80,7 @@
 @.str.print_i1 = private unnamed_addr constant [4 x i8] c"%d \00", align 1
 
 ; char
-@.str.print_i8 = private unnamed_addr constant [4 x i8] c"%c \00", align 1
+@.str.print_i8 = private unnamed_addr constant [4 x i8] c"%d \00", align 1
 
 ; short
 @.str.print_i16 = private unnamed_addr constant [4 x i8] c"%d \00", align 1
@@ -131,18 +131,21 @@ entry:
 
 @.str.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
 
-define internal void @_GLOBAL__sub_I_main.cc() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
-entry:
-  call void @__cxx_global_var_init()
-  ret void
-}
 
-define internal void @__cxx_global_var_init() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
-entry:
-  %call = call %struct.__sFILE* @"\01_fopen"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.write, i64 0, i64 0))
-  store %struct.__sFILE* %call, %struct.__sFILE** @file, align 8
-  ret void
-}
+; @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }]
+
+; define internal void @_GLOBAL__sub_I_main.cc() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
+; entry:
+;   call void @__cxx_global_var_init()
+;   ret void
+; }
+
+; define internal void @__cxx_global_var_init() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
+; entry:
+;   %call = call %struct.__sFILE* @"\01_fopen"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.write, i64 0, i64 0))
+;   store %struct.__sFILE* %call, %struct.__sFILE** @file, align 8
+;   ret void
+; }
 
 declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #222
 
