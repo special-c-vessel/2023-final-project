@@ -116,11 +116,11 @@ int main()
 
             }
           output_result_fstream << "; 새로운 전역 str 작성 종료\n";
+          cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@   record_strfile 작성됨\n";
 
           break;
         }
       }
-
 
       // str_fstream.close();
       // output_printf_fstream.close();
