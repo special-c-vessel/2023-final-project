@@ -45,26 +45,27 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 
 <br><br>
 **2023 9월 21일 기준 진행상황:**
-
+<br><br>
+<img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/74a2d4d0-9abc-438e-844d-3d5fed3af6fb" width="40%" height="%"/>
 - Primitive, String, Array 에 대한 기록 및 재현 가능
 - Object Type은 현재 vector에 대해서만 가능
 
 - 원하는 변수명 또는 포인터 주소에 대해 검색 가능(아래는 변수 a에 대해 검색을 진행한 결과. operation 순서, 종류, 동작 위치를 표로 확인할 수 있음) <br><br>
-<img src="img_3.png" width="40%" height="30%"/> <img src="img_2.png" width="40%" height="%"/>
+<img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/3fb9473c-3e5e-41f2-a25f-bcd01eb23e51" width="40%" height="30%"/> <img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/6fe58ed8-e5de-49cf-a11b-6eaa76bb4f49" width="40%" height="%"/>
 
 <br><br>
 - string type에 대해, 잘못된 index에 값을 할당하는 경우 system message에 문자열 범위 밖 오류임을 표시 <br><br>
-<img src="img_4.png" width="30%" height="30%"/> <img src="img_5.png" width="40%" height="%"/>
+<img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/4d8559f5-e3a2-481d-abd5-2a86edd2e5bf" width="30%" height="30%"/> <img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/219d16a4-58ca-4224-b743-0d426982c8b3" width="40%" height="%"/>
 
 
 <br><br>
 - Segfault 등 프로그램이 중간에 종료되더라도, 그 전까지 진행된 작업을 기록하여 정상 종료가 아님을 확인할 수 있다
   <br>(25번 line에서 프로그램이 종료되었다는 것을 system message에서 확인할 수 있으며, <br>종료의 원인은 변수의 Type이 int pointer임에도 Value에 nullptr가 할당되어 있어 Segfault가 발생했음을 알 수 있다.)<br>
-<img src="img_6.png" width="20%" height="30%"/> <img src="img_7.png" width="70%" height="%"/>
+<img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/847e72d3-e50b-460d-96aa-2694c0f6d32b" width="20%" height="30%"/> <img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/1f857b87-75d2-4a07-8e7f-37a00ea2afaa" width="70%" height="%"/>
 
 <br><br>
 - 사용 가능한 명령어 <br>
-<img src="img_9.png" width="100%" height="30%"/>
+<img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/497f19cd-ba2b-4614-85ad-1c3f25b0e7ea" width="100%" height="30%"/>
 
 <br><br>
 **향후 발전 계획:** <br>
@@ -92,7 +93,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <br>
 
 - record에 필요한 파일 다운로드<br>
-``` git clone https://github.com/special-c-vessel/2023-final-project.git ``` <br>
+``` git clone https://github.com/special-c-vessel/2023-final-project.git ``` 
 
         config.sh 에서
         - LLVM_PATH           (llvm 경로)
@@ -118,7 +119,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <br><br>
 **성과:** <br>
 - 2023 1학기 충남대학교 컴퓨터융햡학부 * 인공지능학과 SW/AI 프로젝트 페어 대상 수상<br>
-<img width="300" alt="image" src="img_10.png">
+<img width="300" alt="image" src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/2d701eec-9ff3-40b6-b7eb-9e0cbb618a8b">
 <br><br>
 - 2023 충남대학교 공과대학 엔지니어링 페어 우수상 수상<br>
   사진 추가 예정
@@ -133,7 +134,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
    <br>
 3. 메모리 보안
    - 서버나 시스템 안의 메모리를 참조할 때 보안상 취약점은 없는가?  <br>
-   메모리 보호가 적용된 주소를 참조하여 기록하므로 culry 사용으로 인한 추가적인 보안 취약점은 없을 것으로 기대합니동ㅇ.<br>
+   메모리 보호가 적용된 주소를 참조하여 기록하므로 culry 사용으로 인한 추가적인 보안 취약점은 없을 것으로 기대합니다.<br>
 
 <br><br>
 **누군가 해줬으면 했지만 아무도 하지 않은 질문:** <br>
@@ -144,8 +145,6 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 3. 추가로 삽입한 코드의 실행을 어떻게 보장하는가?
       <br>-> 기록을 수행하는 코드를 추가한다는 것은 기존 코드에 새로운 함수를 추가하고 사용한다고 생각하면 쉽다.
       <br> 기존 코드의 함수명, 변수명과 중복되지 않도록 llvm 작명 규칙에서 벗어난 복잡한 이름을 사용하고, 기록 기능을 하는 함수를 llvm으로 생성하여 사용하므로 llvm 문법에 변화가 없는 한 추가로 삽입한 코드가 정상적으로 동작할 것으로 기대한다.
-
-
 
 
 <br><br>
