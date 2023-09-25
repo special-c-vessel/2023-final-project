@@ -122,7 +122,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <img width="300" alt="image" src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/2d701eec-9ff3-40b6-b7eb-9e0cbb618a8b">
 <br><br>
 - 2023 충남대학교 공과대학 엔지니어링 페어 우수상 수상<br>
-  사진 추가 예정
+  <img width="300" alt="image" src="https://github.com/special-c-vessel/2023-final-project/assets/33623075/305b4678-db31-4db4-b4ef-c59f091684dd">
 
 <br><br>
 **받은 질문:** <br>
