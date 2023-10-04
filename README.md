@@ -5,7 +5,7 @@
 팀&nbsp;&nbsp;&nbsp;&nbsp;   원 : 충남대학교 컴퓨터융합학부 20 김용일 <br> <br>
 
 **개요 및 추진 배경 : <br>**
-&nbsp; C++ 프로그램은 개발자가 메모리를 직접 관리하여야 하며, 이러한 이유로 다양한 형태의 오류가 발생할 수 있다. 오류가 발생하면 프로그램은 segmentation faults를 내고 종료되거나, 예상하지 못한 이상한 행동을 수행하게 된다. 오류 발생 시 이러한 오류를 탐지하기 위하여 디버거를 활용하여 디버깅을 수행할 수 있으나, 컴파일되어 바이너리로 변환 후 실행되는 프로그램의 특성 상 오류가 난 지점을 판단하기 어려울 뿐만 아니라, 네트워크 오퍼레이션, 외부 환경 변화, 동시성 프로그램, 비결정적 동작 등의 개발자가 동제하기 어렵거나 통제할 수 없는 요소들로 인해 오류가 재현되지 않아 원인 파악에 많은 개발자들이 어려움을 겪고 있다.
+&nbsp; C++ 프로그램은 개발자가 메모리를 직접 관리하여야 하며, 이러한 이유로 다양한 형태의 오류가 발생할 수 있다. 오류가 발생하면 프로그램은 segmentation faults를 내고 종료되거나, 예상하지 못한 이상한 행동을 수행하게 된다. 오류를 탐지하기 위하여 디버깅을 수행할 수 있으나, 컴파일되어 바이너리로 변환 후 실행되는 프로그램의 특성 상 오류가 난 지점을 판단하기 어려울 뿐만 아니라, 네트워크 오퍼레이션, 외부 환경 변화, 동시성 프로그램, 비결정적 동작 등의 개발자가 동제하기 어렵거나 통제할 수 없는 요소들로 인해 오류가 재현되지 않아 원인 파악에 많은 개발자들이 어려움을 겪고 있다.
 위의 어려움을 해결하기 위해 정적 및 동적 분석 기법을 활용하여 프로그램의 실행 흐름과 상태를 모니터링하는 도구와 기법을 개발한다.
 
 <br><br>
@@ -93,8 +93,10 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 
 <br><br>
 **요구사항:** <br>
-- ARM CPU를 사용하는 Mac OS
-- llvm release 12.x 버전
+- ARM CPU를 사용하는 Mac OS Monterey 12.7.0
+- llvm release 12.0.0 버전
+- Apple clang version 14.0.0 (clang-1400.0.29.202)
+
 
 <br><br>
 **사용방법:** <br>
@@ -107,7 +109,8 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
          클론 받은 폴더에서 아래 명령어를 입력하여 llvm build 를 수행해야합니다 (오래 걸리고 용량도 40GB정도 됩니다)
 
           cmake -S llvm -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-          cd build make -j8  (j뒤의 값은 cpu 코어 수에 맞게 입력, 모르면 그냥 make만 )
+          cd build
+          make -j8  (j뒤의 값은 cpu 코어 수에 맞게 입력, 모르면 그냥 make만 )
 <br>
 
 - record에 필요한 파일 다운로드<br>
@@ -156,7 +159,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <br><br>
 **받은 질문:** <br>
 1. 왜 이름이 culry 인가요? (제일 질문 많았음)
-   - 까먹었습니다. <br><br>
+   - CULRY(C++ soUrce-Level Record-and-replaY). <br><br>
 2. 변조된 프로그램의 실행시간은 기존의 프로그램과 얼마나 차이나는가?
    - 정확한 측정은 해보지 않았으나 JavaScript 활용하여 culry와 비슷한 연구를 진행한 Jalangi 의 경우 최소 1.5배에서 최대 93배, 평균 26배의 실행시간이 걸린다고 합니다. (Jalangi 논문 링크: https://dl.acm.org/doi/abs/10.1145/2491411.2491447)
    <br> culry에서는 Segfault 등 프로그램이 갑자기 종료되는 상황 또한 기록하기 위해 각 동작(기록의 대상이 되는 operation)마다 filestream을 진행하므로 많은 실행시간이 걸릴 것으로 예상합니다. <br>
