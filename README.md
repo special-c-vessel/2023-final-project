@@ -65,25 +65,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 
 <br><br>
 - 사용 가능한 명령어 <br>
-
-  |Replay Command|Description|Example|
-  |------|---|---|
-  |w|(기록 파일 정보에 한해서) 위쪽 기록 정보로 이동|w|
-  |ww|(기록 파일 정보에 상관 없이) 위쪽 줄번호로 이동|ww|
-  |s|(기록 파일 정보에 한해서) 아래쪽 기록 정보로 이동|s|
-  |ss|(기록 파일 정보에 상관 없이) 아래쪽 줄번호로 이동|ss|
-  |findptr [address]|[address] 부분에 입력한 포인터 주소에 저장되어 있는 값을 출력|findptr 0x25faddb2|
-  |findtype [type]|[type] 부분에 입력한 타입에 해당되는 변수 목록을 출력|findtype string|
-  |findname [name]|[name] 부분에 입력한 이름에 해당되는 변수 목록을 출력|findname num1|
-  |mvline [line]|[line] 부분에 입력한 줄 번호로 이동|mvline 149|
-  |mvline last|가장 마지막 기록 파일 정보로 이동|mvline last|
-  |mvarray [index]|[index] 부분에 입력한 인덱스로 array data table 페이지를 이동|mvarray 10|
-  |prevright|previous data table 다음 페이지로 이동|prevright|
-  |prevleft|previous data table 이전 페이지로 이동|prevleft|
-  |prevmove [index]|[index] 부분에 입력한 인덱스로 previous data table 페이지를 이동|prevmove 15|
-  |followright|following data table 다음 페이지로 이동|followright|
-  |followleft|following data table 이전 페이지로 이동|followleft|
-  |followmove [index]|[index] 부분에 입력한 인덱스로 follwing data table 페이지를 이동|followmove 15|
+<img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/497f19cd-ba2b-4614-85ad-1c3f25b0e7ea" width="100%" height="30%"/>
 
 <br><br>
 **향후 발전 계획:** <br>
@@ -126,20 +108,9 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
         
 
 <br>
--Replay <br><br>
+-Replay <br>
+ 추가 예정
 
-- replay 모듈 다운로드 <br>
-``` git clone https://github.com/special-c-vessel/Replay.git ```
-<br>
-
-- config.sh 수정 <br>
-
-        config.sh 에서
-        - RECORD_FILE_PATH    (기록 과정을 통해 생성된 기록 파일 경로)
-        - TARGET_FILE_PATH    (타켓 원본 소스 파일 경로, 기록 모듈 config.sh 파일에서 지정한 cpp 소스 코드와 같은 파일)
-        총 2가지의 경로를 설정
- 
-- ./config.sh 를 입력하여 쉘 코드 실행<br>
 
 <br><br>
 **제약사항 :** <br>
@@ -161,10 +132,7 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
    - 정확한 측정은 해보지 않았으나 JavaScript 활용하여 culry와 비슷한 연구를 진행한 Jalangi 의 경우 최소 1.5배에서 최대 93배, 평균 26배의 실행시간이 걸린다고 합니다. (Jalangi 논문 링크: https://dl.acm.org/doi/abs/10.1145/2491411.2491447)
    <br> culry에서는 Segfault 등 프로그램이 갑자기 종료되는 상황 또한 기록하기 위해 각 동작(기록의 대상이 되는 operation)마다 filestream을 진행하므로 많은 실행시간이 걸릴 것으로 예상합니다. <br>
    <br>
-3. replay 모듈 실행을 위한 최소 권장 사양은 어느정도인가?
-   - 메모리 변화를 추적하기 위한 메모리가 필요하므로, 기존 프로그램에 사용된 메모리보다 최소 2배 이상의 메모리가 필요할 것으로 예상합니다.
-  <br><br>
-4. 메모리 보안
+3. 메모리 보안
    - 서버나 시스템 안의 메모리를 참조할 때 보안상 취약점은 없는가?  <br>
    메모리 보호가 적용된 주소를 참조하여 기록하므로 culry 사용으로 인한 추가적인 보안 취약점은 없을 것으로 기대합니다.<br>
 
@@ -183,3 +151,4 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 팀명의 유래 : <br>
 본래 시작은 셋이었으나 좋은 일로 팀을 이탈하게된 충남대학교 컴퓨터공학과 17 정동윤을 기리기 위해 
 무한도전의 홍철없는 홍철팀에서 영감을 받아 팀명을 작명하게 됨 <br><br>
+
