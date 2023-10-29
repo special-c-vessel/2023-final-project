@@ -57,6 +57,8 @@
 
 @.str.userKeyWord_isStruct = private unnamed_addr constant [10 x i8] c"isStruct \00", align 1
 
+@.str.userKeyWord_enter = private unnamed_addr constant [2 x i8] c"\0A\00", align 1
+
 ; keyWord
 @.str.op_declare = private unnamed_addr constant [9 x i8] c"declare \00", align 1
 @.str.op_store = private unnamed_addr constant [7 x i8] c"store \00", align 1

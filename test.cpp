@@ -1,228 +1,151 @@
-#include <iostream>
-#include <vector>
-#include <map>
-#include <queue>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <time.h>
+#include <unistd.h>
 
+#include <iostream>
+#include <random>
+#include <string>
+#include <thread>
+
+/*
+    서버에서
+
+  string stringstart end 말고 string 최대 문자열을 작성
+  
+  기능 구현 표 만들기
+
+
+
+
+*/
 using namespace std;
 
-int globalllll = 55555;
+int my_sock;
+struct sockaddr_in serv_addr;
 
-void testFunc111()
-{
-  int a = 1;
-  int b = 2;
 
-  int c = a + b;
+int thread_Cnt = 0;
+// timeWait();
+
+int str_len;
+
+void testfunc() {
+  printf("It is work\n");
+  return;
 }
 
-// void testFunc222()
-// {
-//   int aa = 1;
-//   int bb = 2;
+void error(char *msg) {
+  // fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+  exit(1);
+}
 
-//   int cc = aa + bb;
-// }
+void *timeCount(void *a) {
+  int cnt2 = 0;
+  while (1) {
+    sleep(1);
+    cnt2++;
 
-class B {
-  public:
-  int x;
-  int y;
-  B() : x(-99), y(-88) {}  
-};
-
-class AAAAA {
-  public:
-  int xxxxx;
-  int yyyyy;
-  string classString;
-  B z;
-  AAAAA() : xxxxx(99), yyyyy(-1) {}
-
-  void inc_x(int zz111) {
-    xxxxx += zz111;
+    if (cnt2 % 2 == 0)
+      thread_Cnt = 1;
+    else
+      thread_Cnt = 0;
+    // cout << "cnt : " << cnt2 << "\n";
   }
 
-  void dec_x(int zz222) {
-    xxxxx -= zz222;
+  close(my_sock); // 4번
+  printf("close client\n");
+
+  return NULL;
+}
+
+void *exeTestFunc(void *a) {
+  while (1) {
+    char tempstr[50];
+    const char *boot = "boot";
+
+    scanf("%s", tempstr);
+    sleep(1);
+
+    if (!strcmp(tempstr, boot))
+    // if(message[0] == '1')
+    {
+      printf("입력된 값: %s\n", tempstr);
+      printf("성공한 예제\n");
+      testfunc();
+    } else {
+      printf("실패한 예제 aaa \n");
+    }
   }
 
-  void inc_y(int zz333) {
-    yyyyy += zz333;
-  }
+  return NULL;
+}
 
-  void dec_y(int zz444) {
-    yyyyy -= zz444;
-  }
-
-  int* get_x_ptr() {
-    return &(this->xxxxx);
-  }
-  int& get_x_ref() {
-    return this->xxxxx;
-  }
-};
-
-class QQQQQ {
-  public:
-  int a123 = 30;
-  int b1123 = 40;
-};
-
-int main()
-{
-  AAAAA x11111;
-  AAAAA x22222;
-
-  AAAAA * x1Ptr;
-
-  B xBBBBB;
-
-  QQQQQ qwe;
-
-  testFunc111();
-
-  x11111.xxxxx = 50;
-  x11111.yyyyy = 100;
-
-  x1Ptr = &x11111;
-
-  x22222.xxxxx = 11;
-  x22222.yyyyy = 22;
-
-  qwe.a123 = 10;
-
-  // cin >> qwe.b1123;
-  // cout << qwe.b1123 << "\n";
-
-  // testFunc222();
-
-  int num11, num22;
-  int num33, num44;
-  int *tempnum1, *tempnum2;
-
-  num11 = x11111.xxxxx;
-  num22 = x11111.yyyyy;
-
-  tempnum1 = &x11111.xxxxx;
-  tempnum2 = &x11111.yyyyy;
-
-  num33 = x11111.xxxxx;
-  num44 = x11111.yyyyy;
-
-
-  xBBBBB = x11111.z;
-
-  cout << num33 << " " << num44 << "\n";
-
-  *tempnum1 = 55555;
-
-  cout << num11 << " ";
-  cout << tempnum1 << " ";
-  cout << x11111.xxxxx << "\n";
-
-  cout << num22 << "\n";
-
+int main(int argc, char *argv[]) {
+  char message[100];
   
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<int> dis(-50, 50);
 
-  // std::cout << x11111.xxxxx << std::endl;
-  // std::cout << x11111.yyyyy << std::endl;
+  pthread_t t0;
+  pthread_t t1;
 
-  x11111.inc_x(10);
+  char tempstr[200] = "temp str value";
 
-  num11 = x11111.xxxxx;
-  num22 = x11111.yyyyy;
+  if (argc != 3) {
+    printf("%s <IP> <PORT>\n", argv[0]);
+    exit(1);
+  }
+  my_sock = socket(PF_INET, SOCK_STREAM, 0); // 1번
+  if (my_sock == -1)
+    printf("socket error \n");
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
+  serv_addr.sin_port = htons(atoi(argv[2]));
 
-  cout << num11 << "\n";
-  cout << num22 << "\n";
+  // pthread_create(&t0, NULL, timeCount, NULL);
 
-  // std::cout << x11111.xxxxx << std::endl;
-  // std::cout << x11111.yyyyy << std::endl;
+  int cnt = 0;
 
-  x22222.xxxxx = 55;
-  x22222.yyyyy = 99;
+  while (1) {
+    // connect(my_sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    if (connect(my_sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1) {
+      str_len = read(my_sock, message, sizeof(message)); // 3번
+      int randomNum = dis(gen);
 
-  num11 = x22222.xxxxx;
-  num22 = x22222.yyyyy;
+      if (str_len == -1)
+        printf("read error\n");
 
-  cout << num11 << "\n" << num22 << "\n";
+      if(message[0] == '9')
+        break;
 
-  x22222.dec_x(3);
-  x22222.dec_y(11);
+      // cout << cnt++ << "  서버에서 : " << message << "\n";
+      // cout << "userInput: " << userInput << "\n";
+      // cout << "thread_Cnt: " << thread_Cnt << "\n";
+      // cout << "random : " << randomNum << "\n";
 
-  num22 = x22222.yyyyy;
+      int tempnum;
+      if (message[0] >= '3')
+        tempnum = message[0] - '0';
+      else
+        tempnum = 0;
 
-  vector<AAAAA> VA;
+      int divNum = tempnum;
 
-  VA.push_back(x11111);
-  VA.push_back(x11111);
-  VA.push_back(x22222);
+      int result = (randomNum * tempnum) / divNum;
 
-  int * ptr1111 = x11111.get_x_ptr();
-  int ptr2222 = x11111.get_x_ref();
-
-  int num1 = 10;
-  int num2 = 20;
-  int num3 = num1 + num2;
-
-  long long int num4 = 111111;
-  float ffffstatic = 112.2414;
-  double vvvv = 525.124;
-  bool isisis = true;
-
-  float arrTest[50];
-  long long int arrTest2[50][50];
-
-  int ResetArr[50] = {11, 22, 33, 44, 55};
-
-  arrTest[30] = 12;
-  arrTest2[25][25] = 55555;
-
-  int arrTest1[100];
-
-  int num333 = 5;
-  int * ptrarrTest = &num333;
-  int ** pptrarrTest = &ptrarrTest;
-  int *** ppptrarrTest = &pptrarrTest;
-
-
-  int kkk = 11111;
-  **pptrarrTest = 22222;
-  ***ppptrarrTest = 55555;
-
-  string str1111 = "hello world\n";
-  str1111 = "faewfefe";
-  cout << str1111 << "\n";
-
-  string str2222 = "hello world\n";
-  str2222 = "change value\n";
-  int lll = 123123;
-
-  str2222[5] = 'e';
-
-  vector<int> vvvvv;
-  vector<long long int> vvvvv22;
-  vector<float> fffff;
-  vector<string> sssss;
-
-  vvvvv.push_back(55555);
-  vvvvv.push_back(66);
-  vvvvv.push_back(77);
-
-  vvvvv22.push_back(12345);
-  vvvvv22.push_back(3456);
-  vvvvv22.push_back(56789);
-
-
-  fffff.push_back(111.24124);
-
-  sssss.push_back("vector string test");
-
-  string tempvectorStringTest = sssss[0];
-  string compareStringTest = "asdfgzxcvbn\n\n\n";
-
-  
+      cout << "result : " << result << "\n";
+    }
+  }
+  close(my_sock); // 4번
+  printf("close client\n");
 
   return 0;
 }
-
-
