@@ -341,6 +341,8 @@ public:
 
     void writeStrNameStream(string varName)
     {
+        // if(varName[varName.length() - 1] == '*')
+        //     return;
         str_fstream << "@__const_culry." << varName << " = private unnamed_addr constant [" << varName.size() + 2 << " x i8] c\"" << varName << " \\00\", align 1\n";
     }
 
@@ -361,6 +363,7 @@ strStreamInfo strStreamInfo1;
 
 string ifDontWriteVarNameThanWrite(string NameString , bool isName)
 {
+    
 
     cout << "ifDontWriteVarNameThanWrite fffffffffffffffff\n\n\n";
 
@@ -404,13 +407,16 @@ string ifDontWriteVarNameThanWrite(string NameString , string NameType , bool* i
 {
     cout << "ifDontWriteVarNameThanWrite is start \n";
 
+    // if()
+
     string tempstr = "";
     string tempFuncName = currentFunc;
     string tempFuncPlusVarNamestr;
 
-    if(globalNum == 110)
+    for(int i = 0; i < NameString.length(); i ++)
     {
-        cout << "find @@@\n\n";
+        if(NameString[i] == '\"')
+        NameString[i] = '_';
     }
 
     if (previoustempv.size() > 0)       // 배열인 경우 변수명 가져옴
@@ -509,6 +515,8 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     bool isPointer = false;
 
     galmoori1.stroeDebugNum(debugNum);
+    if(LineNum == "" && ColNum == "")
+        return ;
 
     var_ptr_cnt = checkFeature1.checkStarCnt(var_type);  // 포인터 * 개수 카우느
 
@@ -519,14 +527,18 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     if(var_name == "bitcast")
         return ;
 
-    if(globalNum == 110)
+    if(var_name[0] != '%')
     {
-        cout << "find !! \n\n";
+        return ;
     }
 
-    ostreamInfo1.writeOpenStream(globalNum);    // open a+
-    ostreamInfo1.writeLoadVarValue(globalNum , var_type , var_name);  // 변수값 load
-    ostreamInfo1.writeKeyWord(globalNum , templocalNum++ , keyWord);  // 키워드
+    // if(var_name[var_name.length() - 1] == '*')
+    // {
+    //     return ;
+    // }
+
+    string original_Str = var_name;
+    
 
     // var_name = var_name + currentFunc;
     cout << "### var_name change " << var_name << " -> ";
@@ -536,6 +548,10 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
     if(isString == true)
         return;
+
+    ostreamInfo1.writeOpenStream(globalNum);    // open a+
+    ostreamInfo1.writeLoadVarValue(globalNum , var_type , original_Str);  // 변수값 load
+    ostreamInfo1.writeKeyWord(globalNum , templocalNum++ , keyWord);  // 키워드
 
     // var_name가 arrayidx 일 경우 배열이므로 차수 기록을 위한 작업 수행
     // cout << var_name.substr(1 , 8) << "\n";
@@ -1852,10 +1868,7 @@ int main()
                 }
 
                 // 변수의 할당 및 불러오기, store 및 load 일 때 새로 할당된 값 또는 불러온 값을 기록
-                else if (
-                    (tempv[i] == "store")
-                    || tempv[i] == "load"
-                    ) //
+                else if (tempv[i] == "store" || tempv[i] == "load") //
                 {
                     // // 기록할 필요 없는 기본 내장 함수 건너뜀
                     if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
@@ -1898,18 +1911,18 @@ int main()
 
                         // continue;
 
-                        // if (var_name == "getelementptr")
-                        // {
-                        //     // 문자열 배열 경우 아직 기록 불가능
-                        //     continue;
-                        // }
+                        if (var_name == "getelementptr")
+                        {
+                            // 문자열 배열 경우 아직 기록 불가능
+                            continue;
+                        }
                     }
 
-                    if(var_name == "getelementptr") // 전역 배열 일단 넘어감 
-                            continue;
+                    // if(var_name == "getelementptr") // 전역 배열 일단 넘어감 
+                    //         continue;
 
-                    if(var_name.substr(1 , 8) == "arrayidx")
-                        continue;
+                    // if(var_name.substr(1 , 8) == "arrayidx")
+                    //     continue;
 
                     // 포인터 아직 지원 안되므로 넘어감
                     // if(var_type.substr(var_type.size() - 3, var_type.size() - 1) == "**")
@@ -2061,295 +2074,382 @@ int main()
 
                 // string 과 관련된 함수일 경우 출력을 위한 코드를 함수 안에 추가, 함수 인자에 line colnum 을 추가해야함
                 // string 함수이면서 마지막 부분일 경우
-                // else if ((currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc_"
-                //     && tempv[i] == "%\"class.std::__1::basic_string\"*"
-                //     && tempv[i + 1] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC2INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*"
-                //     && tempv[i + 2] == "%this1,")
-                //     //%call = call nonnull align 8 dereferenceable(24) %"class.std::__1::basic_string"* @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc(%"class.std::__1::basic_string"* %this1, i8* %0), !dbg !1838
-                //     || (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc_"
-                //         && tempv[i] == "dereferenceable(24)"
-                //         && tempv[i + 1] == "%\"class.std::__1::basic_string\"*"
-                //         && tempv[i + 2] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc(%\"class.std::__1::basic_string\"*"
-                //         && tempv[i + 3] == "%this1,")
-                //     || (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6__"
-                //         && tempv[i] == "%9"
-                //         && tempv[i + 2] == "load"
-                //         && tempv[i + 5] == "%retval,")
-                //     )
-                // {
-                //     string stringValue;
-                //     string stringPointer;
-                //     bool isStore = true;
+                else if ((currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc-"
+                    && tempv[i] == "%\"class.std::__1::basic_string\"*"
+                    && tempv[i + 1] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC2INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*"
+                    && tempv[i + 2] == "%this1,")
+                    //%call = call nonnull align 8 dereferenceable(24) %"class.std::__1::basic_string"* @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc(%"class.std::__1::basic_string"* %this1, i8* %0), !dbg !1838
+                    || (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc-"
+                        && tempv[i] == "dereferenceable(24)"
+                        && tempv[i + 1] == "%\"class.std::__1::basic_string\"*"
+                        && tempv[i + 2] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc(%\"class.std::__1::basic_string\"*"
+                        && tempv[i + 3] == "%this1,")
+                    || (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_-"
+                        && tempv[i] == "%9"
+                        && tempv[i + 2] == "load"
+                        && tempv[i + 5] == "%retval,")
+                    )
+                {
+                    string stringValue;
+                    string stringPointer;
+                    bool isStore = true;
 
-                //     if (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc_"
-                //         || currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc_")
-                //     {
-                //         stringValue = "%__s";
-                //         stringPointer = "%this";
-                //     }
+                    if (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc-"
+                        || currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc-")
+                    {
+                        stringValue = "%__s";
+                        stringPointer = "%this";
+                    }
 
-                //     // %this -> %__lhs  %__s -> %__rhs
-                //     else if (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6__")
-                //     {
-                //         stringValue = "%__rhs";
-                //         stringPointer = "%__lhs";
-                //         isStore = false;
-                //     }
+                    // %this -> %__lhs  %__s -> %__rhs
+                    else if (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_-")
+                    {
+                        stringValue = "%__rhs";
+                        stringPointer = "%__lhs";
+                        isStore = false;
+                    }
 
-                //     // string length record
-                //     output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
+                    // string length record
+                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
 
-                //     // file open
-                //     output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+                    // file open
+                    output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
 
-                //     if (isStore)
-                //     {
-                //         output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
-                //     }
-                //     else
-                //     {
-                //         output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.op_load, i32 0, i32 0))\n";
-                //     }
+                    if (isStore)
+                    {
+                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
+                    }
+                    else
+                    {
+                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.op_load, i32 0, i32 0))\n";
+                    }
 
-                //     // name
-                //     output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) \n";
+                    // name
+                    output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) \n";
 
-                //     // type
-                //     output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+                    // type
+                    output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
 
-                //     // String 값 출력 시작`
-                //     output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
+                    // String 값 출력 시작`
+                    output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
 
-                //     output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
-
-
-                //     // 내용 출력
-                //     if (isStore)
-                //     {
-                //         output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* " << stringValue << ")\n";
-                //     }
-                //     else
-                //     {
-                //         output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), %\"class.std::__1::basic_string\"* %__lhs) \n";
-                //     }
-
-                //     // String 값 출력 끝
-                //     output_printf_fstream << "%var_print_stringEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_isStringEnd, i32 0, i32 0))\n";
-
-                //     output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* " << stringPointer << ")\n";
-                //     output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line)\n";
-                //     output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum)\n";
-
-                //     // file close
-                //     output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
-
-                // }
-
-                // else if (currentFunc.substr(0 , 8) == "_ZNSt3__" && tempv[i] == "ret")
-                // {
-                //     cout << "\n\n\n\n\n\n";
-                //     // output_printf_fstream << tempv[i];
-                //     // output_printf_fstream << ";";
-                //     cout << tempv[i] << "\n";
-                //     cout << currentFunc << "\n";
-                //     cout << "\n\n\n\n\n\n";
-                //     // return 0;
-
-                //     // %value_name 을 저장하기 위한 vector
-                //     vector<string> saveValueName;
-
-                //     // 따로 저장을 하는 경우   ex) %call25 = (invoke or call) function operation 
-
-                //     // 따로 저장하지 않는 경우 ex) (call or invoke) function operation
-                // }
-
-                // // 구조체 내용 출력 
-                // else if (tempv[i] == "alloca" && tempv[i + 1].substr(0 , 7) == "%class.")
-                // {
-                //     // while(i <= tempv.size())
-                //     // {
-                //         // output_printf_fstream << tempv[i] << " ";
-                //         // output_printf_fstream << tempv[i++] << " ";
-                //         // output_printf_fstream << tempv[i++] << " ";
-                //         // output_printf_fstream << tempv[i++] << " ";
-                //         // i ++;
-                //     // }
-
-                //     // if (currentFunc != "main_")
-                //     //     continue;
-
-                //     string classNamea = tempv[i + 1].substr(0 , tempv[i + 1].size() - 1);
-
-                //     globalNumSub++;
-
-                //     cout << "abc 12345678 current class name is : " << classNamea << "\n";   // classNamea = %class.AAAAA
-                //     string tempclassNameb = classNamea;
-                //     classNamea += '*';  // classNamea = %class.AAAAA*
-                //     if(classUserStruct.find(classNamea) != classUserStruct.end())   // value 가 존재한다면
-                //     {
-                //         string mapValue = classUserStruct.at(classNamea);
-
-                //         output_printf_fstream << "%loadStruct_" << globalNumSub << " = call " << classNamea << " " << mapValue << "(" << classNamea << " " << tempv[2] << ") \n";
-                //             //                          %call                            = call %class.AAAAA               *        @_ZN5AAAAAC1Ev                                          (%class.        AAAAA* %x11111)
-
-                //             cout << "pear13\n";
-                //             cout << classNamea << "\n";
-
-                //             vector<string> classValue = classStruct[classNamea];
+                    output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
 
 
-                //             string tempVarName = ifDontWriteVarNameThanWrite(tempv[2] , true);
+                    // 내용 출력
+                    if (isStore)
+                    {
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* " << stringValue << ")\n";
+                    }
+                    else
+                    {
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), %\"class.std::__1::basic_string\"* %__lhs) \n";
+                    }
+
+                    // String 값 출력 끝
+                    output_printf_fstream << "%var_print_stringEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_isStringEnd, i32 0, i32 0))\n";
+
+                    output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* " << stringPointer << ")\n";
+                    output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line)\n";
+                    output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum)\n";
+
+                    // file close
+                    output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+
+                }
+
+                // string 과 관련된 함수일 경우 출력을 위한 코드를 함수 안에 추가, 함수 인자에 line colnum 을 추가해야함
+                // string 함수이면서 마지막 부분일 경우
+                else if ((currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc_"
+                    && tempv[i] == "%\"class.std::__1::basic_string\"*"
+                    && tempv[i + 1] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC2INS_9nullptr_tEEEPKc(%\"class.std::__1::basic_string\"*"
+                    && tempv[i + 2] == "%this1,")
+                    //%call = call nonnull align 8 dereferenceable(24) %"class.std::__1::basic_string"* @_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc(%"class.std::__1::basic_string"* %this1, i8* %0), !dbg !1838
+                    || (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc_"
+                        && tempv[i] == "dereferenceable(24)"
+                        && tempv[i + 1] == "%\"class.std::__1::basic_string\"*"
+                        && tempv[i + 2] == "@_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc(%\"class.std::__1::basic_string\"*"
+                        && tempv[i + 3] == "%this1,")
+                    || (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_-"
+                        && tempv[i] == "%9"
+                        && tempv[i + 2] == "load"
+                        && tempv[i + 5] == "%retval,")
+                    )
+                {
+                    string stringValue;
+                    string stringPointer;
+                    bool isStore = true;
+
+                    if (currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEC1INS_9nullptr_tEEEPKc_"
+                        || currentFunc == "_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEaSEPKc_")
+                    {
+                        stringValue = "%__s";
+                        stringPointer = "%this";
+                    }
+
+                    // %this -> %__lhs  %__s -> %__rhs
+                    else if (currentFunc == "_ZNSt3__1eqIcNS_11char_traitsIcEENS_9allocatorIcEEEEbRKNS_12basic_stringIT_T0_T1_EEPKS6_-")
+                    {
+                        stringValue = "%__rhs";
+                        stringPointer = "%__lhs";
+                        isStore = false;
+                    }
+
+                    // string length record
+                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
+
+                    // file open
+                    output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+
+                    if (isStore)
+                    {
+                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
+                    }
+                    else
+                    {
+                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.op_load, i32 0, i32 0))\n";
+                    }
+
+                    // name
+                    output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) \n";
+
+                    // type
+                    output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+
+                    // String 값 출력 시작`
+                    output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
+
+                    output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
+
+
+                    // 내용 출력
+                    if (isStore)
+                    {
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* " << stringValue << ")\n";
+                    }
+                    else
+                    {
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), %\"class.std::__1::basic_string\"* %__lhs) \n";
+                    }
+
+                    // String 값 출력 끝
+                    output_printf_fstream << "%var_print_stringEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_isStringEnd, i32 0, i32 0))\n";
+
+                    output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* " << stringPointer << ")\n";
+                    output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line)\n";
+                    output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum)\n";
+
+                    // file close
+                    output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+
+                }
+
+                else if (currentFunc.substr(0 , 8) == "_ZNSt3__" && tempv[i] == "ret")
+                {
+                    cout << "\n\n\n\n\n\n";
+                    // output_printf_fstream << tempv[i];
+                    // output_printf_fstream << ";";
+                    cout << tempv[i] << "\n";
+                    cout << currentFunc << "\n";
+                    cout << "\n\n\n\n\n\n";
+                    // return 0;
+
+                    // %value_name 을 저장하기 위한 vector
+                    vector<string> saveValueName;
+
+                    // 따로 저장을 하는 경우   ex) %call25 = (invoke or call) function operation 
+
+                    // 따로 저장하지 않는 경우 ex) (call or invoke) function operation
+                }
+
+                // 구조체 내용 출력 
+                else if (tempv[i] == "alloca" && tempv[i + 1].substr(0 , 7) == "%class.")
+                {
+                    // while(i <= tempv.size())
+                    // {
+                        // output_printf_fstream << tempv[i] << " ";
+                        // output_printf_fstream << tempv[i++] << " ";
+                        // output_printf_fstream << tempv[i++] << " ";
+                        // output_printf_fstream << tempv[i++] << " ";
+                        // i ++;
+                    // }
+
+                    // if (currentFunc != "main_")
+                    //     continue;
+
+                    string classNamea = tempv[i + 1].substr(0 , tempv[i + 1].size() - 1);
+
+                    globalNumSub++;
+
+                    cout << "abc 12345678 current class name is : " << classNamea << "\n";   // classNamea = %class.AAAAA
+                    string tempclassNameb = classNamea;
+                    classNamea += '*';  // classNamea = %class.AAAAA*
+                    if(classUserStruct.find(classNamea) != classUserStruct.end())   // value 가 존재한다면
+                    {
+                        string mapValue = classUserStruct.at(classNamea);
+
+                        output_printf_fstream << "%loadStruct_" << globalNumSub << " = call " << classNamea << " " << mapValue << "(" << classNamea << " " << tempv[2] << ") \n";
+                            //                          %call                            = call %class.AAAAA               *        @_ZN5AAAAAC1Ev                                          (%class.        AAAAA* %x11111)
+
+                            cout << "pear13\n";
+                            cout << classNamea << "\n";
+
+                            vector<string> classValue = classStruct[classNamea];
+
+
+                            string tempVarName = ifDontWriteVarNameThanWrite(tempv[2] , true);
                             
-                //             string removePersenttempclassNameb = ifDontWriteVarNameThanWrite(tempclassNameb , false);
+                            string removePersenttempclassNameb = ifDontWriteVarNameThanWrite(tempclassNameb , false);
                             
 
-                //             string tempVarType = tempv[i + 1].substr(7 , tempv[i + 1].size() - 8);
+                            string tempVarType = tempv[i + 1].substr(7 , tempv[i + 1].size() - 8);
 
-                //             tempVarName = currentFunc + tempVarName;
-
-
-                //             output_printf_fstream << "%openFile_004" << globalNumSub << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
-
-                //             // output_printf_fstream << "%var_store_005" << globalNumSub + 31 << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0)) " << "\n";
-                //             output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
-                //             output_printf_fstream << "%temp_structName_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempVarName.size() + 2 << " x i8], [" << tempVarName.size() + 2 << " x i8]* @__const_culry." << tempVarName << ", i64 0, i64 0))\n";
-                //             output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << removePersenttempclassNameb.size() + 2 << " x i8], [" << removePersenttempclassNameb.size() + 2 << " x i8]* @__const_culry." << removePersenttempclassNameb << ", i64 0, i64 0))\n";
-
-                //             for (int j = 0; j < classValue.size(); j++)
-                //             { 
-                //                 string currentType = classValue[j];
-
-                //                 // output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentFunc.size() + compareVarName.size() + 2 << " x i8], [" << currentFunc.size() + compareVarName.size() + 2 << " x i8]* @__const_culry." << currentFunc + compareVarName << ", i64 0, i64 0))\n";
-                //                 output_printf_fstream << "%tempstructPtr_004" << globalNumSub << "_" << j << " = getelementptr inbounds %class." << classNamea << ", %class." << classNamea << "* " << tempv[2] << " , i32 0, i32 " << j << "\n";
-
-                //                 if (currentType == "i8" || currentType == "i16" ||
-                //                     currentType == "i32" || currentType == "i64")
-                //                 {
-                //                     output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
-                //                     output_printf_fstream << "%tempstructValue_004" << globalNumSub << "_" << j << " = load " << currentType << ", " << currentType << "* %tempstructPtr_004" << globalNumSub << "_" << j << ", align 8 \n";
-
-                //                     {
-                //                         output_printf_fstream << "%temp_varVal_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << 4 << " x i8], [" << 4 << " x i8]* @.str.print_i32, i32 0, i32 0), " << currentType << " %tempstructValue_004" << globalNumSub << "_" << j << ")\n";
-
-                //                     }
+                            tempVarName = currentFunc + tempVarName;
 
 
+                            output_printf_fstream << "%openFile_004" << globalNumSub << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
 
-                //                 }
+                            // output_printf_fstream << "%var_store_005" << globalNumSub + 31 << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0)) " << "\n";
+                            output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
+                            output_printf_fstream << "%temp_structName_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempVarName.size() + 2 << " x i8], [" << tempVarName.size() + 2 << " x i8]* @__const_culry." << tempVarName << ", i64 0, i64 0))\n";
+                            output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << removePersenttempclassNameb.size() + 2 << " x i8], [" << removePersenttempclassNameb.size() + 2 << " x i8]* @__const_culry." << removePersenttempclassNameb << ", i64 0, i64 0))\n";
 
-                //                 else if (currentType == "string")
-                //                 {
-                //                     output_printf_fstream << "%var_type_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
-                //                     // output_printf_fstream << 
-                //                     // i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str
-                //                     // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s) 
+                            for (int j = 0; j < classValue.size(); j++)
+                            { 
+                                string currentType = classValue[j];
 
-                //                 }
+                                // output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentFunc.size() + compareVarName.size() + 2 << " x i8], [" << currentFunc.size() + compareVarName.size() + 2 << " x i8]* @__const_culry." << currentFunc + compareVarName << ", i64 0, i64 0))\n";
+                                output_printf_fstream << "%tempstructPtr_004" << globalNumSub << "_" << j << " = getelementptr inbounds %class." << classNamea << ", %class." << classNamea << "* " << tempv[2] << " , i32 0, i32 " << j << "\n";
 
-                //                 else
-                //                 {
-                //                     // if user struct 
-                //                     // => rec??
-                //                     currentType = ifDontWriteVarNameThanWrite(currentType , false);
-                //                     output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
-                //                     output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
-                //                 }
-                //             }
+                                if (currentType == "i8" || currentType == "i16" ||
+                                    currentType == "i32" || currentType == "i64")
+                                {
+                                    output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
+                                    output_printf_fstream << "%tempstructValue_004" << globalNumSub << "_" << j << " = load " << currentType << ", " << currentType << "* %tempstructPtr_004" << globalNumSub << "_" << j << ", align 8 \n";
 
-                //             output_printf_fstream << "%temp_varPtr_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %class." << tempVarType << "* %" << "loadStruct_" << globalNumSub << " )\n";
-                //             // output_printf_fstream << "%temp_varLine_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << 888 << ")\n";
-                //             output_printf_fstream << "%temp_varColnum_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 999)\n";
-                //             output_printf_fstream << "%closeFile_004" << globalNumSub << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+                                    {
+                                        output_printf_fstream << "%temp_varVal_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << 4 << " x i8], [" << 4 << " x i8]* @.str.print_i32, i32 0, i32 0), " << currentType << " %tempstructValue_004" << globalNumSub << "_" << j << ")\n";
 
-                //             break;
-                //     }
-
-                //     // // if(auto it = totalFunc.begin(); it != totalFunc.end(); it ++)
-                //     // for (int j = 0; j < totalFunc.size(); j++)
-                //     // {
-                //     //     cout << totalFunc[j] << "\n";
-                //     //     // totalFunc 에 class가 포함되어 있을 경우
-                //     //     // classUserStruct ( %class.B* @_ZN1BC1Ev )
-                //     //     if (totalFunc[j].find(classNamea) != string::npos)
-                //     //     {
-                //     //         output_printf_fstream << "%loadStruct_" << globalNumSub << " = call %class." << classNamea << "* " << "@" << totalFunc[j].substr(0 , totalFunc[j].size() - 1) << "(%class." << classNamea << "* " << tempv[2] << ") \n";
-                //     //         //                          %call                            = call %class.AAAAA               *        @_ZN5AAAAAC1Ev                                          (%class.        AAAAA* %x11111)
-
-                //     //         cout << "pear13\n";
-                //     //         cout << classNamea << "\n";
-
-                //     //         vector<string> classValue = classStruct[classNamea];
-
-
-                //     //         string tempVarName = ifDontWriteVarNameThanWrite(tempv[2] , true);
-                //     //         ifDontWriteVarNameThanWrite(classNamea , false);
-
-                //     //         tempVarName = currentFunc + tempVarName;
-
-
-                //     //         output_printf_fstream << "%openFile_004" << globalNumSub << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
-
-                //     //         // output_printf_fstream << "%var_store_005" << globalNumSub + 31 << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0)) " << "\n";
-                //     //         output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
-                //     //         output_printf_fstream << "%temp_structName_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempVarName.size() + 2 << " x i8], [" << tempVarName.size() + 2 << " x i8]* @__const_culry." << tempVarName << ", i64 0, i64 0))\n";
-                //     //         output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << classNamea.size() + 2 << " x i8], [" << classNamea.size() + 2 << " x i8]* @__const_culry." << classNamea << ", i64 0, i64 0))\n";
-
-                //     //         for (int j = 0; j < classValue.size(); j++)
-                //     //         { 
-                //     //             string currentType = classValue[j];
-
-                //     //             // output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentFunc.size() + compareVarName.size() + 2 << " x i8], [" << currentFunc.size() + compareVarName.size() + 2 << " x i8]* @__const_culry." << currentFunc + compareVarName << ", i64 0, i64 0))\n";
-                //     //             output_printf_fstream << "%tempstructPtr_004" << globalNumSub << "_" << j << " = getelementptr inbounds %class." << classNamea << ", %class." << classNamea << "* " << tempv[2] << " , i32 0, i32 " << j << "\n";
-
-                //     //             if (currentType == "i8" || currentType == "i16" ||
-                //     //                 currentType == "i32" || currentType == "i64")
-                //     //             {
-                //     //                 output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
-                //     //                 output_printf_fstream << "%tempstructValue_004" << globalNumSub << "_" << j << " = load " << currentType << ", " << currentType << "* %tempstructPtr_004" << globalNumSub << "_" << j << ", align 8 \n";
-
-                //     //                 {
-                //     //                     output_printf_fstream << "%temp_varVal_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << 4 << " x i8], [" << 4 << " x i8]* @.str.print_i32, i32 0, i32 0), " << currentType << " %tempstructValue_004" << globalNumSub << "_" << j << ")\n";
-
-                //     //                 }
+                                    }
 
 
 
-                //     //             }
+                                }
 
-                //     //             else if (currentType == "string")
-                //     //             {
-                //     //                 output_printf_fstream << "%var_type_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
-                //     //                 // output_printf_fstream << 
-                //     //                 // i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str
-                //     //                 // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s) 
+                                else if (currentType == "string")
+                                {
+                                    output_printf_fstream << "%var_type_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+                                    // output_printf_fstream << 
+                                    // i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str
+                                    // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s) 
 
-                //     //             }
+                                }
 
-                //     //             else
-                //     //             {
-                //     //                 // if user struct 
-                //     //                 // => rec??
-                //     //                 currentType = ifDontWriteVarNameThanWrite(currentType , false);
-                //     //                 output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
-                //     //                 output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
-                //     //             }
-                //     //         }
+                                else
+                                {
+                                    // if user struct 
+                                    // => rec??
+                                    currentType = ifDontWriteVarNameThanWrite(currentType , false);
+                                    output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
+                                    output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
+                                }
+                            }
 
-                //     //         output_printf_fstream << "%temp_varPtr_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %class." << classNamea << "* %" << "loadStruct_" << globalNumSub << " )\n";
-                //     //         // output_printf_fstream << "%temp_varLine_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << 888 << ")\n";
-                //     //         output_printf_fstream << "%temp_varColnum_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 999)\n";
-                //     //         output_printf_fstream << "%closeFile_004" << globalNumSub << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+                            output_printf_fstream << "%temp_varPtr_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %class." << tempVarType << "* %" << "loadStruct_" << globalNumSub << " )\n";
+                            // output_printf_fstream << "%temp_varLine_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << 888 << ")\n";
+                            // output_printf_fstream << "%temp_varColnum_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 999)\n";
+                            output_printf_fstream << "%temp_var_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.userKeyWord_enter, i64 0, i64 0))\n";
+                            output_printf_fstream << "%closeFile_004" << globalNumSub << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
 
-                //     //         break;
-                //     //     }
+                            break;
+                    }
+
+                    // if(auto it = totalFunc.begin(); it != totalFunc.end(); it ++)
+                    for (int j = 0; j < totalFunc.size(); j++)
+                    {
+                        cout << totalFunc[j] << "\n";
+                        // totalFunc 에 class가 포함되어 있을 경우
+                        // classUserStruct ( %class.B* @_ZN1BC1Ev )
+                        if (totalFunc[j].find(classNamea) != string::npos)
+                        {
+                            output_printf_fstream << "%loadStruct_" << globalNumSub << " = call %class." << classNamea << "* " << "@" << totalFunc[j].substr(0 , totalFunc[j].size() - 1) << "(%class." << classNamea << "* " << tempv[2] << ") \n";
+                            //                          %call                            = call %class.AAAAA               *        @_ZN5AAAAAC1Ev                                          (%class.        AAAAA* %x11111)
+
+                            cout << "pear13\n";
+                            cout << classNamea << "\n";
+
+                            vector<string> classValue = classStruct[classNamea];
 
 
-                //     //     //%call = call %class.AAAAA* @_ZN5AAAAAC1Ev(%class.AAAAA* %x11111), !dbg !1824
+                            string tempVarName = ifDontWriteVarNameThanWrite(tempv[2] , true);
+                            ifDontWriteVarNameThanWrite(classNamea , false);
 
-                //     // }
+                            tempVarName = currentFunc + tempVarName;
 
 
-                // }
+                            output_printf_fstream << "%openFile_004" << globalNumSub << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+
+                            // output_printf_fstream << "%var_store_005" << globalNumSub + 31 << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0)) " << "\n";
+                            output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_ = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
+                            output_printf_fstream << "%temp_structName_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << tempVarName.size() + 2 << " x i8], [" << tempVarName.size() + 2 << " x i8]* @__const_culry." << tempVarName << ", i64 0, i64 0))\n";
+                            output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << classNamea.size() + 2 << " x i8], [" << classNamea.size() + 2 << " x i8]* @__const_culry." << classNamea << ", i64 0, i64 0))\n";
+
+                            for (int j = 0; j < classValue.size(); j++)
+                            { 
+                                string currentType = classValue[j];
+
+                                // output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentFunc.size() + compareVarName.size() + 2 << " x i8], [" << currentFunc.size() + compareVarName.size() + 2 << " x i8]* @__const_culry." << currentFunc + compareVarName << ", i64 0, i64 0))\n";
+                                output_printf_fstream << "%tempstructPtr_004" << globalNumSub << "_" << j << " = getelementptr inbounds %class." << classNamea << ", %class." << classNamea << "* " << tempv[2] << " , i32 0, i32 " << j << "\n";
+
+                                if (currentType == "i8" || currentType == "i16" ||
+                                    currentType == "i32" || currentType == "i64")
+                                {
+                                    output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
+                                    output_printf_fstream << "%tempstructValue_004" << globalNumSub << "_" << j << " = load " << currentType << ", " << currentType << "* %tempstructPtr_004" << globalNumSub << "_" << j << ", align 8 \n";
+
+                                    {
+                                        output_printf_fstream << "%temp_varVal_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << 4 << " x i8], [" << 4 << " x i8]* @.str.print_i32, i32 0, i32 0), " << currentType << " %tempstructValue_004" << globalNumSub << "_" << j << ")\n";
+
+                                    }
+
+
+
+                                }
+
+                                else if (currentType == "string")
+                                {
+                                    output_printf_fstream << "%var_type_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+                                    // output_printf_fstream << 
+                                    // i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str
+                                    // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s) 
+
+                                }
+
+                                else
+                                {
+                                    // if user struct 
+                                    // => rec??
+                                    currentType = ifDontWriteVarNameThanWrite(currentType , false);
+                                    output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
+                                    output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentType.size() + 2 << " x i8], [" << currentType.size() + 2 << " x i8]* @__const_culry." << currentType << ", i64 0, i64 0))\n";
+                                }
+                            }
+
+                            output_printf_fstream << "%temp_varPtr_004" << globalNumSub << "_" << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %class." << classNamea << "* %" << "loadStruct_" << globalNumSub << " )\n";
+                            // output_printf_fstream << "%temp_varLine_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << 888 << ")\n";
+                            output_printf_fstream << "%temp_varColnum_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 999)\n";
+                            output_printf_fstream << "%closeFile_004" << globalNumSub << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+
+                            break;
+                        }
+
+
+                        //%call = call %class.AAAAA* @_ZN5AAAAAC1Ev(%class.AAAAA* %x11111), !dbg !1824
+
+                    }
+
+
+                }
 
                 else
                 {
@@ -2387,3 +2487,90 @@ int main()
 
     return 0;
 }
+
+
+// sudo code
+// compile c/c++ source code to llvm bitcode
+
+// for every instructions, I do
+//     if isStoreOrLoadOperation(I)
+//         insertRecordInstruction(I's debug information)
+//     endif
+// endfor
+
+// output instrumented LLVM bitcode
+
+// function insertRecordInstruction(operation, var)
+// {
+//     if(operation == "store")
+//         loadVarValue(var)
+    
+//     record(operation)
+//     record(func_name)
+//     record(var_name)
+//     record(var_type)
+//     record(var_value)
+//     record(var_pointer)
+//     record(line & colnum)
+// }
+
+// store var1, 5
+// insertRecordInstruction(store, var1)
+
+// load var2
+// insertRecordInstruction(load, var2)
+
+// stroe arr1[array1][array2], 10
+// insertRecordInstruction(store, arr1)
+// for array.dimension, I do
+//     record(I)
+// endfor
+
+// load arr2[array1][array2][array3]
+// insertRecordInstruction(store, arr1)
+// for array.dimension, I do
+//     record(I)
+// endfor
+
+// stringAlloca(&this, str_pointer)
+// ...
+// return *this
+
+// stringAlloca(&this, str_pointer, str_name, line & colnum)
+
+// ...
+
+// insertRecordInstruction(store, this)
+// record(str length)
+
+// return *this
+
+// vector_push_back(&this, vector_pointer)
+// ...
+// return void
+
+// vector_push_back(&this, vector_pointer, vector_name, line & colnum)
+// ...
+// record(push_back)
+// insertRecordInstruction(store, this)
+// return void
+
+// alloca struct1
+
+// alloca struct2
+
+// alloca struct1
+//     record(struct1_name)
+//     for every struct1_var, I do
+//         record(I_type)
+//     record(struct1_pointer)
+//     record(struct1_line & colnum)
+
+// alloca struct2
+//     record(struct2_name)
+//     for every struct2_var, I do
+//         record(I_type)
+//     record(struct2_pointer)
+//     record(struct2_line & colnum)
+
+
