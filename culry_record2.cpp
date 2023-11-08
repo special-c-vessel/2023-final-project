@@ -2065,9 +2065,9 @@ int main()
 
                     // 기본적으로 stringLength.ll 파일에서 읽어오는 방식]
                     // 그러나 length 함수가 사용되었다면 아래 코드 사용
-                    output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+                    // output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
                     output_printf_fstream << "%var_length22 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) \n";
-                    output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+                    // output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
 
                     checkDel.checkString_length_Func = true;
                 }
@@ -2109,8 +2109,7 @@ int main()
                         isStore = false;
                     }
 
-                    // string length record
-                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
+                    
 
                     // file open
                     output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
@@ -2133,7 +2132,10 @@ int main()
                     // String 값 출력 시작`
                     output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
 
-                    output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
+                    // output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
+                    
+                    // string length record
+                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
 
 
                     // 내용 출력
@@ -2195,8 +2197,7 @@ int main()
                         isStore = false;
                     }
 
-                    // string length record
-                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
+                    
 
                     // file open
                     output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
@@ -2219,7 +2220,10 @@ int main()
                     // String 값 출력 시작`
                     output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
 
-                    output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
+                    // output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
+                    
+                    // string length record
+                    output_printf_fstream << "%var_string_length = call i64 @_ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6lengthEv(%\"class.std::__1::basic_string\"* " << stringPointer << ") \n";
 
 
                     // 내용 출력
@@ -2488,89 +2492,8 @@ int main()
     return 0;
 }
 
-
-// sudo code
-// compile c/c++ source code to llvm bitcode
-
-// for every instructions, I do
-//     if isStoreOrLoadOperation(I)
-//         insertRecordInstruction(I's debug information)
-//     endif
-// endfor
-
-// output instrumented LLVM bitcode
-
-// function insertRecordInstruction(operation, var)
-// {
-//     if(operation == "store")
-//         loadVarValue(var)
-    
-//     record(operation)
-//     record(func_name)
-//     record(var_name)
-//     record(var_type)
-//     record(var_value)
-//     record(var_pointer)
-//     record(line & colnum)
-// }
-
-// store var1, 5
-// insertRecordInstruction(store, var1)
-
-// load var2
-// insertRecordInstruction(load, var2)
-
-// stroe arr1[array1][array2], 10
-// insertRecordInstruction(store, arr1)
-// for array.dimension, I do
-//     record(I)
-// endfor
-
-// load arr2[array1][array2][array3]
-// insertRecordInstruction(store, arr1)
-// for array.dimension, I do
-//     record(I)
-// endfor
-
-// stringAlloca(&this, str_pointer)
-// ...
-// return *this
-
-// stringAlloca(&this, str_pointer, str_name, line & colnum)
-
-// ...
-
-// insertRecordInstruction(store, this)
-// record(str length)
-
-// return *this
-
-// vector_push_back(&this, vector_pointer)
-// ...
-// return void
-
-// vector_push_back(&this, vector_pointer, vector_name, line & colnum)
-// ...
-// record(push_back)
-// insertRecordInstruction(store, this)
-// return void
-
-// alloca struct1
-
-// alloca struct2
-
-// alloca struct1
-//     record(struct1_name)
-//     for every struct1_var, I do
-//         record(I_type)
-//     record(struct1_pointer)
-//     record(struct1_line & colnum)
-
-// alloca struct2
-//     record(struct2_name)
-//     for every struct2_var, I do
-//         record(I_type)
-//     record(struct2_pointer)
-//     record(struct2_line & colnum)
-
-
+/*ㅁ
+    스레드는 항상 함수 단위로 되는가 
+        -> 함수 단위로 된다면 스레드로 동작하는 함수를 찾아서 그 함수에 추가 번호를 매긴다 
+            -> 스레드 id를 굳이 구하지 않고 임의로 번호를 매겨서 해도 괜찮은가? call
+*/
