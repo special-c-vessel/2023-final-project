@@ -1127,6 +1127,7 @@ int main()
             vector<string> tempv;
             string word;
 
+            int tempGetlineCnt = 1;
             while (getline(ss , word , ' '))
             {
                 tempv.push_back(word);
@@ -1240,6 +1241,36 @@ int main()
             }
             tempv.push_back("enter");       // 마지막 부분임을 알기 위해 enter 추가
 
+            if (tempv[i] == "store" || tempv[i] == "load") //
+                {
+                    // // 기록할 필요 없는 기본 내장 함수 건너뜀
+                    if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
+                        continue;
+
+                    // string type일 때 건너뜀
+                    if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack,")
+                        continue;
+
+                    if (tempv[i] == "store")    // store 일 경우, 지정된 형식에서 값을 가져옴
+                    {
+                        cout << "find store  !!!!\n";
+
+                        
+                    }
+                    else if (tempv[i] == "load")  // load 일 경우, 지정된 형식에서 값을 가져와 addPrintfInstruction 함수에 사용할 수 있도록 갈무리
+                    {
+                        var_name = tempv[7];  // %randomNum,
+
+
+                        if (var_name == "getelementptr")
+                        {
+                            continue;
+                        }
+                    }
+
+
+                    addPrintfInstruction(var_name , var_type , debugNum , currentFunc , tempv[i]);  // 변수의 정보를 바탕으로 기록 코드 작성
+                }
             // 
             for (int i = 0; i < tempv.size(); i++)
             {
@@ -1946,6 +1977,9 @@ int main()
                     //   continue;
                     // if(var_type == "i1")
                     //     continue;
+
+                    
+
                     addPrintfInstruction(var_name , var_type , debugNum , currentFunc , tempv[i]);  // 변수의 정보를 바탕으로 기록 코드 작성
                 }
 
