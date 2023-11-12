@@ -11,6 +11,9 @@
 @.str.write = private unnamed_addr constant [3 x i8] c"w+\00", align 1
 @.str.continue = private unnamed_addr constant [3 x i8] c"a+\00", align 1
 
+; multi thread 동작시 올바른 값을 보장하기 위해 critical section 생성
+%struct._opaque_pthread_mutex_t = type { i64, [56 x i8] }
+@mutex = global %struct._opaque_pthread_mutex_t zeroinitializer, align 8, !dbg !0
 
 @__const_culry.tmpName = private unnamed_addr constant [9 x i8] c"NotRocd \00", align 1
 @__const_culry.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
@@ -151,17 +154,22 @@ entry:
 
 declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #222
 
+declare i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t*) #724
+declare i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t*) #724
+
 ; declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222
 ; declare i32 @fclose(%struct.__sFILE*) #222
 
 ; Function Attrs: argmemonly nofree nounwind willreturn
 declare void @llvm.memcpy.p0i8.p0i8.i64_culry(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
 
-
+attributes #724 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 attributes #100009 = { argmemonly nofree nounwind willreturn }
 attributes #555555 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 attributes #10000003 = { noinline nounwind optnone ssp uwtable "frame-pointer"="non-leaf" "min-legal-vector-width"="0" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" } 
 attributes #10000007 = { nounwind }
+
+
 
 ; ;======================================================================
 ; ;======================================================================
