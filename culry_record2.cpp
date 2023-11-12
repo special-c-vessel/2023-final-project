@@ -244,6 +244,16 @@ class oStreamInfo
 {
 public:
 
+    void writeLockMutexStream(int glo_Cnt)   // 파일 입출력 a+로 이어쓰기
+    {
+        output_printf_fstream << "%lock_" << glo_Cnt << " = call i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t* @mutex) \n";
+    }
+
+    void writeUnlockMutexStream(int glo_Cnt)
+    {
+        output_printf_fstream << "%unlock_" << glo_Cnt << " = call i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t* @mutex) \n";
+    }
+
     void writeOpenStream(int glo_Cnt)   // 파일 입출력 a+로 이어쓰기
     {
         output_printf_fstream << "%openFile_" << glo_Cnt << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
@@ -741,6 +751,9 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     // 파일 닫기
     ostreamInfo1.writeCloseStream(globalNum);
 
+    //critical section 끝
+    ostreamInfo1.writeUnlockMutexStream(globalNum);
+
     cout << "###  >>>>>>> write is completed!!!    \n";
     cout << "###  >>>>>>> var_name is " << var_name << "\n";
     cout << "###  >>>>>>> var_type is " << var_type << "\n";
@@ -1195,7 +1208,11 @@ int main()
                     }
 
                 }
+                
+                // if()
+                // {
 
+                // }
                 
 
             }
@@ -2496,4 +2513,85 @@ int main()
     스레드는 항상 함수 단위로 되는가 
         -> 함수 단위로 된다면 스레드로 동작하는 함수를 찾아서 그 함수에 추가 번호를 매긴다 
             -> 스레드 id를 굳이 구하지 않고 임의로 번호를 매겨서 해도 괜찮은가? call
+
+스레드와 관련된 작업이 늘어날수록 문제가 발생할 확률이 커진다. 
+    -> 스레드를 하나만 사용해도 문제가 발생할 수 있다. 
+            -> 
+
+
+-> segfault 문제 발생
+    1. 기록 동작을 하는 스레드를 하나 더 만들어서
+    기록 기능만 수행할 수 있도록 한다.
+        -> 작업이 겹칠 경우 잘못된 값이 들어갈 수 있다.
+
+    2. 기록 부분을 critical section으로 묶는다. 
+        llvm bitcode 상에서 어떻게 critical section을 만들 수 있는가 
+        
+        겹치는 문제를 방지하기 위해 기다리는 동작을 수행해야 하는가?
+
+#include <iostream>
+#include <thread>
+
+#include <pthread.h>
+#include <unistd.h> // for getpid
+#include <stdio.h>
+#include <stdlib.h>
+// #include <stdlib.h>
+
+void *p_function(void * data)
+{
+  pid_t pid; //process id
+  pthread_t tid; // thread id
+
+  pid = getpid(); //4
+  tid = pthread_self();
+
+  char* thread_name = (char *)data;
+  int i = 0;
+
+  while(i<10)
+  {
+    printf("thread name : %s, tid : %x, pid : %u\n", thread_name, tid, (unsigned int)pid); //5
+    i++;
+    // sleep(1);
+  }
+}
+
+int main()
+{
+  pthread_t pthread[2];
+  int thr_id;
+  int status;
+  char p1[] = "thread_1";
+  char p2[] = "thread_222";
+  char p3[] = "thread_33333";
+
+  // sleep(1); //1
+
+  thr_id = pthread_create(&pthread[0], NULL, p_function, (void*)p1); //2
+  thr_id = pthread_create(&pthread[1], NULL, p_function, (void *)p2); //2
+  thr_id = pthread_create(&pthread[2], NULL, p_function, (void *)p3); //2
+  // p_function((void *)p3); //3
+
+  pthread_join(pthread[0], (void **)&status); //6
+  pthread_join(pthread[1], (void **)&status);
+
+  pthread_join(pthread[2], (void **)&status);
+
+  printf("endddddddd\n");
+
+  return 0;
+}
+
+%struct._opaque_pthread_mutex_t = type { i64, [56 x i8] }
+
+@mutex = global %struct._opaque_pthread_mutex_t zeroinitializer, align 8, !dbg !0
+
+%call0001 = call i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t* @mutex), !dbg !1000
+
+%call0002 = call i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t* @mutex), !dbg !1003
+
+declare i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t*) #724
+declare i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t*) #724
+attributes #724 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 */
