@@ -13,7 +13,9 @@
 
 ; multi thread 동작시 올바른 값을 보장하기 위해 critical section 생성
 %struct._opaque_pthread_mutex_t = type { i64, [56 x i8] }
-@mutex = global %struct._opaque_pthread_mutex_t zeroinitializer, align 8, !dbg !0
+@mute = global %"class.std::__1::mutex" zeroinitializer, align 8
+; @mutex = global %struct._opaque_pthread_mutex_t zeroinitializer, align 8, !dbg !0
+%"class.std::__1::mutex" = type { %struct._opaque_pthread_mutex_t } 
 
 @__const_culry.tmpName = private unnamed_addr constant [9 x i8] c"NotRocd \00", align 1
 @__const_culry.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
@@ -156,6 +158,8 @@ declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #222
 
 declare i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t*) #724
 declare i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t*) #724
+declare void @_ZNSt3__15mutex4lockEv(%"class.std::__1::mutex"*) #6
+declare void @_ZNSt3__15mutex6unlockEv(%"class.std::__1::mutex"*) #2
 
 ; declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222
 ; declare i32 @fclose(%struct.__sFILE*) #222
@@ -163,6 +167,8 @@ declare i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t*) #724
 ; Function Attrs: argmemonly nofree nounwind willreturn
 declare void @llvm.memcpy.p0i8.p0i8.i64_culry(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
 
+attributes #2 = { nounwind "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+attributes #6 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 attributes #724 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 attributes #100009 = { argmemonly nofree nounwind willreturn }
 attributes #555555 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
