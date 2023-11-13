@@ -246,22 +246,33 @@ public:
 
     void writeLockMutexStream(int glo_Cnt)   // 파일 입출력 a+로 이어쓰기
     {
-        output_printf_fstream << "%lock_" << glo_Cnt << " = call i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t* @mutex) \n";
+        output_printf_fstream << "call void @_ZNSt3__15mutex4lockEv(%\"class.std::__1::mutex\"* @mute) \n";
+        // output_printf_fstream << "%lock_" << glo_Cnt << " = call i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t* @mutex) \n";
     }
 
     void writeUnlockMutexStream(int glo_Cnt)
     {
-        output_printf_fstream << "%unlock_" << glo_Cnt << " = call i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t* @mutex) \n";
+        output_printf_fstream << "call void @_ZNSt3__15mutex6unlockEv(%\"class.std::__1::mutex\"* @mute) #3 \n";
+
+        // output_printf_fstream << "%unlock_" << glo_Cnt << " = call i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t* @mutex) \n";
     }
 
     void writeOpenStream(int glo_Cnt)   // 파일 입출력 a+로 이어쓰기
     {
         output_printf_fstream << "%openFile_" << glo_Cnt << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+        output_printf_fstream << "store %struct.__sFILE* %openFile_" << glo_Cnt << ", %struct.__sFILE** @file, align 8 \n";
+        output_printf_fstream << "%temp_OpenFile_" << glo_Cnt << " = load %struct.__sFILE*, %struct.__sFILE** @file, align 8 \n";
     }
 
     void writeCloseStream(int glo_Cnt)
     {
         output_printf_fstream << "%closeFile_" << glo_Cnt << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+    }
+
+    void writeThreadID(int glo_Cnt, int tmp_cnt)
+    {
+        output_printf_fstream << "%thread_id_" << glo_Cnt << " = call %struct._opaque_pthread_t* @pthread_self() \n";
+        output_printf_fstream << "temp_ThreadID_" << glo_Cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_Cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), %struct._opaque_pthread_t* %thread_id_" << glo_Cnt << ")\n";
     }
 
     void writeLoadVarValue(int glo_Cnt , string varType , string varName)  // 변수가 가진 값을 가져와 %var_num_value에 저장, 변수값 출력 시 사용
@@ -271,43 +282,43 @@ public:
 
     void writeVarName(int glo_cnt , int tmp_cnt , string funcName , string varName)
     {
-        output_printf_fstream << "%temp_ValName_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << funcName.size() + varName.size() + 2 << " x i8], [" << funcName.size() + varName.size() + 2 << " x i8]* @__const_culry." << funcName + varName << ", i64 0, i64 0))\n";
+        output_printf_fstream << "%temp_ValName_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([" << funcName.size() + varName.size() + 2 << " x i8], [" << funcName.size() + varName.size() + 2 << " x i8]* @__const_culry." << funcName + varName << ", i64 0, i64 0))\n";
     }
 
     void writeType(int glo_cnt , int tmp_cnt , string varType)
     {
-        output_printf_fstream << "%temp_ValTYpe_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << varType.size() + 2 << " x i8], [" << varType.size() + 2 << " x i8]* @__const_culry." << varType << ", i64 0, i64 0))\n";
+        output_printf_fstream << "%temp_ValTYpe_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([" << varType.size() + 2 << " x i8], [" << varType.size() + 2 << " x i8]* @__const_culry." << varType << ", i64 0, i64 0))\n";
     }
 
     void writeArrIndex(int glo_cnt , int tmp_cnt , string arrNum)
     {
-        output_printf_fstream << "%temp_ArrayIndex_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 " << arrNum << ")\n";
+        output_printf_fstream << "%temp_ArrayIndex_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 " << arrNum << ")\n";
     }
 
     void writeVarValue(int glo_cnt , int tmp_cnt , int varTypeLength , string varType , bool isString)
     {
         if (isString == true)
-            output_printf_fstream << "%temp_varVal_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << varTypeLength << " x i8], [" << varTypeLength << " x i8]* @.str.print_ptr, i32 0, i32 0), " << varType << " %var_" << glo_cnt << "_value)\n";
+            output_printf_fstream << "%temp_varVal_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([" << varTypeLength << " x i8], [" << varTypeLength << " x i8]* @.str.print_ptr, i32 0, i32 0), " << varType << " %var_" << glo_cnt << "_value)\n";
         else
-            output_printf_fstream << "%temp_varVal_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << varTypeLength << " x i8], [" << varTypeLength << " x i8]* @.str.print_" << varType << ", i32 0, i32 0), " << varType << " %var_" << glo_cnt << "_value)\n";
+            output_printf_fstream << "%temp_varVal_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([" << varTypeLength << " x i8], [" << varTypeLength << " x i8]* @.str.print_" << varType << ", i32 0, i32 0), " << varType << " %var_" << glo_cnt << "_value)\n";
     }
 
     void writeVarPointerAddress(int glo_cnt , int tmp_cnt , bool isGlobalVar , string varType , string varName)
     {
         if (isGlobalVar == true) // 전역변수일 경우 @ 사용
         {
-            output_printf_fstream << "%temp_varPtr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << varType << "* @" << varName << ")\n";
+            output_printf_fstream << "%temp_varPtr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << varType << "* @" << varName << ")\n";
         }
         else                    // 전역 아닐 경우 % 사용
         {
-            output_printf_fstream << "%temp_varPtr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << varType << "* %" << varName << ")\n";
+            output_printf_fstream << "%temp_varPtr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << varType << "* %" << varName << ")\n";
         }
     }
 
     void writeLineAndCol(int glo_cnt , int tmp_cnt , string __Line , string __Colnum)
     {
-        output_printf_fstream << "%temp_varLine_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << __Line << ")\n";
-        output_printf_fstream << "%temp_varColnum_" << glo_cnt << "_" << tmp_cnt + 1 << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << __Colnum << ")\n";
+        output_printf_fstream << "%temp_varLine_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << __Line << ")\n";
+        output_printf_fstream << "%temp_varColnum_" << glo_cnt << "_" << tmp_cnt + 1 << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 " << __Colnum << ")\n";
     }
 
 
@@ -317,22 +328,22 @@ public:
     // KeyWord ========
     void writeKeyWord(int glo_cnt , int tmp_cnt , string keyWord)
     {
-        output_printf_fstream << "%temp_KeyWord_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
+        output_printf_fstream << "%temp_KeyWord_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([" << keyWord.size() + 2 << " x i8], [" << keyWord.size() + 2 << " x i8]* @.str.op_" << keyWord << ", i32 0, i32 0))\n";
     }
 
     void writeKeyWord_isPointerArr(int glo_cnt , int tmp_cnt)
     {
-        output_printf_fstream << "%temp_isPointerArr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.userKeyWord_isPointerArr, i32 0, i32 0))\n";
+        output_printf_fstream << "%temp_isPointerArr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.userKeyWord_isPointerArr, i32 0, i32 0))\n";
     }
 
     void writeKeyWord_isArr(int glo_cnt , int tmp_cnt)
     {
-        output_printf_fstream << "%temp_isArr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.userKeyWord_isArr, i32 0, i32 0))\n";
+        output_printf_fstream << "%temp_isArr_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.userKeyWord_isArr, i32 0, i32 0))\n";
     }
 
     void writeKeyWord_isString(int glo_cnt , int tmp_cnt , string strName)
     {
-        output_printf_fstream << "%temp_IsString_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << strName << ")\n";
+        output_printf_fstream << "%temp_IsString_" << glo_cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 " << strName << ")\n";
     }
 
 
@@ -558,6 +569,8 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
     if(isString == true)
         return;
+
+    
 
     ostreamInfo1.writeOpenStream(globalNum);    // open a+
     ostreamInfo1.writeLoadVarValue(globalNum , var_type , original_Str);  // 변수값 load
@@ -1241,7 +1254,9 @@ int main()
             }
             tempv.push_back("enter");       // 마지막 부분임을 알기 위해 enter 추가
 
-            if (tempv[i] == "store" || tempv[i] == "load") //
+            auto iter1 = find(tempv.begin(), tempv.end(), "store");
+            auto iter2 = find(tempv.begin(), tempv.end(), "load");
+            if (iter1 != tempv.end()) // store가 존재하는 경우
                 {
                     // // 기록할 필요 없는 기본 내장 함수 건너뜀
                     if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
@@ -1251,26 +1266,24 @@ int main()
                     if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack,")
                         continue;
 
-                    if (tempv[i] == "store")    // store 일 경우, 지정된 형식에서 값을 가져옴
-                    {
-                        cout << "find store  !!!!\n";
-
-                        
-                    }
-                    else if (tempv[i] == "load")  // load 일 경우, 지정된 형식에서 값을 가져와 addPrintfInstruction 함수에 사용할 수 있도록 갈무리
-                    {
-                        var_name = tempv[7];  // %randomNum,
-
-
-                        if (var_name == "getelementptr")
-                        {
-                            continue;
-                        }
-                    }
-
-
-                    addPrintfInstruction(var_name , var_type , debugNum , currentFunc , tempv[i]);  // 변수의 정보를 바탕으로 기록 코드 작성
+                        // std::cout << "find store  !!!!\n";
+                        // mutex lock 함수 추가 
+                        ostreamInfo1.writeLockMutexStream(globalNum);
                 }
+
+            else if (iter2 != tempv.end())
+            {
+                    string var_name = tempv[7]; // %randomNum,
+
+                    if (var_name == "getelementptr") 
+                    {
+                        continue;
+                    }
+
+                    // mutex lock 함수 추가 
+                    ostreamInfo1.writeLockMutexStream(globalNum);
+            }
+
             // 
             for (int i = 0; i < tempv.size(); i++)
             {
@@ -2628,4 +2641,12 @@ int main()
 declare i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t*) #724
 declare i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t*) #724
 attributes #724 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+*/
+
+/*
+
+call void @_ZNSt3__15mutex4lockEv(%"class.std::__1::mutex"* @mute)
+call void @_ZNSt3__15mutex6unlockEv(%"class.std::__1::mutex"* @mute) #3
+attributes #3 = { nounwind } 
+
 */
