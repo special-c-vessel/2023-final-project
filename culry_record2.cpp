@@ -247,14 +247,11 @@ public:
     void writeLockMutexStream(int glo_Cnt)   // 파일 입출력 a+로 이어쓰기
     {
         output_printf_fstream << "call void @_ZNSt3__15mutex4lockEv(%\"class.std::__1::mutex\"* @mute) \n";
-        // output_printf_fstream << "%lock_" << glo_Cnt << " = call i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t* @mutex) \n";
     }
 
     void writeUnlockMutexStream(int glo_Cnt)
     {
         output_printf_fstream << "call void @_ZNSt3__15mutex6unlockEv(%\"class.std::__1::mutex\"* @mute) #3 \n";
-
-        // output_printf_fstream << "%unlock_" << glo_Cnt << " = call i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t* @mutex) \n";
     }
 
     void writeOpenStream(int glo_Cnt)   // 파일 입출력 a+로 이어쓰기
@@ -1157,7 +1154,6 @@ int main()
                 // define 인 경우 새로운 함수의 시작, 현재 함수명을 저장하며 변수 기록 시 사용
                 if (tempv[i] == "define")
                 {
-
                     if(tempv[i + 2].substr(0, 7) == "%class.")
                     {
                         string tempfuncName = "";
@@ -1221,6 +1217,8 @@ int main()
                         checkDel.checkString__ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv = true;
                     }
 
+                    
+
                 }
                 
                 // if()
@@ -1263,11 +1261,12 @@ int main()
                         continue;
 
                     // string type일 때 건너뜀
-                    if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack,")
+                    if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack," || tempv[6] == "%retval,")
                         continue;
 
                         // std::cout << "find store  !!!!\n";
                         // mutex lock 함수 추가 
+                    // if()
                         ostreamInfo1.writeLockMutexStream(globalNum);
                 }
 
@@ -1918,14 +1917,16 @@ int main()
                 // 마찬가지로 새로운 함수의 시작, 기록 정보를 write하기 위해 txt파일의 주소를 불러옴
                 if (tempv[i] == "entry:")
                 {
+                    if(currentFunc == "main-")
+                    {
+                        output_printf_fstream << "call void @__cxx_global_var_init_culry()\n";
+                        // break;
+                    }
+
                     // 함수 시작에 loadfile 추가
                     output_printf_fstream << "%loadfile   = load %struct.__sFILE*, %struct.__sFILE** @file, align 8\n";
-                    // output_printf_fstream << "%loadfile   = load %struct.__sFILE*, %struct.__sFILE** @file, align 8\n";
-
-                    // output_printf_fstream << "%var_colnum2222 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 99999)" << "\n";
 
                     cout << currentFunc << "\n\n\n";
-
                 }
 
                 // 변수의 할당 및 불러오기, store 및 load 일 때 새로 할당된 값 또는 불러온 값을 기록
