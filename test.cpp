@@ -1,151 +1,65 @@
-#include <arpa/inet.h>
-#include <errno.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <time.h>
-#include <unistd.h>
-
 #include <iostream>
-#include <random>
-#include <string>
 #include <thread>
 
-/*
-    서버에서
+#include <pthread.h>
+#include <unistd.h> // for getpid
+#include <stdio.h>
+#include <stdlib.h>
+// #include <stdlib.h>
 
-  string stringstart end 말고 string 최대 문자열을 작성
-  
-  기능 구현 표 만들기
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
+void *p_function(void * data)
+{
+  pid_t pid; //process id
+  pthread_t tid; // thread id
 
+  pid = getpid(); //4
+  tid = pthread_self();
 
+  char* thread_name = (char *)data;
+  int i = 0;
 
-*/
-using namespace std;
-
-int my_sock;
-struct sockaddr_in serv_addr;
-
-
-int thread_Cnt = 0;
-// timeWait();
-
-int str_len;
-
-void testfunc() {
-  printf("It is work\n");
-  return;
-}
-
-void error(char *msg) {
-  // fprintf(stderr, "%s: %s\n", msg, strerror(errno));
-  exit(1);
-}
-
-void *timeCount(void *a) {
-  int cnt2 = 0;
-  while (1) {
-    sleep(1);
-    cnt2++;
-
-    if (cnt2 % 2 == 0)
-      thread_Cnt = 1;
-    else
-      thread_Cnt = 0;
-    // cout << "cnt : " << cnt2 << "\n";
+  while(i<10)
+  {
+    printf("thread name : %s, tid : %x, pid : %u\n", thread_name, tid, (unsigned int)pid); //5
+    i++;
+    // sleep(1);
   }
 
-  close(my_sock); // 4번
-  printf("close client\n");
-
-  return NULL;
+  int num1 = rand();
+  // int num2 = 200;
+  // int num3 = num1 + num2;
+  // std::cout << "aaea" << "\n";
 }
 
-void *exeTestFunc(void *a) {
-  while (1) {
-    char tempstr[50];
-    const char *boot = "boot";
+int main()
+{
+  pthread_t pthread[2];
+  int thr_id;
+  int status;
+  char p1[] = "thread_1";
+  char p2[] = "thread_222";
+  char p3[] = "thread_33333";
 
-    scanf("%s", tempstr);
-    sleep(1);
+  // sleep(1); //1
 
-    if (!strcmp(tempstr, boot))
-    // if(message[0] == '1')
-    {
-      printf("입력된 값: %s\n", tempstr);
-      printf("성공한 예제\n");
-      testfunc();
-    } else {
-      printf("실패한 예제 aaa \n");
-    }
-  }
+  thr_id = pthread_create(&pthread[0], NULL, p_function, (void*)p1); //2
+  thr_id = pthread_create(&pthread[1], NULL, p_function, (void *)p2); //2
+  thr_id = pthread_create(&pthread[2], NULL, p_function, (void *)p3); //2
+  // p_function((void *)p3); //3
 
-  return NULL;
-}
+  pthread_join(pthread[0], (void **)&status); //6
+  pthread_join(pthread[1], (void **)&status);
+  pthread_join(pthread[2], (void **)&status);
 
-int main(int argc, char *argv[]) {
-  char message[100];
-  
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<int> dis(-50, 50);
+  int num1 = rand();
+  int num2 = 10;
+  int num3 = num1 + num2;
 
-  pthread_t t0;
-  pthread_t t1;
-
-  char tempstr[200] = "temp str value";
-
-  if (argc != 3) {
-    printf("%s <IP> <PORT>\n", argv[0]);
-    exit(1);
-  }
-  my_sock = socket(PF_INET, SOCK_STREAM, 0); // 1번
-  if (my_sock == -1)
-    printf("socket error \n");
-  memset(&serv_addr, 0, sizeof(serv_addr));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
-  serv_addr.sin_port = htons(atoi(argv[2]));
-
-  // pthread_create(&t0, NULL, timeCount, NULL);
-
-  int cnt = 0;
-
-  while (1) {
-    // connect(my_sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
-    if (connect(my_sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1) {
-      str_len = read(my_sock, message, sizeof(message)); // 3번
-      int randomNum = dis(gen);
-
-      if (str_len == -1)
-        printf("read error\n");
-
-      if(message[0] == '9')
-        break;
-
-      // cout << cnt++ << "  서버에서 : " << message << "\n";
-      // cout << "userInput: " << userInput << "\n";
-      // cout << "thread_Cnt: " << thread_Cnt << "\n";
-      // cout << "random : " << randomNum << "\n";
-
-      int tempnum;
-      if (message[0] >= '3')
-        tempnum = message[0] - '0';
-      else
-        tempnum = 0;
-
-      int divNum = tempnum;
-
-      int result = (randomNum * tempnum) / divNum;
-
-      cout << "result : " << result << "\n";
-    }
-  }
-  close(my_sock); // 4번
-  printf("close client\n");
+  printf("endddddddd\n");
 
   return 0;
 }
