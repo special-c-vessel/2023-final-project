@@ -1,63 +1,65 @@
 #include <iostream>
 #include <thread>
 
-using std::thread;
+#include <pthread.h>
+#include <unistd.h> // for getpid
+#include <stdio.h>
+#include <stdlib.h>
+// #include <stdlib.h>
 
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
+void *p_function(void * data)
+{
+  pid_t pid; //process id
+  pthread_t tid; // thread id
 
-void func1() {
-  for (int i = 0; i < 10; i++) {
-    std::cout << "쓰레드 111 작동중! \n";
+  pid = getpid(); //4
+  tid = pthread_self();
+
+  char* thread_name = (char *)data;
+  int i = 0;
+
+  while(i<10)
+  {
+    printf("thread name : %s, tid : %x, pid : %u\n", thread_name, tid, (unsigned int)pid); //5
+    i++;
+    // sleep(1);
   }
 
-  cout << "func1\n";
-
+  int num1 = rand();
+  // int num2 = 200;
+  // int num3 = num1 + num2;
+  // std::cout << "aaea" << "\n";
 }
 
-void func2() {
-  for (int i = 0; i < 11; i++) {
-    std::cout << "쓰레드 22222 작동중! \n";
-  }
-  
-}
+int main()
+{
+  pthread_t pthread[2];
+  int thr_id;
+  int status;
+  char p1[] = "thread_1";
+  char p2[] = "thread_222";
+  char p3[] = "thread_33333";
 
-// void func3() {
-//   for (int i = 0; i < 12; i++) {
-//     std::cout << "쓰레드 3333333333 작동중! \n";
-//   }
-// }
+  // sleep(1); //1
 
-// int func4()
-// {
-//   cout << "func4 \n";
+  thr_id = pthread_create(&pthread[0], NULL, p_function, (void*)p1); //2
+  thr_id = pthread_create(&pthread[1], NULL, p_function, (void *)p2); //2
+  thr_id = pthread_create(&pthread[2], NULL, p_function, (void *)p3); //2
+  // p_function((void *)p3); //3
 
-//   return 0;
-// }
+  pthread_join(pthread[0], (void **)&status); //6
+  pthread_join(pthread[1], (void **)&status);
+  pthread_join(pthread[2], (void **)&status);
 
-int main() {
-  // thread t1(func1);
-  // thread t2(func2);
-  // thread t3(func3);
-  // thread t4(func4);
-  // thread t5(func4);
+  int num1 = rand();
+  int num2 = 10;
+  int num3 = num1 + num2;
 
-  string stttttr = "12345";
-  stttttr = "67890";
+  printf("endddddddd\n");
 
-  // func1();
-
-  // std::thread::id childThreadID2222 =  t1.get_id();
-
-  // cout << "aaaaaaaaaaaaaaaaa" << childThreadID2222 << "bbbbbbbbbb\n";
-  // printf("%d", childThreadID2222);
-  // t1.join();
-  // t2.join();
-  // t3.join();
-  // t4.join();
-  // t5.join();
-
-  // cout << thread.get_id() << "\n";;
-  
   return 0;
 }
