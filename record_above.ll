@@ -11,11 +11,60 @@
 @.str.write = private unnamed_addr constant [3 x i8] c"w+\00", align 1
 @.str.continue = private unnamed_addr constant [3 x i8] c"a+\00", align 1
 
+;#####################################################################################
+;#####################################################################################
 ; multi thread 동작시 올바른 값을 보장하기 위해 critical section 생성
+%"class.std::__1::mutex" = type { %struct._opaque_pthread_mutex_t }
 %struct._opaque_pthread_mutex_t = type { i64, [56 x i8] }
+
 @mute = global %"class.std::__1::mutex" zeroinitializer, align 8
-; @mutex = global %struct._opaque_pthread_mutex_t zeroinitializer, align 8, !dbg !0
-%"class.std::__1::mutex" = type { %struct._opaque_pthread_mutex_t } 
+@__dso_handle = external hidden global i8
+
+; Function Attrs: noinline ssp uwtable
+define internal void @__cxx_global_var_init_culry() #111940 section "__TEXT,__StaticInit,regular,pure_instructions" {
+entry:
+
+  %openFile_init = call %struct.__sFILE* @"_fopen"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.write, i64 0, i64 0)) 
+
+  %call = call %"class.std::__1::mutex"* @_ZNSt3__15mutexC1Ev(%"class.std::__1::mutex"* @mute) #111943
+  %0 = call i32 @__cxa_atexit(void (i8*)* bitcast (%"class.std::__1::mutex"* (%"class.std::__1::mutex"*)* @_ZNSt3__15mutexD1Ev to void (i8*)*), i8* bitcast (%"class.std::__1::mutex"* @mute to i8*), i8* @__dso_handle) #111943
+  ret void
+}
+
+; Function Attrs: noinline nounwind optnone ssp uwtable
+define internal %"class.std::__1::mutex"* @_ZNSt3__15mutexC1Ev(%"class.std::__1::mutex"* returned %this) unnamed_addr #111941 align 2 {
+entry:
+  %this.addr = alloca %"class.std::__1::mutex"*, align 8
+  store %"class.std::__1::mutex"* %this, %"class.std::__1::mutex"** %this.addr, align 8
+  %this1 = load %"class.std::__1::mutex"*, %"class.std::__1::mutex"** %this.addr, align 8
+  %call = call %"class.std::__1::mutex"* @_ZNSt3__15mutexC2Ev(%"class.std::__1::mutex"* %this1) #111943
+  ret %"class.std::__1::mutex"* %this1
+}
+
+; Function Attrs: noinline nounwind optnone ssp uwtable
+define internal %"class.std::__1::mutex"* @_ZNSt3__15mutexC2Ev(%"class.std::__1::mutex"* returned %this) unnamed_addr #111941 align 2 {
+entry:
+  %this.addr = alloca %"class.std::__1::mutex"*, align 8
+  store %"class.std::__1::mutex"* %this, %"class.std::__1::mutex"** %this.addr, align 8
+  %this1 = load %"class.std::__1::mutex"*, %"class.std::__1::mutex"** %this.addr, align 8
+  %__m_ = getelementptr inbounds %"class.std::__1::mutex", %"class.std::__1::mutex"* %this1, i32 0, i32 0
+  %__sig = getelementptr inbounds %struct._opaque_pthread_mutex_t, %struct._opaque_pthread_mutex_t* %__m_, i32 0, i32 0
+  store i64 850045863, i64* %__sig, align 8
+  %__opaque = getelementptr inbounds %struct._opaque_pthread_mutex_t, %struct._opaque_pthread_mutex_t* %__m_, i32 0, i32 1
+  %0 = bitcast [56 x i8]* %__opaque to i8*
+  call void @llvm.memset.p0i8.i64(i8* align 8 %0, i8 0, i64 56, i1 false)
+  %arrayinit.begin = getelementptr inbounds [56 x i8], [56 x i8]* %__opaque, i64 0, i64 0
+  ret %"class.std::__1::mutex"* %this1
+}
+
+; Function Attrs: noinline ssp uwtable
+; define internal void @_GLOBAL__sub_I_test.cpp() #111940 section "__TEXT,__StaticInit,regular,pure_instructions" {
+; entry:
+;   call void @__cxx_global_var_init()
+;   ret void
+; }
+;#####################################################################################
+;#####################################################################################
 
 @__const_culry.tmpName = private unnamed_addr constant [9 x i8] c"NotRocd \00", align 1
 @__const_culry.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
@@ -138,34 +187,32 @@ entry:
 
 @.str.string = private unnamed_addr constant [8 x i8] c"string \00", align 1
 
-
-; @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_main.cc, i8* null }]
-
-; define internal void @_GLOBAL__sub_I_main.cc() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
-; entry:
-;   call void @__cxx_global_var_init()
-;   ret void
-; }
-
-; define internal void @__cxx_global_var_init() #333 section "__TEXT,__StaticInit,regular,pure_instructions" {
-; entry:
-;   %call = call %struct.__sFILE* @"\01_fopen"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.write, i64 0, i64 0))
-;   store %struct.__sFILE* %call, %struct.__sFILE** @file, align 8
-;   ret void
-; }
-
 declare %struct.__sFILE* @"\01_fopen"(i8*, i8*) #222
 
-declare i32 @pthread_mutex_lock(%struct._opaque_pthread_mutex_t*) #724
-declare i32 @pthread_mutex_unlock(%struct._opaque_pthread_mutex_t*) #724
-declare void @_ZNSt3__15mutex4lockEv(%"class.std::__1::mutex"*) #6
-declare void @_ZNSt3__15mutex6unlockEv(%"class.std::__1::mutex"*) #2
 
 ; declare i32 @fprintf(%struct.__sFILE*, i8*, ...) #222
 ; declare i32 @fclose(%struct.__sFILE*) #222
 
 ; Function Attrs: argmemonly nofree nounwind willreturn
 declare void @llvm.memcpy.p0i8.p0i8.i64_culry(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #100009
+
+
+; mutex ################################################
+declare void @_ZNSt3__15mutex4lockEv(%"class.std::__1::mutex"*) #111945
+declare void @_ZNSt3__15mutex6unlockEv(%"class.std::__1::mutex"*) #111942
+declare %"class.std::__1::mutex"* @_ZNSt3__15mutexD1Ev(%"class.std::__1::mutex"* returned) unnamed_addr #111942
+declare i32 @__cxa_atexit(void (i8*)*, i8*, i8*) #111943
+declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #111946
+
+attributes #111940 = { noinline ssp uwtable "frame-pointer"="non-leaf" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+attributes #111941 = { noinline nounwind optnone ssp uwtable "frame-pointer"="non-leaf" "min-legal-vector-width"="0" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+attributes #111942 = { nounwind "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+attributes #111943 = { nounwind }
+attributes #111944 = { noinline norecurse optnone ssp uwtable "frame-pointer"="non-leaf" "min-legal-vector-width"="0" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+attributes #111945 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
+attributes #111946 = { argmemonly nofree nounwind willreturn writeonly }
+
+;################################################
 
 attributes #2 = { nounwind "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
 attributes #6 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-stack"="__chkstk_darwin" "stack-protector-buffer-size"="8" "target-cpu"="apple-m1" "target-features"="+aes,+crc,+crypto,+dotprod,+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+sha2,+sha3,+sm4,+v8.5a,+zcm,+zcz" }
