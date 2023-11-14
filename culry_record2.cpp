@@ -80,6 +80,8 @@ struct checkDeclare
         %"struct.std::__1::basic_string<char>::__long" = type { i8*, i64, i64 }
     */
 
+    bool checkThread_struct_opaque_pthread_t;
+
     bool check_global_ctors = false;
 
     string compressed_pair_Num;
@@ -269,7 +271,7 @@ public:
     void writeThreadID(int glo_Cnt, int tmp_cnt)
     {
         output_printf_fstream << "%thread_id_" << glo_Cnt << " = call %struct._opaque_pthread_t* @pthread_self() \n";
-        output_printf_fstream << "temp_ThreadID_" << glo_Cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_Cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), %struct._opaque_pthread_t* %thread_id_" << glo_Cnt << ")\n";
+        output_printf_fstream << "%temp_ThreadID_" << glo_Cnt << "_" << tmp_cnt << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_" << glo_Cnt << ", i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), %struct._opaque_pthread_t* %thread_id_" << glo_Cnt << ")\n";
     }
 
     void writeLoadVarValue(int glo_Cnt , string varType , string varName)  // 변수가 가진 값을 가져와 %var_num_value에 저장, 변수값 출력 시 사용
@@ -570,6 +572,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     
 
     ostreamInfo1.writeOpenStream(globalNum);    // open a+
+    ostreamInfo1.writeThreadID(globalNum, templocalNum);
     ostreamInfo1.writeLoadVarValue(globalNum , var_type , original_Str);  // 변수값 load
     ostreamInfo1.writeKeyWord(globalNum , templocalNum++ , keyWord);  // 키워드
 
@@ -1106,6 +1109,14 @@ void writeDeclare()
         output_printf_fstream << "declare i32 @fclose(%struct.__sFILE*) #222" << "\n";
     }
 
+    if(checkDel.checkThread_struct_opaque_pthread_t == false)
+    {
+        output_printf_fstream << "%struct._opaque_pthread_t = type { i64, %struct.__darwin_pthread_handler_rec*, [8176 x i8] } \n";
+        output_printf_fstream << "%struct.__darwin_pthread_handler_rec = type { void (i8*)*, i8*, %struct.__darwin_pthread_handler_rec* } \n";
+        output_printf_fstream << "%struct._opaque_pthread_attr_t = type { i64, [56 x i8] } \n";
+        output_printf_fstream << "declare %struct._opaque_pthread_t* @pthread_self() #111945 \n ";
+    }
+
     output_printf_fstream << "; ===========================================================\n";
     output_printf_fstream << "; =================   writeDeclare end   =================   \n";
     output_printf_fstream << "; ===========================================================\n";
@@ -1149,6 +1160,11 @@ int main()
                 if(tempv[i] == "@llvm.global_ctors")
                 {
                     checkDel.check_global_ctors = true;
+                }
+
+                if(tempv[i] == "%struct._opaque_pthread_t")
+                {
+                    checkDel.checkThread_struct_opaque_pthread_t = true;
                 }
 
                 // define 인 경우 새로운 함수의 시작, 현재 함수명을 저장하며 변수 기록 시 사용
@@ -1217,6 +1233,7 @@ int main()
                         checkDel.checkString__ZNKSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE4sizeEv = true;
                     }
 
+                    
                     
 
                 }
