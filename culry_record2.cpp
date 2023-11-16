@@ -80,7 +80,12 @@ struct checkDeclare
         %"struct.std::__1::basic_string<char>::__long" = type { i8*, i64, i64 }
     */
 
+    // bool checkThread_
+
     bool checkThread_struct_opaque_pthread_t;
+    bool checkThread_declare_pthread_self;
+    bool checkThread_declare_llvm_memset_p0i8_i64;
+    
 
     bool check_global_ctors = false;
 
@@ -571,6 +576,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         return;
 
     
+    ostreamInfo1.writeLockMutexStream(globalNum);
 
     ostreamInfo1.writeOpenStream(globalNum);    // open a+
     ostreamInfo1.writeThreadID(globalNum, templocalNum);
@@ -1115,7 +1121,17 @@ void writeDeclare()
         output_printf_fstream << "%struct._opaque_pthread_t = type { i64, %struct.__darwin_pthread_handler_rec*, [8176 x i8] } \n";
         output_printf_fstream << "%struct.__darwin_pthread_handler_rec = type { void (i8*)*, i8*, %struct.__darwin_pthread_handler_rec* } \n";
         output_printf_fstream << "%struct._opaque_pthread_attr_t = type { i64, [56 x i8] } \n";
+        
+    }
+
+    if(checkDel.checkThread_declare_pthread_self == false)
+    {
         output_printf_fstream << "declare %struct._opaque_pthread_t* @pthread_self() #111945 \n ";
+    }
+
+    if(checkDel.checkThread_declare_llvm_memset_p0i8_i64 == false)
+    {
+        output_printf_fstream << "declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #111946 \n ";
     }
 
     output_printf_fstream << "; ===========================================================\n";
@@ -1166,6 +1182,16 @@ int main()
                 if(tempv[i] == "%struct._opaque_pthread_t")
                 {
                     checkDel.checkThread_struct_opaque_pthread_t = true;
+                }
+
+                if(tempv[i] == "declare" && tempv[i + 1] == "%struct._opaque_pthread_t*" && tempv[i + 2] == "@pthread_self()")
+                {
+                    checkDel.checkThread_declare_pthread_self = true;
+                }
+
+                if(tempv[i] == "declare" && tempv[i + 1] == "void" && tempv[i + 2] == "@llvm.memset.p0i8.i64(i8*")
+                {
+                    checkDel.checkThread_declare_llvm_memset_p0i8_i64 = true;
                 }
 
                 // define 인 경우 새로운 함수의 시작, 현재 함수명을 저장하며 변수 기록 시 사용
@@ -1270,36 +1296,37 @@ int main()
             }
             tempv.push_back("enter");       // 마지막 부분임을 알기 위해 enter 추가
 
-            auto iter1 = find(tempv.begin(), tempv.end(), "store");
-            auto iter2 = find(tempv.begin(), tempv.end(), "load");
-            if (iter1 != tempv.end()) // store가 존재하는 경우
-                {
-                    // // 기록할 필요 없는 기본 내장 함수 건너뜀
-                    if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
-                        continue;
 
-                    // string type일 때 건너뜀
-                    if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack," || tempv[6] == "%retval,")
-                        continue;
+            // auto iter1 = find(tempv.begin(), tempv.end(), "store");
+            // auto iter2 = find(tempv.begin(), tempv.end(), "load");
+            // if (iter1 != tempv.end()) // store가 존재하는 경우
+            //     {
+            //         // // 기록할 필요 없는 기본 내장 함수 건너뜀
+            //         if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
+            //             continue;
 
-                        // std::cout << "find store  !!!!\n";
-                        // mutex lock 함수 추가 
-                    // if()
-                        ostreamInfo1.writeLockMutexStream(globalNum);
-                }
+            //         // string type일 때 건너뜀
+            //         if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack," || tempv[6] == "%retval,")
+            //             continue;
 
-            else if (iter2 != tempv.end())
-            {
-                    string var_name = tempv[7]; // %randomNum,
+            //             // std::cout << "find store  !!!!\n";
+            //             // mutex lock 함수 추가 
+            //         // if()
+            //             ostreamInfo1.writeLockMutexStream(globalNum);
+            //     }
 
-                    if (var_name == "getelementptr") 
-                    {
-                        continue;
-                    }
+            // else if (iter2 != tempv.end())
+            // {
+            //         string var_name = tempv[7]; // %randomNum,
 
-                    // mutex lock 함수 추가 
-                    ostreamInfo1.writeLockMutexStream(globalNum);
-            }
+            //         if (var_name == "getelementptr") 
+            //         {
+            //             continue;
+            //         }
+
+            //         // mutex lock 함수 추가 
+            //         ostreamInfo1.writeLockMutexStream(globalNum);
+            // }
 
             // 
             for (int i = 0; i < tempv.size(); i++)
