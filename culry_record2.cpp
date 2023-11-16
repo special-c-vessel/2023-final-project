@@ -547,10 +547,11 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     if(var_name == "bitcast")
         return ;
 
-    if(var_name[0] != '%')
-    {
-        return ;
-    }
+    // 전역 변수 건너뜀
+    // if(var_name[0] != '%')
+    // {
+    //     return ;
+    // }
 
     // if(var_name[var_name.length() - 1] == '*')
     // {
