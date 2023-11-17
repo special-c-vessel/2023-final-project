@@ -11,7 +11,7 @@ using namespace std;
 
 
 // class name,  class types
-map<string , vector<string> > classStruct; 
+map<string , vector<string> > classStruct;
 map<string, string> classUserStruct;
 
 string output_result_FileName("record_result.ll"); // 실행시켜야 할 파일 이름, record_AddPrintf와 record_strfile을 결합한 것
@@ -85,6 +85,7 @@ struct checkDeclare
     bool checkThread_struct_opaque_pthread_t;
     bool checkThread_declare_pthread_self;
     bool checkThread_declare_llvm_memset_p0i8_i64;
+
     
 
     bool check_global_ctors = false;
@@ -110,7 +111,7 @@ void writeArrayIndex(bool isArr , bool isResetArr);
 void writeDeclare();
 
 // void followInvokeconv(string contNum);
-// void findInvokeContAndWriteInstruction(string funcName, string contNum); // invoke.cont: 의 위치를 따라간 뒤 기록 코드를 작성하는 함수 
+// void findInvokeContAndWriteInstruction(string funcName, string contNum); // invoke.cont: 의 위치를 따라간 뒤 기록 코드를 작성하는 함수
 
 
 class checkFeature
@@ -395,7 +396,7 @@ string ifDontWriteVarNameThanWrite(string NameString , bool isName)
     string tempFuncName = currentFunc;
     string tempstr;
 
-    if (checkFeature1.ifStratAtsing_ReturnTrue(NameString))      // @var, 일 경우 
+    if (checkFeature1.ifStratAtsing_ReturnTrue(NameString))      // @var, 일 경우
         tempFuncName = "Global-";
 
     NameString = galmoori1.removePersentOrAtsignAndLastComma(NameString);   // %var, -> var
@@ -474,13 +475,13 @@ string ifDontWriteVarNameThanWrite(string NameString , string NameType , bool* i
         *isString = true;
     }
 
-    // type 이라면 
+    // type 이라면
     else
     {
         // cout << "### ifDontWriteVarNameThanWrite is middle " << NameString << "\n";
     }
 
-    if (checkFeature1.ifStratAtsing_ReturnTrue(NameString))      // @var, 일 경우 
+    if (checkFeature1.ifStratAtsing_ReturnTrue(NameString))      // @var, 일 경우
     {
         tempFuncName = "Global-";
         *isGlobalVar = true;
@@ -505,7 +506,7 @@ string ifDontWriteVarNameThanWrite(string NameString , string NameType , bool* i
         }
     }
 
-    // % , * 같은 특수문자 처리 후 변수명 반환 
+    // % , * 같은 특수문자 처리 후 변수명 반환
     return tempstr;
 }
 
@@ -610,7 +611,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         if (vectorForResetArr.back().first == var_name.substr(0 , var_name.size() - 1))
         {
             cout << "### start print vectorForResetArr       ";
-            var_name = galmoori1.removePersentOrAtsign(var_name_ForResetArr);   // % 빼줌 
+            var_name = galmoori1.removePersentOrAtsign(var_name_ForResetArr);   // % 빼줌
         }
     }
 
@@ -622,18 +623,18 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
         {
             if (checkFeature1.ifStartNum_ReturnTrue(var_name , 0) == true)
             {
-                // maxVarNum 으로 최대값 추가하기때문에 숫자일 경우 넘어감 
+                // maxVarNum 으로 최대값 추가하기때문에 숫자일 경우 넘어감
             }
             else
             {
-                // 존재하지 않고 숫자가 아닐 경우 추가 
+                // 존재하지 않고 숫자가 아닐 경우 추가
                 // str_fstream << "@__const_culry." << var_name << " = private unnamed_addr constant [" << var_name.size() + 2 << " x i8] c\"" << var_name << " \\00\", align 1\n";
                 // varName.push_back(compareVarName);
             }
         }
 
         if (isGlobalVar == false)
-            ostreamInfo1.writeVarName(globalNum , templocalNum++ , currentFunc , var_name);    // 변수명 
+            ostreamInfo1.writeVarName(globalNum , templocalNum++ , currentFunc , var_name);    // 변수명
         else
             ostreamInfo1.writeVarName(globalNum , templocalNum++ , "Global-" , var_name);
 
@@ -644,7 +645,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
 
     }
 
-    // type 출력 
+    // type 출력
 
 
     for (int i = 0; i < var_type.size(); i++)
@@ -766,7 +767,7 @@ void addPrintfInstruction(string var_name , string var_type , string debugNum , 
     }
 
     ostreamInfo1.writeVarPointerAddress(globalNum , templocalNum++ , isGlobalVar , var_type_for_arr , var_name); // 포인터
-    ostreamInfo1.writeLineAndCol(globalNum , templocalNum++ , LineNum , ColNum);        // 줄번호 
+    ostreamInfo1.writeLineAndCol(globalNum , templocalNum++ , LineNum , ColNum);        // 줄번호
 
     // 파일 닫기
     ostreamInfo1.writeCloseStream(globalNum);
@@ -792,19 +793,19 @@ void writeArrayIndex(bool isArr , bool isResetArr)
 
 void findInvokeContAndWriteInstruction(string funcName, string contNum)
 {
-    // invoke.cont에서 정수 갑과 현재 함수의 이름이 같은 경우 코드를 추가하도록 한다. 
+    // invoke.cont에서 정수 갑과 현재 함수의 이름이 같은 경우 코드를 추가하도록 한다.
     // contNum 으로         %invoke.cont , %invoke.cont6 의 형식이 입력으로 들어옴
-    // 찾고자 하는 목표값은     invoke.cont:  , invoke.cont6: 의 형식을 갖는다 
+    // 찾고자 하는 목표값은     invoke.cont:  , invoke.cont6: 의 형식을 갖는다
 
 
     // 기존 파일을 새로 연 뒤
-    // funcName과 같은 함수를 발견 && contNum이 같을 때 기록 코드 작성 
+    // funcName과 같은 함수를 발견 && contNum이 같을 때 기록 코드 작성
 
-    // 인자는 어떻게 넘기지?? 
-    // invoke 발견시 발견한 line의 tempv 를 인자로 넘긴 뒤 
+    // 인자는 어떻게 넘기지??
+    // invoke 발견시 발견한 line의 tempv 를 인자로 넘긴 뒤
     //                                 안에서 갈무리 후 addPrintfInstruction 함수 실행?
     //                      -> 그러기 위해선 목표의 invoke.cont 가 output_printf_fstream 으로 작성되어 있어야함
-    //                          -> 3번째 차례에서 적업해야함 
+    //                          -> 3번째 차례에서 적업해야함
 
 
 
@@ -917,7 +918,7 @@ void writeLLFile(string txtName)
                         // output_printf_fstream << "@__const_culry." << funcName[j] + valName << " = private unnamed_addr constant [" << funcName[j].size() + valName.size() + 2 << " x i8] c\"" << funcName[j] + valName << " \\00\", align 1" << "\n";
 
                     }
-                    //@__const_culry.arr = private unnamed_addr constant [5 x i8] c"arr \00", align 1 
+                    //@__const_culry.arr = private unnamed_addr constant [5 x i8] c"arr \00", align 1
                 }
 
             }
@@ -1296,7 +1297,6 @@ int main()
             }
             tempv.push_back("enter");       // 마지막 부분임을 알기 위해 enter 추가
 
-
             // auto iter1 = find(tempv.begin(), tempv.end(), "store");
             // auto iter2 = find(tempv.begin(), tempv.end(), "load");
             // if (iter1 != tempv.end()) // store가 존재하는 경우
@@ -1311,6 +1311,21 @@ int main()
 
             //             // std::cout << "find store  !!!!\n";
             //             // mutex lock 함수 추가 
+
+            // auto iter1 = find(tempv.begin(), tempv.end(), "store");
+            // auto iter2 = find(tempv.begin(), tempv.end(), "load");
+            // if (iter1 != tempv.end()) // store가 존재하는 경우
+            //     {
+            //         // // 기록할 필요 없는 기본 내장 함수 건너뜀
+            //         if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
+            //             continue;
+
+            //         // string type일 때 건너뜀
+            //         if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack," || tempv[6] == "%retval,")
+            //             continue;
+
+            //             // std::cout << "find store  !!!!\n";
+            //             // mutex lock 함수 추가
             //         // if()
             //             ostreamInfo1.writeLockMutexStream(globalNum);
             //     }
@@ -1320,15 +1335,17 @@ int main()
             //         string var_name = tempv[7]; // %randomNum,
 
             //         if (var_name == "getelementptr") 
+            //         if (var_name == "getelementptr"
             //         {
             //             continue;
             //         }
 
             //         // mutex lock 함수 추가 
+            //         // mutex lock 함수 추가
             //         ostreamInfo1.writeLockMutexStream(globalNum);
             // }
 
-            // 
+            //
             for (int i = 0; i < tempv.size(); i++)
             {
 
@@ -1338,7 +1355,7 @@ int main()
                 // ll코드 재선언을 방지하기 위한 판별
                 // %"class.std::__1::basic_string" = type { %"class.std::__1::__compressed_pair" }
                 else if (tempv[i] == "%\"class.std::__1::basic_string\"" && tempv[i + 4].substr(0 , 35) == "%\"class.std::__1::__compressed_pair")
-                {   //  %"class.std::__1::basic_string" = type { %"class.std::__1::__compressed_pair" } 
+                {   //  %"class.std::__1::basic_string" = type { %"class.std::__1::__compressed_pair" }
                     output_printf_fstream << tempv[i] << " ";
                     checkDel.checkString_base = true;
 
@@ -1382,7 +1399,7 @@ int main()
 
                 // string 함수 및 vector의 push_back 함수에서 line, colnum을 받는 인자 추가
                 //      define internal void @_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%"class.std::__1::vector"* %this, i32* nonnull align 4 dereferenceable(4) %__x) #2 align 2 !dbg !6092 {
-                // ->   define internal void @_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%"class.std::__1::vector"* %this, i32* nonnull align 4 dereferenceable(4) %__x, i8* %__str_name, i32 %__line, i32 %__colnum) #2 align 2 !dbg !6092 { 
+                // ->   define internal void @_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%"class.std::__1::vector"* %this, i32* nonnull align 4 dereferenceable(4) %__x, i8* %__str_name, i32 %__line, i32 %__colnum) #2 align 2 !dbg !6092 {
                 else if (tempv[i] == "define" && tempv[i + 1] == "internal"
                     &&
                     (
@@ -1530,7 +1547,7 @@ int main()
 
                     string tempstrName = string_var_name.substr(0 , string_var_name.size() - 1);
 
-                    // 존재하는지 판별 
+                    // 존재하는지 판별
                     cout << "vector qqqqqqqqqqqqq " << tempstrName << "\n";
 
 
@@ -1572,7 +1589,7 @@ int main()
 
                 // // 함수 안에서 사용된 int tpye push back 에 추가 인자 전달
                 // //      invoke void @_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%"class.std::__1::vector"* %vvvvv, i32* nonnull align 4 dereferenceable(4) %ref.tmp)
-                // // ->   invoke void @_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%"class.std::__1::vector"* %vvvvv, i32* nonnull align 4 dereferenceable(4) %ref.tmp, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @__const_culry.vvvvv,i64 0, i64 0), i32 145, i32 9) 
+                // // ->   invoke void @_ZNSt3__16vectorIiNS_9allocatorIiEEE9push_backERKi(%"class.std::__1::vector"* %vvvvv, i32* nonnull align 4 dereferenceable(4) %ref.tmp, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @__const_culry.vvvvv,i64 0, i64 0), i32 145, i32 9)
                 else if (tempv[i + 1] == "void"
                     // && tempv[i + 2].substr(0 , 18) == "@_ZNSt3__16vectorI"
                     && (tempv[i + 2].find("@_ZNSt3__16vectorI") != string::npos
@@ -1660,7 +1677,7 @@ int main()
 
 
                         // 0)), -> 0), i32 LineNum, i32 ColNum),
-                        // %ref.tmp_num) -> %ref.tmp_num, 
+                        // %ref.tmp_num) -> %ref.tmp_num,
                         output_printf_fstream << "," << " ";
 
                         // i8* getelementptr inbounds ([30 x i8], [30 x i8]* @.str, i64 0, i64 0),
@@ -1763,14 +1780,14 @@ int main()
                         {
                             std::string text = currentFunc;
                             size_t nPos1 = text.find("_ZNSt3__16vectorI");  // size 16
-                            size_t nPos2 = text.find("NS_9allocatorI");     // 
+                            size_t nPos2 = text.find("NS_9allocatorI");     //
 
                             // cout << "aaaaaa\n";
                             // cout << nPos1 << " " << nPos2 << "\n";
                             // cout << text[nPos1] << " " << text[nPos2] << "\n";
                             // cout << text << "\n";
 
-                            // 
+                            //
                             if (nPos2 != string::npos)
                             {
                                 string tempstr = "";
@@ -1829,12 +1846,12 @@ int main()
                     // AAAAA
                     string className = tempv[0].substr(7 , tempv[0].size() - 7);
 
-                    // 해당 클래스를 저장하지 않은 경우 
+                    // 해당 클래스를 저장하지 않은 경우
                     if (classStruct.find(className) == classStruct.end())
                     {
                         // 등록되지 않은 클래스라면
                         // type { i32, i32, %class.B }
-                        // 
+                        //
 
                         vector<string> tempClassTypeVector;
 
@@ -1855,7 +1872,7 @@ int main()
                                 tempClassTypeVector.push_back(tempv[j].substr(7 , tempv[j].size() - 7));
                             }
 
-                            // string 타입인 경우 
+                            // string 타입인 경우
                             else
                             {
                                 tempClassTypeVector.push_back("string");
@@ -2025,7 +2042,7 @@ int main()
                         }
                     }
 
-                    // if(var_name == "getelementptr") // 전역 배열 일단 넘어감 
+                    // if(var_name == "getelementptr") // 전역 배열 일단 넘어감
                     //         continue;
 
                     // if(var_name.substr(1 , 8) == "arrayidx")
@@ -2153,7 +2170,7 @@ int main()
                 }
 
                 //%xxxxx = getelementptr inbounds %class.AAAAA, %class.AAAAA* %x11111, i32 0, i32 0, !dbg !2507
-                // 
+                //
                 // else if (tempv[i].substr(0 , 7) == "%class." && tempv[4] == "getelementptr")
                 // {
 
@@ -2371,12 +2388,12 @@ int main()
                     // %value_name 을 저장하기 위한 vector
                     vector<string> saveValueName;
 
-                    // 따로 저장을 하는 경우   ex) %call25 = (invoke or call) function operation 
+                    // 따로 저장을 하는 경우   ex) %call25 = (invoke or call) function operation
 
                     // 따로 저장하지 않는 경우 ex) (call or invoke) function operation
                 }
 
-                // 구조체 내용 출력 
+                // 구조체 내용 출력
                 else if (tempv[i] == "alloca" && tempv[i + 1].substr(0 , 7) == "%class.")
                 {
                     // while(i <= tempv.size())
@@ -2429,7 +2446,7 @@ int main()
                             output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << removePersenttempclassNameb.size() + 2 << " x i8], [" << removePersenttempclassNameb.size() + 2 << " x i8]* @__const_culry." << removePersenttempclassNameb << ", i64 0, i64 0))\n";
 
                             for (int j = 0; j < classValue.size(); j++)
-                            { 
+                            {
                                 string currentType = classValue[j];
 
                                 // output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentFunc.size() + compareVarName.size() + 2 << " x i8], [" << currentFunc.size() + compareVarName.size() + 2 << " x i8]* @__const_culry." << currentFunc + compareVarName << ", i64 0, i64 0))\n";
@@ -2453,15 +2470,15 @@ int main()
                                 else if (currentType == "string")
                                 {
                                     output_printf_fstream << "%var_type_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
-                                    // output_printf_fstream << 
+                                    // output_printf_fstream <<
                                     // i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str
-                                    // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s) 
+                                    // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s)
 
                                 }
 
                                 else
                                 {
-                                    // if user struct 
+                                    // if user struct
                                     // => rec??
                                     currentType = ifDontWriteVarNameThanWrite(currentType , false);
                                     output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
@@ -2509,7 +2526,7 @@ int main()
                             output_printf_fstream << "%temp_ValTYpe_004" << globalNumSub << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << classNamea.size() + 2 << " x i8], [" << classNamea.size() + 2 << " x i8]* @__const_culry." << classNamea << ", i64 0, i64 0))\n";
 
                             for (int j = 0; j < classValue.size(); j++)
-                            { 
+                            {
                                 string currentType = classValue[j];
 
                                 // output_printf_fstream << "%temp_ValName_" << globalNum << "_" << templocalNum++ << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentFunc.size() + compareVarName.size() + 2 << " x i8], [" << currentFunc.size() + compareVarName.size() + 2 << " x i8]* @__const_culry." << currentFunc + compareVarName << ", i64 0, i64 0))\n";
@@ -2533,15 +2550,15 @@ int main()
                                 else if (currentType == "string")
                                 {
                                     output_printf_fstream << "%var_type_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
-                                    // output_printf_fstream << 
+                                    // output_printf_fstream <<
                                     // i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str
-                                    // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s) 
+                                    // %var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* %__s)
 
                                 }
 
                                 else
                                 {
-                                    // if user struct 
+                                    // if user struct
                                     // => rec??
                                     currentType = ifDontWriteVarNameThanWrite(currentType , false);
                                     output_printf_fstream << "%var_isStruct_004" << globalNumSub << "_" << j << " = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.userKeyWord_isStruct, i32 0, i32 0)) " << "\n";
@@ -2603,13 +2620,13 @@ int main()
 }
 
 /*ㅁ
-    스레드는 항상 함수 단위로 되는가 
-        -> 함수 단위로 된다면 스레드로 동작하는 함수를 찾아서 그 함수에 추가 번호를 매긴다 
+    스레드는 항상 함수 단위로 되는가
+        -> 함수 단위로 된다면 스레드로 동작하는 함수를 찾아서 그 함수에 추가 번호를 매긴다
             -> 스레드 id를 굳이 구하지 않고 임의로 번호를 매겨서 해도 괜찮은가? call
 
-스레드와 관련된 작업이 늘어날수록 문제가 발생할 확률이 커진다. 
-    -> 스레드를 하나만 사용해도 문제가 발생할 수 있다. 
-            -> 
+스레드와 관련된 작업이 늘어날수록 문제가 발생할 확률이 커진다.
+    -> 스레드를 하나만 사용해도 문제가 발생할 수 있다.
+            ->
 
 
 -> segfault 문제 발생
@@ -2617,8 +2634,8 @@ int main()
     기록 기능만 수행할 수 있도록 한다.
         -> 작업이 겹칠 경우 잘못된 값이 들어갈 수 있다.
 
-    2. 기록 부분을 critical section으로 묶는다. 
-        llvm bitcode 상에서 어떻게 critical section을 만들 수 있는가 
+    2. 기록 부분을 critical section으로 묶는다.
+        llvm bitcode 상에서 어떻게 critical section을 만들 수 있는가
         
         겹치는 문제를 방지하기 위해 기다리는 동작을 수행해야 하는가?
 
@@ -2693,6 +2710,6 @@ attributes #724 = { "frame-pointer"="non-leaf" "no-trapping-math"="true" "probe-
 
 call void @_ZNSt3__15mutex4lockEv(%"class.std::__1::mutex"* @mute)
 call void @_ZNSt3__15mutex6unlockEv(%"class.std::__1::mutex"* @mute) #3
-attributes #3 = { nounwind } 
+attributes #3 = { nounwind }
 
 */
