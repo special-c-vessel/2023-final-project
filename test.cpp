@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+int global_i_Cnt = 0;
+
 void *p_function(void * data)
 {
   pid_t pid; //process id
@@ -20,19 +22,19 @@ void *p_function(void * data)
   tid = pthread_self();
 
   char* thread_name = (char *)data;
-  int i = 0;
+  
 
-  while(i<10)
+  while(global_i_Cnt<10)
   {
     printf("thread name : %s, tid : %x, pid : %u\n", thread_name, tid, (unsigned int)pid); //5
-    i++;
+    global_i_Cnt++;
+    
     // sleep(1);
   }
 
   int num1 = rand();
   // int num2 = 200;
   // int num3 = num1 + num2;
-  // std::cout << "aaea" << "\n";
 }
 
 int main()
