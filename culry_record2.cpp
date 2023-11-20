@@ -86,6 +86,8 @@ struct checkDeclare
     bool checkThread_declare_pthread_self;
     bool checkThread_declare_llvm_memset_p0i8_i64;
 
+    bool checkRandom___dso_handle;
+    bool checkRandom___cxa_atexit;
     
 
     bool check_global_ctors = false;
@@ -97,8 +99,8 @@ struct checkDeclare
 
 checkDeclare checkDel;
 
-int globalNum = 0;
-int globalNumSub = 0;
+int globalNum = 10;
+int globalNumSub = 10;
 
 int maxPtrCnt = 0;
 int maxNumValueName = -1;
@@ -1297,20 +1299,6 @@ int main()
             }
             tempv.push_back("enter");       // 마지막 부분임을 알기 위해 enter 추가
 
-            // auto iter1 = find(tempv.begin(), tempv.end(), "store");
-            // auto iter2 = find(tempv.begin(), tempv.end(), "load");
-            // if (iter1 != tempv.end()) // store가 존재하는 경우
-            //     {
-            //         // // 기록할 필요 없는 기본 내장 함수 건너뜀
-            //         if (currentFunc_returnType == "linkonce_odr" || currentFunc_returnType == "internal")
-            //             continue;
-
-            //         // string type일 때 건너뜀
-            //         if (tempv[6] == "%exn.slot," || tempv[6] == "%ehselector.slot," || tempv[2] == "%exn" || tempv[2] == "%sel" || tempv[6] == "%saved_stack," || tempv[7] == "%saved_stack," || tempv[6] == "%retval,")
-            //             continue;
-
-            //             // std::cout << "find store  !!!!\n";
-            //             // mutex lock 함수 추가 
 
             // auto iter1 = find(tempv.begin(), tempv.end(), "store");
             // auto iter2 = find(tempv.begin(), tempv.end(), "load");
@@ -1334,13 +1322,11 @@ int main()
             // {
             //         string var_name = tempv[7]; // %randomNum,
 
-            //         if (var_name == "getelementptr") 
-            //         if (var_name == "getelementptr"
+            //         if (var_name == "getelementptr")
             //         {
             //             continue;
             //         }
 
-            //         // mutex lock 함수 추가 
             //         // mutex lock 함수 추가
             //         ostreamInfo1.writeLockMutexStream(globalNum);
             // }
@@ -1813,25 +1799,36 @@ int main()
                             // continue;
                         }
 
+                        ostreamInfo1.writeUnlockMutexStream(globalNum++);
+                        
+                        ostreamInfo1.writeOpenStream(globalNum);
 
-                        output_printf_fstream << "%openFile_vectorEnd = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+                        // output_printf_fstream << "%openFile_vectorEnd = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
 
-                        output_printf_fstream << "%var_store__vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0)) " << "\n";
-                        output_printf_fstream << "%var_push_back =  call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_pushBack, i32 0, i32 0)) " << "\n";
-                        output_printf_fstream << "%var_name_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) " << "\n";
-                        output_printf_fstream << "%var_type_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentVectorType.size() + 2 << " x i8], [" << currentVectorType.size() + 2 << " x i8]* @__const_culry." << currentVectorType << ", i64 0, i64 0)) " << "\n";
+                        output_printf_fstream << "%openFile_8888 = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+                        output_printf_fstream << "store %struct.__sFILE* %openFile_8888, %struct.__sFILE** @file, align 8  \n";
+                        output_printf_fstream << "%temp_OpenFile_8888 = load %struct.__sFILE*, %struct.__sFILE** @file, align 8  \n";
+                        output_printf_fstream << "%thread_id_8888 = call %struct._opaque_pthread_t* @pthread_self()  \n";
+                        output_printf_fstream << "%temp_ThreadID_8888 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), %struct._opaque_pthread_t* %thread_id_8888)  \n";
+
+                        output_printf_fstream << "%var_store__vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0)) " << "\n";
+                        output_printf_fstream << "%var_push_back =  call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_pushBack, i32 0, i32 0)) " << "\n";
+                        output_printf_fstream << "%var_name_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) " << "\n";
+                        output_printf_fstream << "%var_type_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([" << currentVectorType.size() + 2 << " x i8], [" << currentVectorType.size() + 2 << " x i8]* @__const_culry." << currentVectorType << ", i64 0, i64 0)) " << "\n";
 
                         ifDontWriteVarNameThanWrite(currentVectorType , false);
 
-                        output_printf_fstream << "%var_target_ptr_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << xType << " %__x) " << "\n";
+                        output_printf_fstream << "%var_target_ptr_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), " << xType << " %__x) " << "\n";
                         // output_printf_fstream << "%var_load_value = load " << currentVectorType << ", " << currentVectorType << "* %__x, align 4 " << "\n";
                         // output_printf_fstream << "%var_value_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([" << currentPrintTypeSize << " x i8], [" << currentPrintTypeSize << " x i8]* @.str.print_" << currentVectorType << ", i64 0, i64 0), " << currentVectorType << " %var_load_value) " << "\n";
 
-                        output_printf_fstream << "%var_ptr_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::vector" << vector_type_num << "\"* %this) " << "\n";
-                        output_printf_fstream << "%var_line_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line) " << "\n";
-                        output_printf_fstream << "%var_colnum_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum) " << "\n";
+                        output_printf_fstream << "%var_ptr_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::vector" << vector_type_num << "\"* %this) " << "\n";
+                        output_printf_fstream << "%var_line_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line) " << "\n";
+                        output_printf_fstream << "%var_colnum_vectorEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_8888, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum) " << "\n";
 
-                        output_printf_fstream << "%closeFile_vectorEnd = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+                        output_printf_fstream << "%closeFile_vectorEnd = call i32 @fclose(%struct.__sFILE* %temp_OpenFile_8888) \n";
+                        
+                        ostreamInfo1.writeUnlockMutexStream(globalNum);
                         output_printf_fstream << "" << "\n";
                     }
 
@@ -2193,7 +2190,7 @@ int main()
                     // 기본적으로 stringLength.ll 파일에서 읽어오는 방식]
                     // 그러나 length 함수가 사용되었다면 아래 코드 사용
                     // output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
-                    output_printf_fstream << "%var_length22 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) \n";
+                    output_printf_fstream << "%var_length22 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %call) \n";
                     // output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
 
                     checkDel.checkString_length_Func = true;
@@ -2236,28 +2233,41 @@ int main()
                         isStore = false;
                     }
 
-                    
+                    ostreamInfo1.writeUnlockMutexStream(globalNum++);
+
 
                     // file open
-                    output_printf_fstream << "%openFile" << 999 << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+                    // output_printf_fstream << "%temp_OpenFile_999" << " = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+
+                    // ostreamInfo1.writeThreadID(999, 0);
+
+                    ostreamInfo1.writeOpenStream(globalNum);
+
+
+                    output_printf_fstream << "%openFile_9999 = call %struct.__sFILE* @\"\01_fopen\"(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.openfile, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.continue, i64 0, i64 0)) \n";
+                    output_printf_fstream << "store %struct.__sFILE* %openFile_9999, %struct.__sFILE** @file, align 8  \n";
+                    output_printf_fstream << "%temp_OpenFile_9999 = load %struct.__sFILE*, %struct.__sFILE** @file, align 8  \n";
+                    output_printf_fstream << "%thread_id_9999 = call %struct._opaque_pthread_t* @pthread_self()  \n";
+                    output_printf_fstream << "%temp_ThreadID_9999 = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), %struct._opaque_pthread_t* %thread_id_9999)  \n";
+
 
                     if (isStore)
                     {
-                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
+                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.op_store, i32 0, i32 0))\n";
                     }
                     else
                     {
-                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.op_load, i32 0, i32 0))\n";
+                        output_printf_fstream << "%var_store = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.op_load, i32 0, i32 0))\n";
                     }
 
                     // name
-                    output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) \n";
+                    output_printf_fstream << "%var_name = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.print_string_name, i64 0, i64 0), i8* %__str_name) \n";
 
                     // type
-                    output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
+                    output_printf_fstream << "%var_type = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.string, i64 0, i64 0))\n";
 
                     // String 값 출력 시작`
-                    output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
+                    output_printf_fstream << "%var_print_stringStart = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.userKeyWord_isStringStart, i32 0, i32 0))\n";
 
                     // output_printf_fstream << "%var_length = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i64 %var_string_length) \n";
                     
@@ -2268,22 +2278,24 @@ int main()
                     // 내용 출력
                     if (isStore)
                     {
-                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* " << stringValue << ")\n";
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), i8* " << stringValue << ")\n";
                     }
                     else
                     {
-                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), %\"class.std::__1::basic_string\"* %__lhs) \n";
+                        output_printf_fstream << "%var_value = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_string, i64 0, i64 0), %\"class.std::__1::basic_string\"* %__lhs) \n";
                     }
 
                     // String 값 출력 끝
-                    output_printf_fstream << "%var_print_stringEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_isStringEnd, i32 0, i32 0))\n";
+                    output_printf_fstream << "%var_print_stringEnd = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.userKeyWord_isStringEnd, i32 0, i32 0))\n";
 
-                    output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* " << stringPointer << ")\n";
-                    output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line)\n";
-                    output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %loadfile, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum)\n";
+                    output_printf_fstream << "%var_ptr = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_ptr, i32 0, i32 0), %\"class.std::__1::basic_string\"* " << stringPointer << ")\n";
+                    output_printf_fstream << "%var_line = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int, i64 0, i64 0), i32 %__line)\n";
+                    output_printf_fstream << "%var_colnum = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %temp_OpenFile_9999, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.print_int_space, i64 0, i64 0), i32 %__colnum)\n";
 
                     // file close
-                    output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %loadfile) \n";
+                    output_printf_fstream << "%closeFile" << 999 << " = call i32 @fclose(%struct.__sFILE* %temp_OpenFile_9999) \n";
+
+                    ostreamInfo1.writeUnlockMutexStream(globalNum);
 
                 }
 
