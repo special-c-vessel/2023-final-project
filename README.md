@@ -154,6 +154,10 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <br><br>
 - 2023 충남대학교 공과대학 엔지니어링 페어 우수상 수상<br>
   <img width="300" alt="image" src="https://github.com/special-c-vessel/2023-final-project/assets/33623075/305b4678-db31-4db4-b4ef-c59f091684dd">
+<br><br>
+- 2023 2학기 충남대학교 컴퓨터융햡학부 * 인공지능학과 SW/AI 프로젝트 페어 우수상 수상<br>
+<img width="300" alt="image" src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/13bae0f0-8f77-40bf-988f-006b1a7dc158">
+
 
 <br><br>
 **받은 질문:** <br>
