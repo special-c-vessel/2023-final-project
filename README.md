@@ -1,40 +1,40 @@
-# Culry: C++ 소스코드 수준 기록-재현 도구 (23.09.24 업데이트) <br>
+# Culry: C/C++ 소스코드 수준 기록-재현 도구 (23.09.24 업데이트) <br>
 지도교수 : 이성호 교수님 <br>
 팀&nbsp;&nbsp;&nbsp;&nbsp;   명 : 동윤없는 동윤팀  <br> 
 팀&nbsp;&nbsp;&nbsp;&nbsp;   원 : 충남대학교 컴퓨터공학과  17 한정경<br> 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;충남대학교 컴퓨터융합학부 20 김용일 <br> <br>
 
 **개요 및 추진 배경 : <br>**
-&nbsp; C++ 프로그램은 개발자가 메모리를 직접 관리하여야 하며, 이러한 이유로 다양한 형태의 오류가 발생할 수 있다. 오류가 발생하면 프로그램은 segmentation faults를 내고 종료되거나, 예상하지 못한 이상한 행동을 수행하게 된다. 오류를 탐지하기 위하여 디버깅을 수행할 수 있으나, 컴파일되어 바이너리로 변환 후 실행되는 프로그램의 특성 상 오류가 난 지점을 판단하기 어려울 뿐만 아니라, 네트워크 오퍼레이션, 외부 환경 변화, 동시성 프로그램, 비결정적 동작 등의 개발자가 동제하기 어렵거나 통제할 수 없는 요소들로 인해 오류가 재현되지 않아 원인 파악에 많은 개발자들이 어려움을 겪고 있다. 위의 어려움을 해결하기 위해 정적 및 동적 분석 기법을 활용하여 프로그램의 실행 흐름과 상태를 모니터링하는 도구와 기법을 개발한다.
+&nbsp; C/C++ 프로그램에서, 메모리를 직접 관리하거나 네트워크 통신, 동시성(concurrent) 같은 비결정론적(nondeterministic) 요인으로 인해 segmentation faults를 내고 종료되거나, 예상하지 못한 이상한 행동을 수행하게 된다. 이 경우 프로그램 분석을 위해 디버깅을 수행할 수 있으나, 컴파일되어 바이너리로 변환 후 실행되는 프로그램의 특성 상 오류를 식별하고 해결하는 데 많은 시간과 자원을 필요로 한다. 위의 어려움을 해결하기 위해 정적 및 동적 분석 기법을 활용하여 프로그램의 실행 흐름과 상태를 모니터링하는 도구와 기법을 개발한다.
 
 <br><br>
 **프로젝트 목표 :** 
-- 기존 디버깅 시스템에서 벗어나, 프로그램 실행시 그 실행 흐름을 기록하고 재현하여 프로그램을 더욱 효과적으로 파악할 수 있도록 하는 새로운 디버깅 도구의 개발을 목표로 한다. <br><br>
+- 당시 실행중이던 프로그램의 상태를 기반으로 프로그램을 분석하는 기록 기반 디버깅 도구의 개발. <br><br>
 
 **기대효과 :**
-- 오류재현 등, 코드 분석에 걸리는 시간과 자원의 소모를 줄이고 개발자의 개발 역량을 높힌다. <br> <br>
+- 오류 재현 등, 프로그램 분석에 걸리는 시간과 자원의 소모를 줄이고 개발자의 개발 역량을 높힌다. <br> <br>
 
+
+
+- Culry의 전체 동작 과정 <br>
+<img width="1849" alt="image" src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/82ab2569-78d7-4df3-9d53-9f2a878d4cd7">
 
 **동작 과정:** <br>
-&nbsp; 동작 과정은 크게 기록과 재현, 두 단계로 나눌 수 있다. <br>
-- 기록: 
-  1. 타겟 c++ 코드를 llvm을 통해 .ll 파일로 컴파일한다.
-  2. .ll 파일에 기록을 위한 llvm instruction 을 삽입한다.
+&nbsp; 동작 과정은 크게 Instrument와 Replay, 두 단계로 나눌 수 있다. <br>
+- Instrument 단계: 
+  1. Original C/C++ 코드를 LLVM bitcode로 컴파일한다.
+  2. Original LLVM bitcode의 메모리 접근 명령어(store, load)를 대상으로 기록을 위한 추가 LLVM instruction을 삽입한다.
   3. 변조된 프로그램을 실행하여 동작 과정이 기록된 결과물을 얻는다. <br><br>
 
-- 재현:
-  1. 동작 과정이 기록된 결과물과 타겟 c++ 코드를 mapping 한다.
+- Replay 단계:
+  1. 동작 과정이 기록된 결과물과 Original C/C++ 코드를 mapping 한다.
   2. UI/UX 및 명령어를 통해 실행 정보를 사용자에게 전달한다.<br><br>
 
 
-
-- 기록-재현 과정을 도식화한 그림 <br>
-<img width="300" alt="image" src="https://github.com/special-c-vessel/2023-final-project/assets/33623075/7b83aa90-7994-4ef6-b219-a95c01a4b06b">
-
 <br><br>
 **더 쉬운 이해를 위한 문제 예시: <br>**
-
 - 외부 서버와 통신을 하는 프로그램이 있을 때 서버에서 잘못된 값을 전송하므로써 오류가 발생한 경우, 프로그램의 문제인지 서버의 문제인지 개발자는 그 원인을 파악하기 어렵다. 이때 Culry를 사용하여 통신 정보와 그로 인한 결과값을 기록할 수 있으므로 외부 서버의 재송신 없이도 프로그램을 분석하여 원인을 보다 쉽게 파악할 수 있다.
+- 멀티 스레드를 사용하는 경우, 일반적으로 스레드의 동작 순서를 예축할 수 없지만 Culry를 통해 어떤 스레드에서 어떤 동작이 수행되었는지를 분석할 수 있다.
 - 어제 5가지의 음식을 먹고 알레르기 반응이 나타난 경우, 알레르기 반응 확인을 위해 모든 음식을 다시 먹어봐야한다. 그러나 먹은 음식에 대한 성분표를 갖고 있다면 음식을 다시 먹을 필요가 없다.
 
 <br><br>
@@ -56,11 +56,13 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 - string type에 대해, 잘못된 index에 값을 할당하는 경우 system message에 문자열 범위 밖 오류임을 표시 <br><br>
 <img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/4d8559f5-e3a2-481d-abd5-2a86edd2e5bf" width="30%" height="30%"/> <img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/219d16a4-58ca-4224-b743-0d426982c8b3" width="40%" height="%"/>
 
-
 <br><br>
 - Segfault 등 프로그램이 중간에 종료되더라도, 그 전까지 진행된 작업을 기록하여 정상 종료가 아님을 확인할 수 있다
   <br>(25번 line에서 프로그램이 종료되었다는 것을 system message에서 확인할 수 있으며, <br>종료의 원인은 변수의 Type이 int pointer임에도 Value에 nullptr가 할당되어 있어 Segfault가 발생했음을 알 수 있다.)<br>
 <img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/847e72d3-e50b-460d-96aa-2694c0f6d32b" width="20%" height="30%"/> <img src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/1f857b87-75d2-4a07-8e7f-37a00ea2afaa" width="70%" height="%"/>
+
+<br><br>
+- 멀티 스레드 환경에서, 전체 스레드의 동작 순서와 수행된 동작을 확인할 수 있다.
 
 <br><br>
 - 사용 가능한 명령어 <br>
@@ -87,12 +89,12 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 <br><br>
 **향후 발전 계획:** <br>
 - 효과적으로 정보를 확인할 수 있는 다양한 명령어 및 UI/UX 개발
-- 동시성 프로그램 지원(multi thread 동작 시 각 thread별 ID와 Timestamp를 기록하여 작업 순서 기록)
+- ~~동시성 프로그램 지원(multi thread 동작 시 각 thread별 ID와 Timestamp를 기록하여 작업 순서 기록)~~ 개발함
 - llvm이 지원하는 다른 언어로의 확장(Rust, Swift, Objective-C)
 
 <br><br>
-**요구사항:** <br>
-- ARM CPU를 사용하는 Mac OS Monterey 12.7.0
+**~~요구사항~~ 개발 환경:** <br>
+- ARM CPU를 사용하는 Mac OS Monterey 12.7.0  (OS 버전 다를 시 동작하지 않을 수 있음)
 - llvm release 12.0.0 버전
 - Apple clang version 14.0.0 (clang-1400.0.29.202)
 
@@ -145,7 +147,8 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 
 <br><br>
 **제약사항 :** <br>
-개발 완료 이후 테스트를 통해 업데이트 예정
+~~개발 완료 이후 테스트를 통해 업데이트 예정~~
+- Complex Data Type 은 지원하지 않음
 
 <br><br>
 **성과:** <br>
@@ -155,9 +158,12 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 - 2023 충남대학교 공과대학 엔지니어링 페어 우수상 수상<br>
   <img width="300" alt="image" src="https://github.com/special-c-vessel/2023-final-project/assets/33623075/305b4678-db31-4db4-b4ef-c59f091684dd">
 <br><br>
-- 2023 2학기 충남대학교 컴퓨터융햡학부 * 인공지능학과 SW/AI 프로젝트 페어 우수상 수상<br>
+- 2023 2학기 충남대학교 컴퓨터융햡학부 * 인공지능학과 SW/AI 축전 우수상 수상<br>
 <img width="300" alt="image" src="https://github.com/wjdrud2532/2023-final-project/assets/33623075/13bae0f0-8f77-40bf-988f-006b1a7dc158">
 
+<br><br>
+**2023 정보과학회 프로그래밍 언어 분야, 일반 섹션 통과**  &nbsp; ~~학부생임에도 불구하고!!~~ <br><br>
+[Culry-출판용 논문.pdf](https://github.com/wjdrud2532/2023-final-project/files/13549570/Culry-.pdf)
 
 <br><br>
 **받은 질문:** <br>
@@ -179,14 +185,13 @@ https://cnuswaiproject.wixsite.com/2023-1/post/culry-c-%ED%94%84%EB%A1%9C%EA%B7%
 1. 코드삽입 전과 후, 두 프로그램이 같다는 것을 어떻게 증명하는가?
   <br>-> 기록을 위한 코드를 삽입할 때, 값을 불러오는 종류의 코드만을 추가하므로 원본 코드의 동작 수행에 변형을 가하지 않을 것으로 기대한다.<br><br>
 2. 기록이 완벽하다는 것을 어떻게 증명하는가?
-   <br>-> 여러 타입과 출력 형식, 결정적인 프로그램에 대해 테스트를 진행하여 출력과 기록 정보가 같음을 확인, 이것은 일정한 형식이 있는 동작이므로 기록이 완벽할 것으로 기대한다.<br><br>
+   <br>-> 여러 타입과 출력 형식, 결정적인 프로그램에 대해 테스트를 진행하여 출력과 기록 정보가 같음을 확인, 멀티 스레드의 경우 메모리 접근 명령어의 전,후를 mutex lock, unlock 하여 값이 유지되도록 함. 이것은 일정한 형식이 있는 동작이므로 기록이 완벽할 것으로 기대한다.<br><br>
 3. 추가로 삽입한 코드의 실행을 어떻게 보장하는가?
       <br>-> 기록을 수행하는 코드를 추가한다는 것은 기존 코드에 새로운 함수를 추가하고 사용한다고 생각하면 쉽다.
       <br> 기존 코드의 함수명, 변수명과 중복되지 않도록 llvm 작명 규칙에서 벗어난 복잡한 이름을 사용하고, 기록 기능을 하는 함수를 llvm으로 생성하여 사용하므로 llvm 문법에 변화가 없는 한 추가로 삽입한 코드가 정상적으로 동작할 것으로 기대한다.
 
-<br><br>
-**논문**<br>
-[Culry-심사용 논문.pdf](https://github.com/wjdrud2532/2023-final-project/files/13198171/Culry-.pdf)
+
+
 
 
 <br><br>
